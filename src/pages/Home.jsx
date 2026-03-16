@@ -53,7 +53,7 @@ export default function Home() {
           <h1>South African Coin Collectors Club</h1>
           <p className="hero-sub">South Africa’s Home of Numismatics</p>
           <div className="hero-actions">
-            <Link to="/membership" className="btn btn-primary">Join Now</Link>
+            <Link to="/join" className="btn btn-primary">Join The Club</Link>
             <Link to="/news" className="btn btn-outline">Read Latest News</Link>
           </div>
           <p className="hero-intro-brief">Bringing collectors together.
@@ -143,7 +143,7 @@ Join a community built for collectors.</p>
               <p>{membershipFee.desc}</p>
               <p className="pricing-cta-text">Connect with collectors and grow your knowledge.
               Become an official member of South Africa’s coin collecting community.</p>
-              <Link to="/membership" className="btn btn-primary btn-lg">Join Now</Link>
+              <Link to="/join" className="btn btn-primary btn-lg">Join The Club</Link>
             </div>
           </div>
         </div>

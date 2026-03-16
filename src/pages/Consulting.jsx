@@ -21,9 +21,7 @@ export default function Consulting() {
         <div className="container">
           <div className="consulting-intro">
             <p>
-              Our experienced members volunteer their time to help fellow collectors. Consulting fees 
-              are considered a sponsorship contribution to the club, supporting our mission to promote 
-              the world of coins in South Africa.
+              Our experienced collectors and numismatic experts are passionate about helping fellow members. Consulting fees are treated as sponsorship contributions that support the club's mission while advancing numismatic knowledge in South Africa.
             </p>
           </div>
           <div className="services-grid">

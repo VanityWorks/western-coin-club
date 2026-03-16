@@ -107,23 +107,22 @@ export default function About() {
 
           <div className="about-digital">
             <h2>Digital Community</h2>
-            <p>At the heart of what we do is a WhatsApp Community-the main hub where collectors connect. Example channels include:</p>
+            <p>At the heart of what we do is a WhatsApp Community-the main hub where collectors connect.</p>
+            <h3 className="channel-group-heading">Regional Numismatic Groups</h3>
             <ul className="channel-list">
-              <li>General Discussions</li>
-              <li>Research & Discoveries</li>
-              <li>Ancient Coins</li>
-              <li>ZAR Coinage</li>
-              <li>Union Coinage</li>
-              <li>Republic Decimal Coinage</li>
-              <li>World Coins</li>
-              <li>Banknotes</li>
-              <li>Tokens & Medals</li>
-              <li>Members Buy & Sell</li>
-              <li>Coin Photography</li>
-              <li>Grading & Authentication</li>
-              <li>New Collectors / Beginner Questions</li>
+              <li>Gauteng Numismatics</li>
+              <li>KZN Numismatics</li>
+              <li>Western Cape Numismatics</li>
             </ul>
-            <p>This structure lets you focus on what you love while staying part of a national community-and helps new collectors feel welcome from day one.</p>
+            <h3 className="channel-group-heading">Channels</h3>
+            <ul className="channel-list">
+              <li>Pricing Guide</li>
+              <li>Buy • Sell • Trade</li>
+              <li>General Discussion</li>
+              <li>New Collectors Corner</li>
+              <li>SAAND Dealer Advertising</li>
+            </ul>
+            <p className="channel-footer">Join the groups that interest you, take part in the discussions, and share your passion for numismatics with fellow collectors.</p>
           </div>
         </div>
       </section>

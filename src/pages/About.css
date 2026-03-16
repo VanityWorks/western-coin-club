@@ -145,6 +145,22 @@
   margin-bottom: 0;
 }
 
+.channel-group-heading {
+  font-family: var(--font-heading);
+  font-size: 1.1rem;
+  font-weight: 600;
+  margin: 1.5rem 0 0.5rem;
+  color: var(--text);
+}
+
+.channel-group-heading:first-of-type {
+  margin-top: 1rem;
+}
+
+.channel-footer {
+  margin-top: 1.5rem !important;
+}
+
 .channel-list {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));

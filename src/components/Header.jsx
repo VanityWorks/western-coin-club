@@ -35,8 +35,8 @@ export default function Header() {
           ))}
         </nav>
 
-        <Link to="/membership" className="header-cta" onClick={() => setMenuOpen(false)}>
-          Join Now
+        <Link to="/join" className="header-cta" onClick={() => setMenuOpen(false)}>
+          Join The Club
         </Link>
 
         <button

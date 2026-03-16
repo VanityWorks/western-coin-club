@@ -1,3 +1,132 @@
+/* Membership info page (pricing, benefits) */
+.membership-intro {
+  max-width: 640px;
+  margin: 0 auto 2.5rem;
+  text-align: center;
+}
+
+.membership-intro p {
+  font-size: 1.15rem;
+  line-height: 1.7;
+  color: var(--text);
+  margin: 0;
+}
+
+.membership-pricing-block {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 2.5rem;
+}
+
+.membership-pricing-card {
+  padding: 2.5rem 3rem;
+  background: var(--white);
+  border-radius: 20px;
+  border: 1px solid var(--border);
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
+  text-align: center;
+  max-width: 400px;
+}
+
+.membership-price {
+  font-family: var(--font-heading);
+  font-size: 2.5rem;
+  font-weight: 700;
+  color: var(--sa-gold);
+  margin-bottom: 0.5rem;
+}
+
+.membership-price span {
+  font-size: 1rem;
+  font-weight: 500;
+  color: var(--text-muted);
+}
+
+.membership-pricing-card p {
+  margin: 0 0 1.5rem;
+  color: var(--text-muted);
+}
+
+.membership-welcome-pack {
+  margin-bottom: 2.5rem;
+  padding: 2rem;
+  background: var(--gray-100);
+  border-radius: 16px;
+  border-left: 5px solid var(--sa-gold);
+}
+
+.membership-welcome-pack h2 {
+  font-family: var(--font-heading);
+  font-size: 1.35rem;
+  font-weight: 600;
+  margin: 0 0 1rem;
+  color: var(--black);
+}
+
+.membership-welcome-pack ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.membership-welcome-pack li {
+  padding: 0.4rem 0;
+  padding-left: 1.5rem;
+  position: relative;
+  font-size: 0.95rem;
+  line-height: 1.5;
+  color: var(--text);
+}
+
+.membership-welcome-pack li::before {
+  content: '•';
+  position: absolute;
+  left: 0;
+  color: var(--sa-gold);
+}
+
+.membership-benefits {
+  margin-bottom: 2.5rem;
+}
+
+.membership-benefits h2 {
+  font-family: var(--font-heading);
+  font-size: 1.35rem;
+  font-weight: 600;
+  margin: 0 0 1rem;
+  color: var(--black);
+}
+
+.membership-benefits ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.membership-benefits li {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.4rem 0;
+  font-size: 0.95rem;
+  line-height: 1.5;
+  color: var(--text);
+}
+
+.membership-benefits .benefit-icon {
+  color: var(--sa-gold);
+  font-size: 1.1rem;
+}
+
+.membership-cta {
+  text-align: center;
+}
+
+.membership-cta .btn {
+  padding: 0.9rem 2rem;
+}
+
+/* Join form page */
 .membership-form {
   max-width: 640px;
   margin: 0 auto;

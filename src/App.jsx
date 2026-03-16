@@ -4,6 +4,7 @@ import Footer from './components/Footer'
 import Home from './pages/Home'
 import About from './pages/About'
 import Membership from './pages/Membership'
+import Join from './pages/Join'
 import News from './pages/News'
 import Consulting from './pages/Consulting'
 import Forum from './pages/Forum'
@@ -19,6 +20,7 @@ function App() {
           <Route path="/" element={<Home />} />
           <Route path="/about" element={<About />} />
           <Route path="/membership" element={<Membership />} />
+          <Route path="/join" element={<Join />} />
           <Route path="/news" element={<News />} />
           <Route path="/consulting" element={<Consulting />} />
           <Route path="/forum" element={<Forum />} />

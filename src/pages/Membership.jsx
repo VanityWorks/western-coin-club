@@ -1,17 +1,32 @@
-import { useState } from 'react'
+import { Link } from 'react-router-dom'
 import './Page.css'
 import './Membership.css'
 
-const interests = [
-  'Ancient Coins', 'Medieval Coins', 'South African Republic (ZAR)',
-  'Union of South Africa', 'Republic of South Africa', 'Modern Bullion Coins',
-  'Gold Coins', 'Silver Coins', 'World Coins', 'Error Coins', 'Pattern Coins',
-  'Medals', 'Tokens', 'Banknotes', 'Other',
+const membershipFee = { price: 'R100', desc: 'Full access to all club benefits' }
+
+const welcomePack = [
+  'Official Membership Certificate issued in your name',
+  'South African Coin Collectors Club Membership Card',
+  'Welcome Letter from the club',
+  'SANGS Pedigree Coin — graded, registered, and attributed to your name',
+  'Access to the Hern\'s Pocket Guide for catalog pricing and reference',
+  'SANGS Grading Voucher',
+  'Bassani\'s No Seller\'s Commission Voucher',
+  'Investment Coin & Bullion Voucher',
+  'Bucks & Gems Voucher',
+  'A Special Numismatic Welcome Gift',
+]
+
+const benefits = [
+  'Access to collector community',
+  'Educational articles and news',
+  'Member networking opportunities',
+  'Coin market insights',
+  'Events and special activities',
+  'Member recognition',
 ]
 
 export default function Membership() {
-  const [referral, setReferral] = useState('no')
-
   return (
     <main className="page membership-page">
       <section className="page-hero">
@@ -19,147 +34,42 @@ export default function Membership() {
         <p>Join South Africa's welcoming coin community</p>
       </section>
       <section className="page-content">
-        <div className="container narrow">
-          <form className="membership-form" onSubmit={(e) => e.preventDefault()}>
-            <fieldset>
-              <legend>Personal Details</legend>
-              <div className="form-grid">
-                <label>
-                  First Name <span className="required">*</span>
-                  <input type="text" required placeholder="e.g. John" />
-                </label>
-                <label>
-                  Surname <span className="required">*</span>
-                  <input type="text" required placeholder="e.g. Smith" />
-                </label>
-                <label>
-                  Email <span className="required">*</span>
-                  <input type="email" required placeholder="john@example.com" />
-                </label>
-                <label>
-                  Mobile <span className="required">*</span>
-                  <input type="tel" required placeholder="+27 XX XXX XXXX" />
-                </label>
-                <label>
-                  WhatsApp Number <span className="required">*</span>
-                  <input type="tel" required placeholder="+27 XX XXX XXXX" />
-                </label>
-                <label className="full">
-                  Physical Address <span className="required">*</span>
-                  <input type="text" required placeholder="Street address" />
-                </label>
-                <label>
-                  Town / City <span className="required">*</span>
-                  <input type="text" required placeholder="e.g. Cape Town" />
-                </label>
-                <label>
-                  Region / Province <span className="required">*</span>
-                  <input type="text" required placeholder="e.g. Western Cape" />
-                </label>
-                <label>
-                  Country <span className="required">*</span>
-                  <select required defaultValue="ZA">
-                    <option value="ZA">South Africa</option>
-                    <option value="other">Other</option>
-                  </select>
-                </label>
-              </div>
-            </fieldset>
+        <div className="container">
+          <div className="membership-intro">
+            <p>
+              When you join the South African Coin Collectors Club, you receive a welcome pack and access to benefits designed to support and grow your coin collecting journey.
+            </p>
+          </div>
 
-            <fieldset>
-              <legend>Collecting Interests</legend>
-              <p className="field-hint">Select all that apply</p>
-              <div className="checkbox-grid">
-                {interests.map((i) => (
-                  <label key={i} className="checkbox-label">
-                    <input type="checkbox" />
-                    <span>{i}</span>
-                  </label>
-                ))}
-              </div>
-            </fieldset>
-
-            <fieldset>
-              <legend>Member Referral</legend>
-              <label className="radio-group">
-                <input
-                  type="radio"
-                  name="referral"
-                  value="yes"
-                  checked={referral === 'yes'}
-                  onChange={() => setReferral('yes')}
-                />
-                <span>Yes</span>
-              </label>
-              <label className="radio-group">
-                <input
-                  type="radio"
-                  name="referral"
-                  value="no"
-                  checked={referral === 'no'}
-                  onChange={() => setReferral('no')}
-                />
-                <span>No</span>
-              </label>
-              {referral === 'yes' && (
-                <div className="referral-fields">
-                  <label>
-                    Referring Member Name <span className="required">*</span>
-                    <input type="text" required />
-                  </label>
-                  <label>
-                    Referring Membership Number <span className="required">*</span>
-                    <input type="text" required />
-                  </label>
-                </div>
-              )}
-            </fieldset>
-
-            <fieldset>
-              <legend>Optional</legend>
-              <div className="checkbox-grid">
-                <label className="checkbox-label">
-                  <input type="checkbox" />
-                  <span>Interested in events</span>
-                </label>
-                <label className="checkbox-label">
-                  <input type="checkbox" />
-                  <span>Interested in buying coins</span>
-                </label>
-                <label className="checkbox-label">
-                  <input type="checkbox" />
-                  <span>Interested in selling coins</span>
-                </label>
-                <label className="checkbox-label">
-                  <input type="checkbox" />
-                  <span>Interested in learning / research</span>
-                </label>
-                <label className="checkbox-label">
-                  <input type="checkbox" />
-                  <span>Interested in networking</span>
-                </label>
-              </div>
-            </fieldset>
-
-            <fieldset>
-              <legend>Consent</legend>
-              <label className="checkbox-label">
-                <input type="checkbox" required />
-                <span>I agree to receive club communications <span className="required">*</span></span>
-              </label>
-              <label className="checkbox-label">
-                <input type="checkbox" required />
-                <span>I accept the privacy policy <span className="required">*</span></span>
-              </label>
-            </fieldset>
-
-            <div className="form-actions">
-              <button type="submit" className="btn btn-primary btn-lg">
-                Submit Application
-              </button>
-              <p className="form-note">Demo only - form does not submit</p>
+          <div className="membership-pricing-block">
+            <div className="membership-pricing-card">
+              <div className="membership-price">{membershipFee.price}<span>/year</span></div>
+              <p>{membershipFee.desc}</p>
+              <Link to="/join" className="btn btn-primary btn-lg">Join The Club</Link>
             </div>
-          </form>
+          </div>
+
+          <div className="membership-welcome-pack">
+            <h2>Your Membership Welcome Pack Includes</h2>
+            <ul>
+              {welcomePack.map((item, i) => (
+                <li key={i}>{item}</li>
+              ))}
+            </ul>
+          </div>
+
+          <div className="membership-benefits">
+            <h2>Member Benefits</h2>
+            <ul>
+              {benefits.map((b, i) => (
+                <li key={i}><span className="benefit-icon">◎</span>{b}</li>
+              ))}
+            </ul>
+          </div>
+
+          <div className="membership-cta">
+            <Link to="/join" className="btn btn-primary btn-lg">Join The Club</Link>
+          </div>
         </div>
       </section>
     </main>
