@@ -98,6 +98,11 @@ export default function About() {
               <h3>Patron</h3>
               <p>To be announced</p>
             </div>
+
+            <div className="structure-section structure-patron">
+              <h3>Honorary Life Members</h3>
+              <p>To be announced</p>
+            </div>
           </div>
 
           <div className="about-digital">
