@@ -2,7 +2,7 @@ import { Link } from 'react-router-dom'
 import './Page.css'
 import './Membership.css'
 
-const membershipFee = { price: 'R100', desc: 'Full access to all club benefits' }
+const membershipFee = { price: 'R120', desc: 'Full access to all club benefits' }
 
 const welcomePack = [
   'Official Membership Certificate issued in your name',
