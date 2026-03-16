@@ -2,9 +2,9 @@ import { Link } from 'react-router-dom'
 import './Home.css'
 
 const latestNews = [
-  { id: 1, title: '2026 Krugerrand Design Unveiled', summary: 'The annual release brings fresh excitement for bullion collectors.', date: 'Mar 12, 2026' },
-  { id: 2, title: 'ZAR Coins: A Collector\'s Guide', summary: 'Deep dive into South African Republic numismatics.', date: 'Mar 5, 2026' },
-  { id: 3, title: 'Club Event: Spring Numismatic Fair', summary: 'Join us for our quarterly gathering of collectors.', date: 'Feb 28, 2026' },
+  { id: 1, title: '2026 Krugerrand Design Unveiled', summary: 'The annual release brings fresh excitement for bullion collectors.', date: 'Mar 12, 2026', image: '/news-krugerrand.png' },
+  { id: 2, title: 'ZAR Coins: A Collector\'s Guide', summary: 'Deep dive into South African Republic numismatics.', date: 'Mar 5, 2026', image: '/news-zar.png' },
+  { id: 3, title: 'Club Event: Spring Numismatic Fair', summary: 'Join us for our quarterly gathering of collectors.', date: 'Feb 28, 2026', image: '/news-spring-fair.png' },
 ]
 
 const benefits = [
@@ -45,16 +45,12 @@ const membershipFee = { price: 'R100', desc: 'Full access to all club benefits' 
 export default function Home() {
   return (
     <main className="home">
+      <div className="home-bg" aria-hidden="true"></div>
+      <div className="home-overlay" aria-hidden="true"></div>
       <section className="hero">
-        <div className="hero-bg">
-          <div className="hero-accent green"></div>
-          <div className="hero-accent gold"></div>
-          <div className="hero-accent red"></div>
-          <div className="hero-accent blue"></div>
-        </div>
         <div className="hero-content">
-          <h1>South Africa's Modern Home for Coin and Banknote Collectors</h1>
-          <p className="hero-sub">A community for collectors, researchers, investors and enthusiasts of numismatics.</p>
+          <h1>South African Coin Collectors Club</h1>
+          <p className="hero-sub">A welcoming home for coin collectors and enthusiasts around South Africa.</p>
           <div className="hero-actions">
             <Link to="/membership" className="btn btn-primary">Join Now</Link>
             <Link to="/news" className="btn btn-outline">Read Latest News</Link>
@@ -69,7 +65,7 @@ export default function Home() {
             {latestNews.map((article) => (
               <article key={article.id} className="news-card">
                 <div className="news-card-image">
-                  <span className="news-placeholder">◎</span>
+                  <img src={article.image} alt="" />
                 </div>
                 <div className="news-card-content">
                   <span className="news-date">{article.date}</span>
@@ -102,7 +98,7 @@ export default function Home() {
           <h2>Who the Club Is For</h2>
           <div className="audience-content">
             <p>
-              The Western Coin Club welcomes anyone with an interest in numismatics. Our members 
+              The South African Coin Collectors Club welcomes anyone with an interest in numismatics. Our members 
               come from all walks of life and levels of experience.
             </p>
             <ul>
@@ -149,28 +145,16 @@ export default function Home() {
       </section>
 
       <section className="section pricing">
-        <div className="sa-stripe"></div>
         <div className="container">
           <h2>2026 Membership</h2>
           <div className="pricing-block">
             <div className="pricing-card">
               <div className="price">{membershipFee.price}<span>/year</span></div>
               <p>{membershipFee.desc}</p>
+              <p className="pricing-cta-text">Become part of South Africa's premier numismatic community.</p>
               <Link to="/membership" className="btn btn-primary btn-lg">Join Now</Link>
             </div>
-            <div className="pricing-cta-inline">
-              <p>Become part of South Africa's premier numismatic community.</p>
-              <Link to="/membership" className="btn btn-outline-light">Become a Member</Link>
-            </div>
           </div>
-        </div>
-        <div className="sa-stripe"></div>
-      </section>
-
-      <section className="section cta">
-        <div className="cta-content">
-          <h2>Ready to Join?</h2>
-          <Link to="/membership" className="btn btn-primary btn-lg">Become a Member</Link>
         </div>
       </section>
     </main>

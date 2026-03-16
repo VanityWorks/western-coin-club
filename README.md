@@ -1,6 +1,6 @@
-# Western Coin Club – Frontend Demo
+# South African Coin Collectors Club – Frontend Demo
 
-A visual demo website for the Western Coin Club, built with Vite + React (SPA).
+A visual demo website for the South African Coin Collectors Club, built with Vite + React (SPA).
 
 ## Theme
 

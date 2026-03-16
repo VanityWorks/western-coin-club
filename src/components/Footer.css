@@ -1,14 +1,11 @@
 .footer {
+  position: relative;
+  z-index: 20;
   margin-top: auto;
-  background: var(--black);
+  background: #0a0a0a;
   color: var(--gray-300);
-}
-
-.footer::before {
-  content: '';
-  display: block;
-  height: 4px;
-  background: linear-gradient(90deg, var(--sa-green), var(--sa-gold), var(--sa-red), var(--sa-blue));
+  -webkit-backface-visibility: hidden;
+  backface-visibility: hidden;
 }
 
 .footer-inner {
@@ -33,7 +30,7 @@
 }
 
 .footer-brand .logo-icon {
-  color: var(--sa-gold);
+  color: var(--gray-400);
 }
 
 .footer-links {
@@ -48,24 +45,8 @@
 }
 
 .footer-links a:hover {
-  color: var(--sa-gold);
+  color: var(--white);
 }
-
-.footer-accent {
-  display: flex;
-  gap: 6px;
-}
-
-.accent-dot {
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
-}
-
-.accent-dot.green { background: var(--sa-green); }
-.accent-dot.gold { background: var(--sa-gold); }
-.accent-dot.red { background: var(--sa-red); }
-.accent-dot.blue { background: var(--sa-blue); }
 
 .footer-bottom {
   border-top: 1px solid var(--gray-800);

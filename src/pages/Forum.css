@@ -2,7 +2,7 @@
   padding: 1rem 1.5rem;
   background: var(--bg-alt);
   border-radius: 8px;
-  border-left: 4px solid var(--sa-gold);
+  border-left: 4px solid var(--border);
   margin-bottom: 2rem;
 }
 
@@ -29,12 +29,12 @@
 }
 
 .forum-category:hover {
-  border-color: var(--sa-gold);
+  border-color: var(--gray-400);
 }
 
 .forum-cat-icon {
   font-size: 1.5rem;
-  color: var(--sa-gold);
+  color: var(--gray-600);
 }
 
 .forum-cat-info {

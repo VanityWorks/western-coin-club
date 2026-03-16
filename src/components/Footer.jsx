@@ -7,7 +7,7 @@ export default function Footer() {
       <div className="footer-inner">
         <div className="footer-brand">
           <span className="logo-icon">◎</span>
-          <span>Western Coin Club</span>
+          <span>South African Coin Collectors Club</span>
         </div>
         <div className="footer-links">
           <Link to="/about">About</Link>
@@ -16,15 +16,9 @@ export default function Footer() {
           <Link to="/consulting">Consulting</Link>
           <Link to="/contact">Contact</Link>
         </div>
-        <div className="footer-accent">
-          <span className="accent-dot green"></span>
-          <span className="accent-dot gold"></span>
-          <span className="accent-dot red"></span>
-          <span className="accent-dot blue"></span>
-        </div>
       </div>
       <div className="footer-bottom">
-        <p>© {new Date().getFullYear()} Western Coin Club. South Africa's home for numismatics.</p>
+        <p>© {new Date().getFullYear()} South African Coin Collectors Club. South Africa's home for numismatics.</p>
       </div>
     </footer>
   )

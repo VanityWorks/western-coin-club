@@ -6,7 +6,7 @@ export default function Contact() {
     <main className="page contact-page">
       <section className="page-hero">
         <h1>Contact Us</h1>
-        <p>Get in touch with the Western Coin Club</p>
+        <p>Get in touch with the South African Coin Collectors Club</p>
       </section>
       <section className="page-content">
         <div className="container">

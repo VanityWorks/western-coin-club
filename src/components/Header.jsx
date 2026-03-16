@@ -1,14 +1,11 @@
-import { useState, useRef, useEffect } from 'react'
+import { useState } from 'react'
 import { Link, NavLink } from 'react-router-dom'
 import './Header.css'
 
-const mainNavItems = [
+const navItems = [
   { to: '/', label: 'Home' },
   { to: '/about', label: 'About' },
   { to: '/membership', label: 'Membership' },
-]
-
-const moreNavItems = [
   { to: '/news', label: 'News' },
   { to: '/consulting', label: 'Consulting' },
   { to: '/forum', label: 'Forum' },
@@ -17,30 +14,30 @@ const moreNavItems = [
 
 export default function Header() {
   const [menuOpen, setMenuOpen] = useState(false)
-  const [moreOpen, setMoreOpen] = useState(false)
-  const moreRef = useRef(null)
-
-  useEffect(() => {
-    function handleClickOutside(e) {
-      if (moreRef.current && !moreRef.current.contains(e.target)) {
-        setMoreOpen(false)
-      }
-    }
-    document.addEventListener('click', handleClickOutside)
-    return () => document.removeEventListener('click', handleClickOutside)
-  }, [])
-
-  const closeAll = () => {
-    setMenuOpen(false)
-    setMoreOpen(false)
-  }
 
   return (
     <header className="header">
       <div className="header-inner">
-        <Link to="/" className="logo">
+        <Link to="/" className="header-logo">
           <span className="logo-icon">◎</span>
-          <span className="logo-text">Western Coin Club</span>
+          <span className="logo-text">South African Coin Collectors Club</span>
+        </Link>
+
+        <nav className={`header-nav ${menuOpen ? 'open' : ''}`}>
+          {navItems.map(({ to, label }) => (
+            <NavLink
+              key={to}
+              to={to}
+              className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`}
+              onClick={() => setMenuOpen(false)}
+            >
+              {label}
+            </NavLink>
+          ))}
+        </nav>
+
+        <Link to="/membership" className="header-cta" onClick={() => setMenuOpen(false)}>
+          Join Now
         </Link>
 
         <button
@@ -52,45 +49,6 @@ export default function Header() {
           <span className={menuOpen ? 'open' : ''}></span>
           <span className={menuOpen ? 'open' : ''}></span>
         </button>
-
-        <nav className={`nav ${menuOpen ? 'open' : ''}`}>
-          {mainNavItems.map(({ to, label }) => (
-            <NavLink
-              key={to}
-              to={to}
-              className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`}
-              onClick={closeAll}
-            >
-              {label}
-            </NavLink>
-          ))}
-          <div className="nav-dropdown" ref={moreRef}>
-            <button
-              className={`nav-link nav-dropdown-trigger ${moreOpen ? 'open' : ''}`}
-              onClick={(e) => { e.stopPropagation(); setMoreOpen(!moreOpen) }}
-            >
-              More
-              <span className="dropdown-chevron">▾</span>
-            </button>
-            {moreOpen && (
-              <div className="nav-dropdown-menu">
-                {moreNavItems.map(({ to, label }) => (
-                  <NavLink
-                    key={to}
-                    to={to}
-                    className={({ isActive }) => `nav-dropdown-link ${isActive ? 'active' : ''}`}
-                    onClick={closeAll}
-                  >
-                    {label}
-                  </NavLink>
-                ))}
-              </div>
-            )}
-          </div>
-          <Link to="/membership" className="nav-cta" onClick={closeAll}>
-            Join Now
-          </Link>
-        </nav>
       </div>
     </header>
   )

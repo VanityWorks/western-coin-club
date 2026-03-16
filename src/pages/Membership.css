@@ -16,7 +16,6 @@
   font-size: 1.25rem;
   font-weight: 600;
   padding: 0 0.5rem;
-  color: var(--sa-green);
 }
 
 .field-hint {
@@ -45,7 +44,7 @@
 }
 
 .required {
-  color: var(--sa-red);
+  color: var(--gray-600);
 }
 
 .membership-form input,
@@ -59,8 +58,7 @@
 .membership-form input:focus,
 .membership-form select:focus {
   outline: none;
-  border-color: var(--sa-gold);
-  box-shadow: 0 0 0 3px rgba(255, 184, 28, 0.2);
+  border-color: var(--black);
 }
 
 .checkbox-grid {
@@ -80,7 +78,6 @@
 .checkbox-label input {
   width: 1.125rem;
   height: 1.125rem;
-  accent-color: var(--sa-gold);
 }
 
 .radio-group {
@@ -92,7 +89,6 @@
 
 .radio-group input {
   margin-right: 0.5rem;
-  accent-color: var(--sa-gold);
 }
 
 .referral-fields {

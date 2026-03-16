@@ -4,7 +4,7 @@
   padding: 1.5rem 2rem;
   background: var(--bg-alt);
   border-radius: 12px;
-  border-left: 4px solid var(--sa-gold);
+  border-left: 4px solid var(--border);
 }
 
 .consulting-intro p {
@@ -28,7 +28,7 @@
 .service-icon {
   display: block;
   font-size: 1.5rem;
-  color: var(--sa-gold);
+  color: var(--gray-600);
   margin-bottom: 0.5rem;
 }
 

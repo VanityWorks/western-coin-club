@@ -5,7 +5,7 @@ export default function About() {
   return (
     <main className="page about-page">
       <section className="page-hero">
-        <h1>About the Western Coin Club</h1>
+        <h1>About the South African Coin Collectors Club</h1>
         <p>South Africa's premier community for numismatic enthusiasts</p>
       </section>
       <section className="page-content">
@@ -14,7 +14,7 @@ export default function About() {
             <div className="about-block">
               <h2>Our Mission</h2>
               <p>
-                The Western Coin Club exists to bring together collectors, researchers, and enthusiasts 
+                The South African Coin Collectors Club exists to bring together collectors, researchers, and enthusiasts 
                 of coins, banknotes, medals, and tokens. We foster education, facilitate networking, 
                 and celebrate the rich numismatic heritage of South Africa and beyond.
               </p>
@@ -31,7 +31,7 @@ export default function About() {
               <h2>Our History</h2>
               <p>
                 Founded by passionate collectors who saw the need for a modern, inclusive numismatic 
-                community in South Africa, the Western Coin Club has grown into a vibrant organisation 
+                community in South Africa, the South African Coin Collectors Club has grown into a vibrant organisation 
                 that welcomes anyone with an interest in the art and history of money.
               </p>
             </div>
