@@ -100,10 +100,16 @@ export default function Home() {
       <section className="section audience">
         <div className="container">
           <h2>Who the Club Is For</h2>
-          <div className="audience-grid">
-            {audience.map((a, i) => (
-              <div key={i} className="audience-chip">{a}</div>
-            ))}
+          <div className="audience-content">
+            <p>
+              The Western Coin Club welcomes anyone with an interest in numismatics. Our members 
+              come from all walks of life and levels of experience.
+            </p>
+            <ul>
+              {audience.map((a, i) => (
+                <li key={i}>{a}</li>
+              ))}
+            </ul>
           </div>
         </div>
       </section>
@@ -111,13 +117,16 @@ export default function Home() {
       <section className="section categories">
         <div className="container">
           <h2>Areas of Collecting</h2>
-          <div className="categories-grid">
-            {categories.map((c, i) => (
-              <div key={i} className="category-card">
-                <span className="category-icon">◎</span>
-                <span>{c}</span>
-              </div>
-            ))}
+          <div className="categories-content">
+            <p>
+              The club welcomes collectors across the full spectrum of numismatics. Whether your interest 
+              lies in historical South African issues or international pieces, there's a place for you.
+            </p>
+            <ul>
+              {categories.map((c, i) => (
+                <li key={i}>{c}</li>
+              ))}
+            </ul>
           </div>
         </div>
       </section>
@@ -140,22 +149,27 @@ export default function Home() {
       </section>
 
       <section className="section pricing">
+        <div className="sa-stripe"></div>
         <div className="container">
           <h2>2026 Membership</h2>
-          <div className="pricing-single">
+          <div className="pricing-block">
             <div className="pricing-card">
               <div className="price">{membershipFee.price}<span>/year</span></div>
               <p>{membershipFee.desc}</p>
-              <Link to="/membership" className="btn btn-primary">Join</Link>
+              <Link to="/membership" className="btn btn-primary btn-lg">Join Now</Link>
+            </div>
+            <div className="pricing-cta-inline">
+              <p>Become part of South Africa's premier numismatic community.</p>
+              <Link to="/membership" className="btn btn-outline-light">Become a Member</Link>
             </div>
           </div>
         </div>
+        <div className="sa-stripe"></div>
       </section>
 
       <section className="section cta">
-        <div className="container">
+        <div className="cta-content">
           <h2>Ready to Join?</h2>
-          <p>Become part of South Africa's premier numismatic community.</p>
           <Link to="/membership" className="btn btn-primary btn-lg">Become a Member</Link>
         </div>
       </section>
