@@ -51,6 +51,14 @@ export default function Home() {
         <div className="hero-content">
           <h1>South African Coin Collectors Club</h1>
           <p className="hero-sub">A welcoming home for coin collectors and enthusiasts around South Africa.</p>
+          <div className="hero-intro">
+            <p>
+              The South African Coin Collectors Club brings together enthusiasts from across the country and beyond. Whether you collect Krugerrands, ZAR coins, or world numismatics, you'll find a welcoming community here.
+            </p>
+            <p>
+              Numismatics is more than a hobby—it's a window into history, art, and economics. We host regular events, publish educational content, and provide a forum for discussion and discovery. This is your space to add whatever content you need—replace these paragraphs with your club's story, mission, or any other information.
+            </p>
+          </div>
           <div className="hero-actions">
             <Link to="/membership" className="btn btn-primary">Join Now</Link>
             <Link to="/news" className="btn btn-outline">Read Latest News</Link>
