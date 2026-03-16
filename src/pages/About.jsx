@@ -62,9 +62,9 @@ export default function About() {
               <h3>Community & Industry Relations</h3>
               <ul>
                 <li><strong>Membership Director</strong> - Georgia Hammer</li>
-                <li><strong>Dealer & Industry Liaison</strong> - Dillon Bassani</li>
-                <li><strong>Events Director</strong> - Dillon & Marco Bassani</li>
-                <li><strong>Regional Coordinators</strong> - Cape Town (Gary Willicott), Johannesburg (Landon Coleske), Durban (Anthony Govender), Port Elizabeth (Jaco Krause), Bloemfontein (Juan Terblanche)</li>
+                <li><strong>Member Liaison</strong> - Dillon Bassani</li>
+                <li><strong>Events Director</strong> - John Hammer</li>
+                <li><strong>Regional Coordinators</strong> - Western Cape (Gary Willicott), Gauteng (Landon Coleske), KwaZulu-Natal (Anthony Govender), Port Elizabeth (To be announced), Bloemfontein (To be announced)</li>
               </ul>
             </div>
 
