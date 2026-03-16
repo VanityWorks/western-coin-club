@@ -38,9 +38,7 @@ export default function About() {
             <div className="about-block">
               <h2>Our Vision</h2>
               <p>
-                To grow the hobby, attract new collectors, and strengthen South Africa's coin community as a 
-                unified, welcoming front-while preserving our rich monetary history. No stuffiness, no gatekeeping. 
-                Just a bunch of people who love coins and want to help others discover that too.
+                No stuffiness, no gatekeeping - just fun, thats our promise. Just a bunch of people who love coins and want to help others discover that too.
               </p>
             </div>
           </div>
@@ -55,8 +53,8 @@ export default function About() {
                 <li><strong>President</strong> - Thomas van der Spuy</li>
                 <li><strong>Vice President</strong> - Gary Willicott</li>
                 <li><strong>Treasurer / Financial Director</strong> - Retief de Villiers</li>
-                <li><strong>Legal & Governance Officer</strong> - Henk van Zyl</li>
-                <li><strong>Committee Members</strong> - Dillon Bassani, Landon Coleske, Dario Deligiannidis, John Hammer, Anthony Govender</li>
+                <li><strong>Legal & Governance Officer</strong> - Henk van Aswegen</li>
+                <li><strong>Committee Members</strong> - Dillon Bassani, Dario Deligiannidis, Anthony Govender</li>
               </ul>
             </div>
 
@@ -73,14 +71,14 @@ export default function About() {
             <div className="structure-section">
               <h3>Research & Education</h3>
               <ul>
-                <li><strong>Coin Research Director</strong> - Prof Francois Malan</li>
+                <li><strong>Coin Research Director</strong> - To be announced</li>
                 <li><strong>ZAR Series Coordinator</strong> - Werner Lamprecht</li>
                 <li><strong>Union Series Coordinator</strong> - Jan Kleynhans</li>
-                <li><strong>South African Decimal Series Coordinator</strong> - Slade Taylor</li>
-                <li><strong>World Coin Coordinator</strong> - Andrew Terblanche</li>
+                <li><strong>South African Decimal Series Coordinator</strong> - To be announced</li>
+                <li><strong>World Coin Coordinator</strong> - To be announced</li>
                 <li><strong>Ancient Coordinator</strong> - Joel Potgieter</li>
                 <li><strong>Local Bullion & Mint Issues Coordinator</strong> - Marco Bassani</li>
-                <li><strong>Banknotes Coordinator</strong> - Dr Heinz Wurz</li>
+                <li><strong>Banknotes Coordinator</strong> - To be announced</li>
                 <li><strong>Tokens Coordinator</strong> - Anthony Govender</li>
                 <li><strong>Young Collectors Program Director</strong> - John Hammer</li>
               </ul>
