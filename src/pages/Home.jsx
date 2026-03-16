@@ -27,8 +27,9 @@ const audience = [
 
 const categories = [
   'Ancient Coins',
-  'South African Republic (ZAR)',
-  'Union & Republic of SA',
+  'Zuid-Afrikaansche Republiek (ZAR)',
+  'Union',
+  'Republic of South Africa',
   'Modern Bullion',
   'World Coins',
   'Banknotes',
@@ -40,7 +41,7 @@ const testimonials = [
   { quote: 'Finally a club that understands both the hobby and investment sides of the coin world.', author: 'M. Ndlovu', role: 'Gold coin enthusiast' },
 ]
 
-const membershipFee = { price: 'R100', desc: 'Full access to all club benefits' }
+const membershipFee = { price: 'R120', desc: 'Full access to all club benefits' }
 
 export default function Home() {
   return (
@@ -50,12 +51,16 @@ export default function Home() {
       <section className="hero">
         <div className="hero-content">
           <h1>South African Coin Collectors Club</h1>
-          <p className="hero-sub">A welcoming home for coin collectors and enthusiasts around South Africa.</p>
+          <p className="hero-sub">South Africa’s Home of Numismatics</p>
           <div className="hero-actions">
             <Link to="/membership" className="btn btn-primary">Join Now</Link>
             <Link to="/news" className="btn btn-outline">Read Latest News</Link>
           </div>
-          <p className="hero-intro-brief">We bring together collectors of Krugerrands, ZAR coins, and world coins from across South Africa and beyond. Join us for events, educational content, market insights, and a welcoming community of enthusiasts.</p>
+          <p className="hero-intro-brief">Bringing collectors together.
+Learn, discover, and share knowledge.
+Stay informed with news and insights.
+Join a community built for collectors.</p>
+          <p className="hero-tagline">For Collectors. By Collectors.</p>
         </div>
       </section>
 
@@ -136,7 +141,8 @@ export default function Home() {
             <div className="pricing-card">
               <div className="price">{membershipFee.price}<span>/year</span></div>
               <p>{membershipFee.desc}</p>
-              <p className="pricing-cta-text">Become part of South Africa's welcoming coin community.</p>
+              <p className="pricing-cta-text">Connect with collectors and grow your knowledge.
+              Become an official member of South Africa’s coin collecting community.</p>
               <Link to="/membership" className="btn btn-primary btn-lg">Join Now</Link>
             </div>
           </div>
