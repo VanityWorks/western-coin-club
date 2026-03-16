@@ -12,7 +12,7 @@
 .header-inner {
   position: relative;
   width: 100%;
-  padding: 1rem 0;
+  padding: 0.5rem 0;
   padding-left: max(0.75rem, env(safe-area-inset-left));
   padding-right: max(0.75rem, env(safe-area-inset-right));
   display: flex;
@@ -51,21 +51,17 @@
 .logo {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
-  font-family: var(--font-heading);
-  font-size: 1.5rem;
-  font-weight: 700;
-  color: var(--black);
 }
 
 .header-logo:hover,
 .logo:hover {
-  opacity: 0.8;
+  opacity: 0.9;
 }
 
-.logo-icon {
-  font-size: 1.75rem;
-  color: var(--black);
+.logo-img {
+  height: 64px;
+  width: auto;
+  display: block;
 }
 
 .menu-toggle {

@@ -18,9 +18,8 @@ export default function Header() {
   return (
     <header className="header">
       <div className="header-inner">
-        <Link to="/" className="header-logo">
-          <span className="logo-icon">◎</span>
-          <span className="logo-text">South African Coin Collectors Club</span>
+        <Link to="/" className="header-logo" aria-label="South African Coin Collectors Club - Home">
+          <img src="/logo.png" alt="" className="logo-img" />
         </Link>
 
         <nav className={`header-nav ${menuOpen ? 'open' : ''}`}>
