@@ -51,18 +51,11 @@ export default function Home() {
         <div className="hero-content">
           <h1>South African Coin Collectors Club</h1>
           <p className="hero-sub">A welcoming home for coin collectors and enthusiasts around South Africa.</p>
-          <div className="hero-intro">
-            <p>
-              The South African Coin Collectors Club brings together enthusiasts from across the country and beyond. Whether you collect Krugerrands, ZAR coins, or world numismatics, you'll find a welcoming community here.
-            </p>
-            <p>
-              Numismatics is more than a hobby—it's a window into history, art, and economics. We host regular events, publish educational content, and provide a forum for discussion and discovery. This is your space to add whatever content you need—replace these paragraphs with your club's story, mission, or any other information.
-            </p>
-          </div>
           <div className="hero-actions">
             <Link to="/membership" className="btn btn-primary">Join Now</Link>
             <Link to="/news" className="btn btn-outline">Read Latest News</Link>
           </div>
+          <p className="hero-intro-brief">We bring together collectors of Krugerrands, ZAR coins, and world numismatics from across South Africa and beyond. Join us for events, educational content, market insights, and a welcoming community of enthusiasts.</p>
         </div>
       </section>
 
@@ -87,50 +80,34 @@ export default function Home() {
         </div>
       </section>
 
-      <section className="section benefits">
+      <section className="section about-club">
         <div className="container">
-          <h2>What You Get as a Member</h2>
-          <ul className="benefits-list">
-            {benefits.map((b, i) => (
-              <li key={i}>
-                <span className="benefit-icon">◎</span>
-                {b}
-              </li>
-            ))}
-          </ul>
-        </div>
-      </section>
-
-      <section className="section audience">
-        <div className="container">
-          <h2>Who the Club Is For</h2>
-          <div className="audience-content">
-            <p>
-              The South African Coin Collectors Club welcomes anyone with an interest in numismatics. Our members 
-              come from all walks of life and levels of experience.
-            </p>
-            <ul>
-              {audience.map((a, i) => (
-                <li key={i}>{a}</li>
-              ))}
-            </ul>
-          </div>
-        </div>
-      </section>
-
-      <section className="section categories">
-        <div className="container">
-          <h2>Areas of Collecting</h2>
-          <div className="categories-content">
-            <p>
-              The club welcomes collectors across the full spectrum of numismatics. Whether your interest 
-              lies in historical South African issues or international pieces, there's a place for you.
-            </p>
-            <ul>
-              {categories.map((c, i) => (
-                <li key={i}>{c}</li>
-              ))}
-            </ul>
+          <h2>About the Club</h2>
+          <div className="about-club-grid">
+            <div className="about-club-card">
+              <h3>What You Get</h3>
+              <ul className="benefits-list-compact">
+                {benefits.map((b, i) => (
+                  <li key={i}><span className="benefit-icon">◎</span>{b}</li>
+                ))}
+              </ul>
+            </div>
+            <div className="about-club-card">
+              <h3>Who It's For</h3>
+              <ul>
+                {audience.map((a, i) => (
+                  <li key={i}>{a}</li>
+                ))}
+              </ul>
+            </div>
+            <div className="about-club-card">
+              <h3>Areas of Collecting</h3>
+              <ul>
+                {categories.map((c, i) => (
+                  <li key={i}>{c}</li>
+                ))}
+              </ul>
+            </div>
           </div>
         </div>
       </section>
