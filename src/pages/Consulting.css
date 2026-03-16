@@ -1,0 +1,95 @@
+.consulting-intro {
+  max-width: 640px;
+  margin: 0 auto 2rem;
+  padding: 1.5rem 2rem;
+  background: var(--bg-alt);
+  border-radius: 12px;
+  border-left: 4px solid var(--sa-gold);
+}
+
+.consulting-intro p {
+  margin: 0;
+}
+
+.services-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 1rem;
+  margin-bottom: 3rem;
+}
+
+.service-card {
+  padding: 1.5rem;
+  background: var(--white);
+  border-radius: 12px;
+  border: 1px solid var(--border);
+}
+
+.service-icon {
+  display: block;
+  font-size: 1.5rem;
+  color: var(--sa-gold);
+  margin-bottom: 0.5rem;
+}
+
+.service-card h3 {
+  font-size: 1.1rem;
+  margin-bottom: 0.5rem;
+}
+
+.service-card p {
+  font-size: 0.9rem;
+  color: var(--text-muted);
+  margin: 0;
+}
+
+.consulting-form-wrap {
+  max-width: 560px;
+  margin: 0 auto;
+  padding: 2rem;
+  background: var(--white);
+  border-radius: 12px;
+  border: 1px solid var(--border);
+}
+
+.consulting-form-wrap h2 {
+  margin-bottom: 1.5rem;
+}
+
+.consulting-form label {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  margin-bottom: 1rem;
+  font-weight: 500;
+}
+
+.consulting-form .form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+}
+
+.consulting-form input,
+.consulting-form select,
+.consulting-form textarea {
+  padding: 0.6rem 0.75rem;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  font-size: 1rem;
+}
+
+.consulting-form textarea {
+  resize: vertical;
+  min-height: 100px;
+}
+
+.consulting-form .btn {
+  margin-top: 0.5rem;
+}
+
+@media (max-width: 600px) {
+  .consulting-form .form-row {
+    grid-template-columns: 1fr;
+  }
+}

@@ -1,0 +1,21 @@
+.about-page .about-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 2rem;
+}
+
+.about-block {
+  padding: 2rem;
+  background: var(--white);
+  border-radius: 12px;
+  border: 1px solid var(--border);
+}
+
+.about-block.full {
+  grid-column: 1 / -1;
+}
+
+.about-block h2 {
+  margin-bottom: 1rem;
+  color: var(--sa-green);
+}

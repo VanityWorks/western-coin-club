@@ -1,0 +1,33 @@
+.page {
+  flex: 1;
+}
+
+.page-hero {
+  padding: 3rem 1.5rem;
+  text-align: center;
+  background: linear-gradient(180deg, var(--gray-100) 0%, var(--white) 100%);
+  border-bottom: 1px solid var(--border);
+}
+
+.page-hero h1 {
+  margin-bottom: 0.5rem;
+}
+
+.page-hero p {
+  font-size: 1.125rem;
+  color: var(--text-muted);
+  margin: 0;
+}
+
+.page-content {
+  padding: 3rem 1.5rem;
+}
+
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.container.narrow {
+  max-width: 720px;
+}
