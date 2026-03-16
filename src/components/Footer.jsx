@@ -17,7 +17,7 @@ export default function Footer() {
         </div>
       </div>
       <div className="footer-bottom">
-        <p>© {new Date().getFullYear()} South African Coin Collectors Club. South Africa's home for numismatics.</p>
+        <p>© {new Date().getFullYear()} South African Coin Collectors Club. South Africa's home for the world of coins.</p>
       </div>
     </footer>
   )

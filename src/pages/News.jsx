@@ -4,8 +4,8 @@ import './News.css'
 
 const articles = [
   { id: 1, title: '2026 Krugerrand Design Unveiled', summary: 'The annual release brings fresh excitement for bullion collectors. This year\'s design continues the tradition of excellence.', date: 'Mar 12, 2026', category: 'Bullion', image: '/news-krugerrand.png' },
-  { id: 2, title: 'ZAR Coins: A Collector\'s Guide', summary: 'Deep dive into South African Republic numismatics. From the Veld Pond to the Burgers Pond.', date: 'Mar 5, 2026', category: 'History', image: '/news-zar.png' },
-  { id: 3, title: 'Club Event: Spring Numismatic Fair', summary: 'Join us for our quarterly gathering of collectors. Vendors, exhibits, and networking.', date: 'Feb 28, 2026', category: 'Events', image: '/news-spring-fair.png' },
+  { id: 2, title: 'ZAR Coins: A Collector\'s Guide', summary: 'Deep dive into South African Republic coins. From the Veld Pond to the Burgers Pond.', date: 'Mar 5, 2026', category: 'History', image: '/news-zar.png' },
+  { id: 3, title: 'Club Event: Spring Coin Fair', summary: 'Join us for our quarterly gathering of collectors. Vendors, exhibits, and networking.', date: 'Feb 28, 2026', category: 'Events', image: '/news-spring-fair.png' },
   { id: 4, title: 'Grading 101: Understanding Condition', summary: 'Learn how professional grading affects the value of your coins.', date: 'Feb 20, 2026', category: 'Education' },
   { id: 5, title: 'The Story of the R2 Coin', summary: 'A look at the design evolution of South Africa\'s bimetallic circulation coin.', date: 'Feb 15, 2026', category: 'History' },
   { id: 6, title: 'Market Update: Gold and Silver', summary: 'Quarterly insights into precious metal trends for collectors and investors.', date: 'Feb 10, 2026', category: 'Market' },
@@ -27,7 +27,7 @@ export default function News() {
     <main className="page news-page">
       <section className="page-hero">
         <h1>News & Articles</h1>
-        <p>Stay informed with the latest from the numismatic world</p>
+        <p>Stay informed with the latest from the coin world</p>
       </section>
       <section className="page-content">
         <div className="container">

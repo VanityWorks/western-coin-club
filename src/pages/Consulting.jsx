@@ -7,6 +7,7 @@ const services = [
   { title: 'Valuation Guidance', desc: 'Understand the market value of your coins and banknotes.' },
   { title: 'Auction & Selling Advice', desc: 'Tips for selling through auctions or private sales.' },
   { title: 'Grading Advice', desc: 'Learn about condition and professional grading standards.' },
+  { title: 'Authentication', desc: 'Help verifying authenticity of coins and banknotes.' },
 ]
 
 export default function Consulting() {
@@ -22,7 +23,7 @@ export default function Consulting() {
             <p>
               Our experienced members volunteer their time to help fellow collectors. Consulting fees 
               are considered a sponsorship contribution to the club, supporting our mission to promote 
-              numismatics in South Africa.
+              the world of coins in South Africa.
             </p>
           </div>
           <div className="services-grid">
@@ -34,6 +35,7 @@ export default function Consulting() {
               </div>
             ))}
           </div>
+          <hr className="consulting-separator" />
           <div className="consulting-form-wrap">
             <h2>Request a Consultation</h2>
             <form className="consulting-form" onSubmit={(e) => e.preventDefault()}>
@@ -60,6 +62,7 @@ export default function Consulting() {
                     <option>Valuation</option>
                     <option>Auction / Selling</option>
                     <option>Grading</option>
+                    <option>Authentication</option>
                   </select>
                 </label>
               </div>

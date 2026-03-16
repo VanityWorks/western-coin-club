@@ -41,10 +41,14 @@
   order: 3;
 }
 
+.header-nav {
+  order: 4;
+}
+
 .menu-toggle {
   display: none;
   flex-shrink: 0;
-  order: 3;
+  order: 2;
 }
 
 .header-logo,
@@ -178,7 +182,7 @@
     align-items: center;
     width: 100%;
     order: 4;
-    margin-top: -1rem;
+    margin-top: 0.25rem;
     padding: 1rem;
   }
 
@@ -189,5 +193,19 @@
   .header-nav.open .nav-link {
     padding: 0.75rem 1rem;
     text-align: center;
+  }
+
+  /* Fix squiggly underline on mobile - use simpler wavy underline */
+  .header-nav .nav-link.active {
+    padding-bottom: 0.5rem;
+  }
+
+  .header-nav .nav-link.active::after {
+    display: none;
+  }
+
+  .header-nav .nav-link.active {
+    text-decoration: underline wavy #E63946;
+    text-underline-offset: 4px;
   }
 }

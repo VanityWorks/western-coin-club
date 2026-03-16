@@ -32,13 +32,13 @@ export default function About() {
                 We run a WhatsApp community with channels for ZAR coins, Union coinage, banknotes, buy & sell, 
                 and beginner questions. We host regional meetups in Cape Town, Johannesburg, Durban, and other 
                 cities. We share educational content, help with identification and valuation, and put on national events. 
-                It's all about making numismatics accessible and fun.
+                It's all about making the world of coins accessible and fun.
               </p>
             </div>
             <div className="about-block">
               <h2>Our Vision</h2>
               <p>
-                To grow the hobby, attract new collectors, and strengthen South Africa's numismatic community as a 
+                To grow the hobby, attract new collectors, and strengthen South Africa's coin community as a 
                 unified, welcoming front-while preserving our rich monetary history. No stuffiness, no gatekeeping. 
                 Just a bunch of people who love coins and want to help others discover that too.
               </p>
@@ -73,7 +73,7 @@ export default function About() {
             <div className="structure-section">
               <h3>Research & Education</h3>
               <ul>
-                <li><strong>Numismatic Research Director</strong> - Prof Francois Malan</li>
+                <li><strong>Coin Research Director</strong> - Prof Francois Malan</li>
                 <li><strong>ZAR Series Coordinator</strong> - Werner Lamprecht</li>
                 <li><strong>Union Series Coordinator</strong> - Jan Kleynhans</li>
                 <li><strong>South African Decimal Series Coordinator</strong> - Slade Taylor</li>

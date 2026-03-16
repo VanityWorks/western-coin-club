@@ -15,9 +15,21 @@
 
 .services-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  grid-template-columns: repeat(3, 1fr);
   gap: 1.5rem;
   margin-bottom: 3rem;
+}
+
+@media (max-width: 768px) {
+  .services-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 480px) {
+  .services-grid {
+    grid-template-columns: 1fr;
+  }
 }
 
 .service-card {
@@ -53,6 +65,12 @@
   color: var(--text-muted);
   margin: 0;
   line-height: 1.6;
+}
+
+.consulting-separator {
+  border: none;
+  border-top: 2px solid var(--sa-gold);
+  margin: 2.5rem 0;
 }
 
 .consulting-form-wrap {

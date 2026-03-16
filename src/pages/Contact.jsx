@@ -15,7 +15,7 @@ export default function Contact() {
               <h2>Reach Out</h2>
               <p>Have a question about membership, consulting, or the club? We'd love to hear from you.</p>
               <div className="contact-details">
-                <p><strong>Email:</strong> info@westerncoinclub.co.za</p>
+                <p><strong>Email:</strong> info@southafricancoinclub.co.za</p>
                 <p><strong>WhatsApp:</strong> +27 XX XXX XXXX</p>
               </div>
             </div>

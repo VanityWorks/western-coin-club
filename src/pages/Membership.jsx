@@ -16,7 +16,7 @@ export default function Membership() {
     <main className="page membership-page">
       <section className="page-hero">
         <h1>Become a Member</h1>
-        <p>Join South Africa's premier numismatic community</p>
+        <p>Join South Africa's welcoming coin community</p>
       </section>
       <section className="page-content">
         <div className="container narrow">

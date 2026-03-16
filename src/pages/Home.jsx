@@ -3,8 +3,8 @@ import './Home.css'
 
 const latestNews = [
   { id: 1, title: '2026 Krugerrand Design Unveiled', summary: 'The annual release brings fresh excitement for bullion collectors.', date: 'Mar 12, 2026', image: '/news-krugerrand.png' },
-  { id: 2, title: 'ZAR Coins: A Collector\'s Guide', summary: 'Deep dive into South African Republic numismatics.', date: 'Mar 5, 2026', image: '/news-zar.png' },
-  { id: 3, title: 'Club Event: Spring Numismatic Fair', summary: 'Join us for our quarterly gathering of collectors.', date: 'Feb 28, 2026', image: '/news-spring-fair.png' },
+  { id: 2, title: 'ZAR Coins: A Collector\'s Guide', summary: 'Deep dive into South African Republic coins.', date: 'Mar 5, 2026', image: '/news-zar.png' },
+  { id: 3, title: 'Club Event: Spring Coin Fair', summary: 'Join us for our quarterly gathering of collectors.', date: 'Feb 28, 2026', image: '/news-spring-fair.png' },
 ]
 
 const benefits = [
@@ -22,7 +22,7 @@ const audience = [
   'Coin dealers',
   'Researchers',
   'Investors',
-  'Students of numismatics',
+  'Students of coin collecting',
 ]
 
 const categories = [
@@ -37,7 +37,7 @@ const categories = [
 
 const testimonials = [
   { quote: 'The best decision I made for my collection. The community is knowledgeable and welcoming.', author: 'J. van der Berg', role: 'Collector since 2018' },
-  { quote: 'Finally a club that understands both the hobby and investment sides of numismatics.', author: 'M. Ndlovu', role: 'Gold coin enthusiast' },
+  { quote: 'Finally a club that understands both the hobby and investment sides of the coin world.', author: 'M. Ndlovu', role: 'Gold coin enthusiast' },
 ]
 
 const membershipFee = { price: 'R100', desc: 'Full access to all club benefits' }
@@ -55,7 +55,7 @@ export default function Home() {
             <Link to="/membership" className="btn btn-primary">Join Now</Link>
             <Link to="/news" className="btn btn-outline">Read Latest News</Link>
           </div>
-          <p className="hero-intro-brief">We bring together collectors of Krugerrands, ZAR coins, and world numismatics from across South Africa and beyond. Join us for events, educational content, market insights, and a welcoming community of enthusiasts.</p>
+          <p className="hero-intro-brief">We bring together collectors of Krugerrands, ZAR coins, and world coins from across South Africa and beyond. Join us for events, educational content, market insights, and a welcoming community of enthusiasts.</p>
         </div>
       </section>
 
@@ -136,7 +136,7 @@ export default function Home() {
             <div className="pricing-card">
               <div className="price">{membershipFee.price}<span>/year</span></div>
               <p>{membershipFee.desc}</p>
-              <p className="pricing-cta-text">Become part of South Africa's premier numismatic community.</p>
+              <p className="pricing-cta-text">Become part of South Africa's welcoming coin community.</p>
               <Link to="/membership" className="btn btn-primary btn-lg">Join Now</Link>
             </div>
           </div>
