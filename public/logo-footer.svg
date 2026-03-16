@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 180 48">
+  <defs>
+    <clipPath id="fc"><circle cx="90" cy="24" r="11"/></clipPath>
+  </defs>
+  <!-- SA Flag circle (O) - inline paths, no fill inheritance -->
+  <g clip-path="url(#fc)" transform="translate(79, 13) scale(0.24)">
+    <path d="M50 2 L98 50 L50 50 Z" fill="#E63946"/>
+    <path d="M50 50 L98 50 L50 98 Z" fill="#002395"/>
+    <path d="M2 50 L50 2 L50 50 Z" fill="#007749"/>
+    <path d="M2 50 L50 98 L50 50 Z" fill="#007749"/>
+    <path d="M2 50 L50 50 L35 20 L35 80 Z" fill="#FFB81C"/>
+    <path d="M2 50 L50 50" stroke="#fff" stroke-width="2" fill="none"/>
+    <path d="M50 2 L50 50" stroke="#fff" stroke-width="1.5" fill="none"/>
+    <path d="M50 98 L50 50" stroke="#fff" stroke-width="1.5" fill="none"/>
+  </g>
+  <!-- White text - compact layout -->
+  <text x="90" y="10" fill="white" font-family="Outfit, system-ui, sans-serif" font-size="6.5" font-weight="600" text-anchor="middle" letter-spacing="0.12em">SOUTH AFRICAN</text>
+  <text x="65" y="26" fill="white" font-family="Outfit, system-ui, sans-serif" font-size="12" font-weight="700" text-anchor="middle">C</text>
+  <text x="115" y="26" fill="white" font-family="Outfit, system-ui, sans-serif" font-size="12" font-weight="700" text-anchor="middle">IN</text>
+  <text x="90" y="40" fill="white" font-family="Outfit, system-ui, sans-serif" font-size="6.5" font-weight="600" text-anchor="middle" letter-spacing="0.08em">COLLECTORS CLUB</text>
+</svg>

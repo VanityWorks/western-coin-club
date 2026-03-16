@@ -1,26 +1,52 @@
 .page {
   flex: 1;
+  background: var(--white);
 }
 
 .page-hero {
-  padding: 3rem 1.5rem;
+  padding: 4rem 1.5rem 3rem;
   text-align: center;
-  background: linear-gradient(180deg, var(--gray-100) 0%, var(--white) 100%);
-  border-bottom: 1px solid var(--border);
+  background-image: url('/hero-bg.png');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  position: relative;
+  border-bottom: 3px solid var(--sa-gold);
+}
+
+.page-hero::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5);
+  pointer-events: none;
+}
+
+.page-hero h1,
+.page-hero p {
+  position: relative;
+  z-index: 1;
 }
 
 .page-hero h1 {
-  margin-bottom: 0.5rem;
+  font-family: var(--font-heading);
+  font-size: clamp(1.85rem, 3.5vw, 2.4rem);
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  margin-bottom: 0.75rem;
+  color: var(--white);
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
 }
 
 .page-hero p {
   font-size: 1.125rem;
-  color: var(--text-muted);
+  color: rgba(255, 255, 255, 0.9);
   margin: 0;
 }
 
 .page-content {
-  padding: 3rem 1.5rem;
+  padding: 5rem 1.5rem;
+  background: linear-gradient(180deg, var(--white) 0%, rgba(255, 184, 28, 0.05) 50%, var(--white) 100%);
 }
 
 .container {

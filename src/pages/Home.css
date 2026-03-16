@@ -126,14 +126,19 @@
 
 .section.latest-news {
   padding-top: 2.5rem;
-}
-
-.section:nth-child(4n) {
   background: var(--gray-100);
 }
 
-.section:nth-child(4n+3) {
+.section.about-club {
+  background: var(--white);
+}
+
+.section.testimonials {
   background: #fefaf5;
+}
+
+.section.pricing {
+  background: var(--gray-100);
 }
 
 .container {
@@ -148,7 +153,7 @@
   letter-spacing: -0.02em;
   text-align: center;
   margin-bottom: 3rem;
-  color: var(--black);
+  color: var(--sa-green);
   line-height: 1.25;
 }
 
@@ -212,11 +217,12 @@
 
 .news-link {
   font-weight: 600;
-  color: var(--black);
+  color: var(--sa-green);
   font-size: 0.95rem;
 }
 
 .news-link:hover {
+  color: var(--sa-blue);
   text-decoration: underline;
 }
 

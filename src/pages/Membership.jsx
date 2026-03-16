@@ -157,7 +157,7 @@ export default function Membership() {
               <button type="submit" className="btn btn-primary btn-lg">
                 Submit Application
               </button>
-              <p className="form-note">Demo only – form does not submit</p>
+              <p className="form-note">Demo only - form does not submit</p>
             </div>
           </form>
         </div>

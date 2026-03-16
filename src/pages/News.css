@@ -15,7 +15,7 @@
 
 .news-search:focus {
   outline: none;
-  border-color: var(--black);
+  border-color: var(--sa-green);
 }
 
 .news-categories {
@@ -25,11 +25,12 @@
 }
 
 .cat-btn {
-  padding: 0.4rem 0.9rem;
+  padding: 0.5rem 1rem;
   background: var(--white);
   border: 1px solid var(--border);
   border-radius: 999px;
   font-size: 0.9rem;
+  font-weight: 500;
   transition: all 0.2s;
 }
 
@@ -38,27 +39,29 @@
 }
 
 .cat-btn.active {
-  background: var(--black);
-  border-color: var(--black);
+  background: var(--sa-green);
+  border-color: var(--sa-green);
   color: var(--white);
 }
 
 .articles-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-  gap: 1.5rem;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 2rem;
 }
 
 .article-card {
   background: var(--white);
-  border-radius: 12px;
+  border-radius: 16px;
   overflow: hidden;
   border: 1px solid var(--border);
-  transition: box-shadow 0.2s;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08), 0 1px 3px rgba(0, 0, 0, 0.04);
+  transition: transform 0.25s, box-shadow 0.25s;
 }
 
 .article-card:hover {
-  box-shadow: var(--shadow);
+  transform: translateY(-6px);
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.12), 0 4px 12px rgba(0, 0, 0, 0.06);
 }
 
 .article-image {
@@ -78,8 +81,8 @@
 
 .article-placeholder {
   font-size: 4rem;
-  color: var(--gray-300);
-  opacity: 0.6;
+  color: var(--sa-gold);
+  opacity: 0.5;
 }
 
 .article-content {
@@ -89,23 +92,26 @@
 .article-meta {
   display: flex;
   justify-content: space-between;
-  font-size: 0.8rem;
+  font-size: 0.85rem;
   color: var(--text-muted);
   margin-bottom: 0.5rem;
 }
 
 .article-category {
-  color: var(--text-muted);
   font-weight: 600;
+  color: var(--sa-green);
 }
 
 .article-card h3 {
-  margin-bottom: 0.5rem;
   font-size: 1.2rem;
+  font-weight: 600;
+  margin: 0.5rem 0 0.75rem;
+  line-height: 1.35;
 }
 
 .article-card p {
-  font-size: 0.95rem;
+  font-size: 1rem;
+  line-height: 1.6;
   color: var(--text-muted);
   margin-bottom: 1rem;
 }
@@ -114,12 +120,14 @@
   background: none;
   border: none;
   font-weight: 600;
-  color: var(--black);
+  color: var(--sa-green);
   padding: 0;
   font-size: 0.95rem;
+  cursor: pointer;
 }
 
 .article-link:hover {
+  color: var(--sa-blue);
   text-decoration: underline;
 }
 

@@ -5,10 +5,11 @@
 
 .membership-form fieldset {
   border: 1px solid var(--border);
-  border-radius: 12px;
-  padding: 1.5rem 2rem;
+  border-radius: 16px;
+  padding: 1.75rem 2rem;
   margin-bottom: 1.5rem;
   background: var(--white);
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
 }
 
 .membership-form legend {
@@ -16,6 +17,7 @@
   font-size: 1.25rem;
   font-weight: 600;
   padding: 0 0.5rem;
+  color: var(--black);
 }
 
 .field-hint {
@@ -44,21 +46,22 @@
 }
 
 .required {
-  color: var(--gray-600);
+  color: var(--sa-red);
 }
 
 .membership-form input,
 .membership-form select {
-  padding: 0.6rem 0.75rem;
+  padding: 0.65rem 0.75rem;
   border: 1px solid var(--border);
-  border-radius: 6px;
+  border-radius: 8px;
   font-size: 1rem;
+  transition: border-color 0.2s;
 }
 
 .membership-form input:focus,
 .membership-form select:focus {
   outline: none;
-  border-color: var(--black);
+  border-color: var(--sa-green);
 }
 
 .checkbox-grid {

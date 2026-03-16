@@ -5,10 +5,9 @@ export default function Footer() {
   return (
     <footer className="footer">
       <div className="footer-inner">
-        <div className="footer-brand">
-          <span className="logo-icon">◎</span>
-          <span>South African Coin Collectors Club</span>
-        </div>
+        <Link to="/" className="footer-brand" aria-label="South African Coin Collectors Club - Home">
+          <img src="/logo-footer.png" alt="" className="footer-logo" />
+        </Link>
         <div className="footer-links">
           <Link to="/about">About</Link>
           <Link to="/membership">Membership</Link>
