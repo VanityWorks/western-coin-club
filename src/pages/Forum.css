@@ -179,7 +179,7 @@
 
 .forum-cat-thead {
   display: grid;
-  grid-template-columns: 1fr 80px 220px;
+  grid-template-columns: 1fr 100px 220px;
   padding: 0.65rem 1.25rem;
   background: var(--gray-100);
   border-bottom: 1px solid var(--border);
@@ -192,7 +192,7 @@
 
 .forum-cat-row {
   display: grid;
-  grid-template-columns: 1fr 80px 220px;
+  grid-template-columns: 1fr 100px 220px;
   align-items: center;
   padding: 0.9rem 1.25rem;
   border-bottom: 1px solid var(--border);
@@ -743,7 +743,7 @@
 
 @media (max-width: 900px) {
   .forum-cat-thead,
-  .forum-cat-row { grid-template-columns: 1fr 70px; }
+  .forum-cat-row { grid-template-columns: 1fr 80px; }
   .fct-col-last { display: none; }
 
   .forum-thread-thead,

@@ -1,6 +1,8 @@
 import { useState, useEffect, useRef } from 'react'
 import { Link } from 'react-router-dom'
 import { supabase } from '../lib/supabase'
+import { useAuth } from '../lib/AuthContext'
+import { getCategories, getThreadStats, getCategoryThreads, invalidateThreads, invalidateForumHome } from '../lib/preload'
 import RichTextEditor from '../components/RichTextEditor'
 import './Page.css'
 import './Forum.css'
@@ -195,23 +197,18 @@ function ForumHome({ user, onSelectCategory }) {
 
   useEffect(() => {
     async function load() {
-      const [{ data: cats }, { data: threads }] = await Promise.all([
-        supabase.from('forum_categories').select('*').order('sort_order'),
-        supabase.from('forum_threads').select('category_id, title, author_name, created_at').order('created_at', { ascending: false }),
-      ])
+      const [cats, threads] = await Promise.all([getCategories(), getThreadStats()])
 
-      if (cats) setCategoryGroups(groupCategories(cats))
+      setCategoryGroups(groupCategories(cats))
 
-      if (threads) {
-        const map = {}
-        for (const t of threads) {
-          if (!map[t.category_id]) {
-            map[t.category_id] = { count: 0, latestTitle: t.title, latestBy: t.author_name, latestTime: t.created_at }
-          }
-          map[t.category_id].count++
+      const map = {}
+      for (const t of threads) {
+        if (!map[t.category_id]) {
+          map[t.category_id] = { count: 0, latestTitle: t.title, latestBy: t.author_name, latestTime: t.created_at }
         }
-        setStats(map)
+        map[t.category_id].count++
       }
+      setStats(map)
       setLoading(false)
     }
     load()
@@ -298,14 +295,9 @@ function ThreadList({ category, onSelectThread, onBack, onNewThread }) {
 
   useEffect(() => {
     async function load() {
-      const { data } = await supabase
-        .from('forum_threads')
-        .select('*, forum_posts(count)')
-        .eq('category_id', category.id)
-        .order('is_pinned', { ascending: false })
-        .order('created_at', { ascending: false })
-      setThreads(data || [])
-      const ids = [...new Set((data || []).map(t => t.author_id).filter(Boolean))]
+      const data = await getCategoryThreads(category.id)
+      setThreads(data)
+      const ids = [...new Set(data.map(t => t.author_id).filter(Boolean))]
       if (ids.length) {
         const { data: profs } = await supabase.from('profiles').select('id, avatar_url').in('id', ids)
         const map = {}; profs?.forEach(p => { map[p.id] = p }); setProfiles(map)
@@ -649,17 +641,10 @@ function ThreadView({ thread, category, user, onBack }) {
 // ── Root ───────────────────────────────────────────────────────────────────────
 
 export default function Forum() {
-  const [member, setMember] = useState(null) // null=loading | false=guest | object=authed
-
-  useEffect(() => {
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      setMember(session?.user || false)
-    })
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_, session) => {
-      setMember(session?.user || false)
-    })
-    return () => subscription.unsubscribe()
-  }, [])
+  const { user, loading: authLoading } = useAuth()
+  // null=still checking, false=guest, object=authed user
+  // Use user directly once it's non-null — don't wait for profile fetch to complete
+  const member = (authLoading && user === null) ? null : (user || false)
 
   const [view, setView]                   = useState('home')
   const [selectedCategory, setSelectedCategory] = useState(null)
@@ -687,6 +672,9 @@ export default function Forum() {
     await supabase.from('forum_posts').insert({
       thread_id: thread.id, content: body, author_id: member.id, author_name: name,
     })
+    // Invalidate caches so next visit to forum home / category shows fresh data
+    invalidateForumHome()
+    invalidateThreads(selectedCategory.id)
     setShowNewThread(false)
     selectThread(thread)
   }

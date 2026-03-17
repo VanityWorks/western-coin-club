@@ -3,7 +3,11 @@ import { BrowserRouter, Routes, Route, Outlet } from 'react-router-dom'
 import Header from './components/Header'
 import Footer from './components/Footer'
 import { AuthProvider } from './lib/AuthContext'
+import { prefetchForum } from './lib/preload'
 import './App.css'
+
+// Kick off forum data fetching immediately — resolved before user navigates there
+prefetchForum()
 
 const Home        = lazy(() => import('./pages/Home'))
 const About       = lazy(() => import('./pages/About'))
