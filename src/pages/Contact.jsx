@@ -21,11 +21,11 @@ export default function Contact() {
             </div>
             <form className="contact-form" onSubmit={(e) => e.preventDefault()}>
               <label>
-                Name <span className="required">*</span>
+                <span>Name <span className="required">*</span></span>
                 <input type="text" required />
               </label>
               <label>
-                Email <span className="required">*</span>
+                <span>Email <span className="required">*</span></span>
                 <input type="email" required />
               </label>
               <label>
@@ -39,7 +39,7 @@ export default function Contact() {
                 </select>
               </label>
               <label>
-                Message <span className="required">*</span>
+                <span>Message <span className="required">*</span></span>
                 <textarea rows={5} required placeholder="Your message..."></textarea>
               </label>
               <button type="submit" className="btn btn-primary">Send Message</button>

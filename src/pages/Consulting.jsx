@@ -32,9 +32,9 @@ const consultants = [
   },
   {
     id: 'john-hamer',
-    name: 'John Hamer',
+    name: 'John Hammer',
     image: '/consultants/john-hamer.png',
-    bio: "John Hamer is the owner of JWH Coins and a registered dealer with the South African Association of Numismatic Dealers (SAAND), bringing both credibility and experience to the South African numismatic community. With a strong foundation in bullion and a deep passion for numismatic education, John is particularly well positioned to guide collectors who are looking to grow their collections while making sound, value-driven decisions. His approach combines practical market insight with a genuine enthusiasm for the hobby, making him a trusted resource for both new and experienced collectors alike. John has a unique ability to simplify complex numismatic concepts and communicate them in a way that is accessible, engaging, and meaningful. He is passionate about helping people appreciate not only the historical and collectible value of coins, but also their role in bullion ownership, wealth preservation, and long-term stewardship. Through his work, John aims to build bridges between collecting, education, and sound financial thinking, helping more South Africans engage with numismatics in a way that is both rewarding and purposeful. For collectors seeking to grow in knowledge, confidence, and appreciation for the hobby, John offers both guidance and perspective on the numismatic journey.",
+    bio: "John Hammer is the owner of JWH Coins and a registered dealer with the South African Association of Numismatic Dealers (SAAND), bringing both credibility and experience to the South African numismatic community. With a strong foundation in bullion and a deep passion for numismatic education, John is particularly well positioned to guide collectors who are looking to grow their collections while making sound, value-driven decisions. His approach combines practical market insight with a genuine enthusiasm for the hobby, making him a trusted resource for both new and experienced collectors alike. John has a unique ability to simplify complex numismatic concepts and communicate them in a way that is accessible, engaging, and meaningful. He is passionate about helping people appreciate not only the historical and collectible value of coins, but also their role in bullion ownership, wealth preservation, and long-term stewardship. Through his work, John aims to build bridges between collecting, education, and sound financial thinking, helping more South Africans engage with numismatics in a way that is both rewarding and purposeful. For collectors seeking to grow in knowledge, confidence, and appreciation for the hobby, John offers both guidance and perspective on the numismatic journey.",
   },
   {
     id: 'thomas-van-der-spuy',
@@ -119,21 +119,21 @@ export default function Consulting() {
             <form className="consulting-form" onSubmit={(e) => e.preventDefault()}>
               <div className="form-row">
                 <label>
-                  Name <span className="required">*</span>
+                  <span>Name <span className="required">*</span></span>
                   <input type="text" required />
                 </label>
                 <label>
-                  Email <span className="required">*</span>
+                  <span>Email <span className="required">*</span></span>
                   <input type="email" required />
                 </label>
               </div>
               <div className="form-row">
                 <label>
-                  Phone <span className="required">*</span>
+                  <span>Phone <span className="required">*</span></span>
                   <input type="tel" required />
                 </label>
                 <label>
-                  Consultant <span className="required">*</span>
+                  <span>Consultant <span className="required">*</span></span>
                   <select
                     required
                     value={selectedConsultant}
@@ -152,6 +152,7 @@ export default function Consulting() {
                 <label>
                   Type of consulting
                   <select>
+                    <option>General</option>
                     <option>Coin Identification</option>
                     <option>Collection Advice</option>
                     <option>Valuation</option>

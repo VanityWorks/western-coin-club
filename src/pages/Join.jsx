@@ -48,35 +48,35 @@ export default function Join() {
               <legend>Personal Details</legend>
               <div className="form-grid">
                 <label>
-                  First Name <span className="required">*</span>
+                  <span>First Name <span className="required">*</span></span>
                   <input type="text" required placeholder="e.g. John" />
                 </label>
                 <label>
-                  Surname <span className="required">*</span>
+                  <span>Surname <span className="required">*</span></span>
                   <input type="text" required placeholder="e.g. Smith" />
                 </label>
                 <label>
-                  Email <span className="required">*</span>
+                  <span>Email <span className="required">*</span></span>
                   <input type="email" required placeholder="john@example.com" />
                 </label>
                 <label>
-                  Mobile <span className="required">*</span>
+                  <span>Mobile <span className="required">*</span></span>
                   <input type="tel" required placeholder="+27 XX XXX XXXX" />
                 </label>
                 <label>
-                  WhatsApp Number <span className="required">*</span>
+                  <span>WhatsApp Number <span className="required">*</span></span>
                   <input type="tel" required placeholder="+27 XX XXX XXXX" />
                 </label>
                 <label className="full">
-                  Physical Address <span className="required">*</span>
+                  <span>Physical Address <span className="required">*</span></span>
                   <input type="text" required placeholder="Street address" />
                 </label>
                 <label>
-                  Town / City <span className="required">*</span>
+                  <span>Town / City <span className="required">*</span></span>
                   <input type="text" required placeholder="e.g. Cape Town" />
                 </label>
                 <label>
-                  Region / Province <span className="required">*</span>
+                  <span>Region / Province <span className="required">*</span></span>
                   <select required defaultValue="">
                     <option value="" disabled>Select province</option>
                     {provinces.map((p) => (
@@ -85,7 +85,7 @@ export default function Join() {
                   </select>
                 </label>
                 <label>
-                  Country <span className="required">*</span>
+                  <span>Country <span className="required">*</span></span>
                   <select required defaultValue="ZA">
                     <option value="ZA">South Africa</option>
                     <option value="other">Other</option>
@@ -132,11 +132,11 @@ export default function Join() {
               {referral === 'yes' && (
                 <div className="referral-fields">
                   <label>
-                    Referring Member Name <span className="required">*</span>
+                    <span>Referring Member Name <span className="required">*</span></span>
                     <input type="text" required />
                   </label>
                   <label>
-                    Referring Membership Number <span className="required">*</span>
+                    <span>Referring Membership Number <span className="required">*</span></span>
                     <input type="text" required />
                   </label>
                 </div>
