@@ -1,0 +1,146 @@
+/* EFT Success Screen */
+.eft-success-wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 1.75rem;
+  max-width: 640px;
+  margin: 0 auto;
+}
+
+.eft-ref-card {
+  background: var(--black);
+  color: var(--white);
+  border-radius: 16px;
+  padding: 2rem;
+  text-align: center;
+}
+
+.eft-ref-label {
+  font-size: 0.85rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.6);
+  margin: 0 0 0.5rem;
+}
+
+.eft-ref-number {
+  font-family: var(--font-heading);
+  font-size: clamp(1.5rem, 4vw, 2.25rem);
+  font-weight: 700;
+  color: var(--sa-gold);
+  letter-spacing: 0.05em;
+  margin: 0 0 0.75rem;
+}
+
+.eft-ref-note {
+  font-size: 0.875rem;
+  color: rgba(255,255,255,0.55);
+  margin: 0;
+}
+
+.eft-details-card {
+  background: var(--white);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 2rem;
+  box-shadow: var(--shadow-sm);
+}
+
+.eft-details-card h2 {
+  font-size: 1.35rem;
+  margin-bottom: 0.75rem;
+}
+
+.eft-instructions {
+  font-size: 0.95rem;
+  color: var(--text-muted);
+  margin-bottom: 1.5rem;
+  line-height: 1.6;
+}
+
+.eft-table {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.eft-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.75rem 1rem;
+  border-bottom: 1px solid var(--border);
+  font-size: 0.95rem;
+}
+
+.eft-row:last-child {
+  border-bottom: none;
+}
+
+.eft-row span {
+  color: var(--text-muted);
+  font-size: 0.875rem;
+  flex-shrink: 0;
+}
+
+.eft-row strong {
+  font-weight: 600;
+  text-align: right;
+}
+
+.eft-amount {
+  color: var(--sa-green);
+}
+
+.eft-row-ref {
+  background: rgba(255, 184, 28, 0.06);
+}
+
+.eft-ref-inline {
+  color: var(--sa-gold);
+  font-family: var(--font-heading);
+  font-size: 1.05rem;
+  letter-spacing: 0.04em;
+}
+
+.eft-next-steps {
+  background: var(--gray-100);
+  border-radius: 16px;
+  border-left: 4px solid var(--sa-green);
+  padding: 1.5rem 1.75rem;
+}
+
+.eft-next-steps h3 {
+  font-size: 1.1rem;
+  margin-bottom: 1rem;
+}
+
+.eft-next-steps ol {
+  margin: 0;
+  padding-left: 1.25rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.eft-next-steps li {
+  font-size: 0.95rem;
+  color: var(--text);
+  line-height: 1.5;
+}
+
+/* Join form error */
+.form-error {
+  color: var(--sa-red);
+  font-size: 0.9rem;
+  text-align: center;
+  background: rgba(230, 57, 70, 0.06);
+  border: 1px solid rgba(230, 57, 70, 0.2);
+  border-radius: 8px;
+  padding: 0.75rem 1rem;
+  margin: 0 0 1rem;
+}

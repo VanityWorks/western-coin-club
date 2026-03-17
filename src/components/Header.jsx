@@ -1,5 +1,7 @@
-import { useState } from 'react'
-import { Link, NavLink } from 'react-router-dom'
+import { useState, useRef, useEffect } from 'react'
+import { Link, NavLink, useNavigate } from 'react-router-dom'
+import { supabase } from '../lib/supabase'
+import { useAuth } from '../lib/AuthContext'
 import './Header.css'
 
 const navItems = [
@@ -12,8 +14,33 @@ const navItems = [
   { to: '/contact', label: 'Contact' },
 ]
 
+function getInitials(name) {
+  if (!name) return '?'
+  const parts = name.trim().split(/\s+/)
+  if (parts.length >= 2) return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase()
+  return parts[0].slice(0, 2).toUpperCase()
+}
+
 export default function Header() {
   const [menuOpen, setMenuOpen] = useState(false)
+  const [dropOpen, setDropOpen] = useState(false)
+  const { user, profile } = useAuth()
+  const navigate = useNavigate()
+  const dropRef = useRef(null)
+
+  useEffect(() => {
+    function handleClick(e) {
+      if (dropRef.current && !dropRef.current.contains(e.target)) setDropOpen(false)
+    }
+    document.addEventListener('mousedown', handleClick)
+    return () => document.removeEventListener('mousedown', handleClick)
+  }, [])
+
+  async function handleSignOut() {
+    await supabase.auth.signOut()
+    setDropOpen(false)
+    navigate('/')
+  }
 
   return (
     <header className="header">
@@ -35,9 +62,41 @@ export default function Header() {
           ))}
         </nav>
 
-        <Link to="/join" className="header-cta" onClick={() => setMenuOpen(false)}>
-          Join The Club
-        </Link>
+        {user ? (
+          <div className="header-user" ref={dropRef}>
+            <button
+              className="header-avatar-btn"
+              onClick={() => setDropOpen(v => !v)}
+              aria-label="Account menu"
+            >
+              {profile?.avatar_url ? (
+                <img src={profile.avatar_url} alt="" className="header-avatar-img" />
+              ) : (
+                <span className="header-avatar-initials">{getInitials(profile?.display_name)}</span>
+              )}
+            </button>
+            {dropOpen && (
+              <div className="header-dropdown">
+                <div className="header-dropdown-top">
+                  <span className="header-dropdown-name">{profile?.display_name || user.email}</span>
+                </div>
+                <Link to={`/profile/${user.id}`} className="header-dropdown-item" onClick={() => setDropOpen(false)}>
+                  <i className="fa-solid fa-user" /> My Profile
+                </Link>
+                <Link to="/settings" className="header-dropdown-item" onClick={() => setDropOpen(false)}>
+                  <i className="fa-solid fa-gear" /> Settings
+                </Link>
+                <button className="header-dropdown-item header-dropdown-signout" onClick={handleSignOut}>
+                  <i className="fa-solid fa-arrow-right-from-bracket" /> Sign Out
+                </button>
+              </div>
+            )}
+          </div>
+        ) : (
+          <Link to="/join" className="header-cta" onClick={() => setMenuOpen(false)}>
+            Join The Club
+          </Link>
+        )}
 
         <button
           className="menu-toggle"

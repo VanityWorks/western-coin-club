@@ -70,6 +70,26 @@ const consultants = [
 
 export default function Consulting() {
   const [selectedConsultant, setSelectedConsultant] = useState('')
+  const [submitted, setSubmitted] = useState(false)
+
+  function handleSubmit(e) {
+    e.preventDefault()
+    const fd = new FormData(e.target)
+    const entry = {
+      id: Date.now().toString(),
+      submittedAt: new Date().toISOString(),
+      name: fd.get('name') || '',
+      email: fd.get('email') || '',
+      phone: fd.get('phone') || '',
+      consultant: fd.get('consultant') || '',
+      type: fd.get('type') || '',
+      contactMethod: fd.get('contactMethod') || '',
+      message: fd.get('message') || '',
+    }
+    const existing = JSON.parse(localStorage.getItem('wccc_consulting') || '[]')
+    localStorage.setItem('wccc_consulting', JSON.stringify([entry, ...existing]))
+    setSubmitted(true)
+  }
 
   return (
     <main className="page consulting-page">
@@ -116,32 +136,38 @@ export default function Consulting() {
           <hr className="consulting-separator" />
           <div className="consulting-form-wrap">
             <h2>Request a Consultation</h2>
-            <form className="consulting-form" onSubmit={(e) => e.preventDefault()}>
+            {submitted ? (
+              <p style={{ fontSize: '1.1rem', color: 'var(--sa-green)', textAlign: 'center', padding: '2rem 0' }}>
+                Thank you! Your consultation request has been received. We will be in touch shortly.
+              </p>
+            ) : (
+            <form className="consulting-form" onSubmit={handleSubmit}>
               <div className="form-row">
                 <label>
                   <span>Name <span className="required">*</span></span>
-                  <input type="text" required />
+                  <input type="text" name="name" required />
                 </label>
                 <label>
                   <span>Email <span className="required">*</span></span>
-                  <input type="email" required />
+                  <input type="email" name="email" required />
                 </label>
               </div>
               <div className="form-row">
                 <label>
                   <span>Phone <span className="required">*</span></span>
-                  <input type="tel" required />
+                  <input type="tel" name="phone" required />
                 </label>
                 <label>
                   <span>Consultant <span className="required">*</span></span>
                   <select
+                    name="consultant"
                     required
                     value={selectedConsultant}
                     onChange={(e) => setSelectedConsultant(e.target.value)}
                   >
                     <option value="">Select a consultant</option>
                     {consultants.map((c) => (
-                      <option key={c.id} value={c.id}>
+                      <option key={c.id} value={c.name}>
                         {c.name}
                       </option>
                     ))}
@@ -151,7 +177,7 @@ export default function Consulting() {
               <div className="form-row">
                 <label>
                   Type of consulting
-                  <select>
+                  <select name="type">
                     <option>General</option>
                     <option>Coin Identification</option>
                     <option>Collection Advice</option>
@@ -163,7 +189,7 @@ export default function Consulting() {
                 </label>
                 <label>
                   Preferred contact method
-                  <select>
+                  <select name="contactMethod">
                     <option>Email</option>
                     <option>Phone</option>
                     <option>WhatsApp</option>
@@ -172,10 +198,11 @@ export default function Consulting() {
               </div>
               <label>
                 Message (optional)
-                <textarea rows={4} placeholder="Describe your enquiry..."></textarea>
+                <textarea name="message" rows={4} placeholder="Describe your enquiry..."></textarea>
               </label>
               <button type="submit" className="btn btn-primary">Submit Request</button>
             </form>
+            )}
           </div>
         </div>
       </section>

@@ -1,0 +1,184 @@
+@import './Page.css';
+
+.settings-page { padding-bottom: 4rem; }
+
+.settings-loading {
+  text-align: center;
+  padding: 4rem 1rem;
+  color: var(--text-muted);
+}
+
+.settings-content {
+  padding-top: 2.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  max-width: 680px;
+}
+
+/* ── Card ─────────────────────────────────────────────── */
+
+.settings-card {
+  background: var(--white);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 1.75rem;
+}
+
+.settings-card h2 {
+  font-size: 1.05rem;
+  font-weight: 700;
+  margin-bottom: 1.25rem;
+  padding-bottom: 0.75rem;
+  border-bottom: 1px solid var(--border);
+}
+
+/* ── Fields ───────────────────────────────────────────── */
+
+.settings-field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  margin-bottom: 1rem;
+}
+
+.settings-field label {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--text);
+}
+
+.settings-input,
+.settings-textarea {
+  padding: 0.6rem 0.85rem;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  font-family: var(--font-body);
+  font-size: 0.925rem;
+  color: var(--text);
+  background: var(--white);
+  transition: border-color 0.2s;
+  resize: vertical;
+}
+
+.settings-input:focus,
+.settings-textarea:focus {
+  outline: none;
+  border-color: var(--sa-green);
+}
+
+.settings-input-disabled {
+  background: var(--gray-100);
+  color: var(--text-muted);
+  cursor: not-allowed;
+}
+
+.settings-hint {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  margin: 0;
+}
+
+/* ── Toggles ──────────────────────────────────────────── */
+
+.settings-toggles {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+  margin-bottom: 1.25rem;
+}
+
+.settings-toggle {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  cursor: pointer;
+  font-size: 0.9rem;
+  color: var(--text);
+}
+
+.settings-toggle input[type="checkbox"] {
+  width: 16px;
+  height: 16px;
+  accent-color: var(--sa-green);
+  flex-shrink: 0;
+}
+
+/* ── Actions ──────────────────────────────────────────── */
+
+.settings-actions {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-top: 0.25rem;
+}
+
+.settings-view-link {
+  font-size: 0.875rem;
+  color: var(--sa-green);
+  font-weight: 600;
+}
+
+/* ── Avatar ───────────────────────────────────────────── */
+
+.settings-avatar-row {
+  display: flex;
+  align-items: center;
+  gap: 1.25rem;
+  margin-bottom: 0.5rem;
+}
+
+.settings-avatar-img {
+  width: 72px;
+  height: 72px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid var(--border);
+}
+
+.settings-avatar-initials {
+  width: 72px;
+  height: 72px;
+  border-radius: 50%;
+  background: var(--sa-gold);
+  color: #111;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.5rem;
+  font-weight: 800;
+  font-family: var(--font-heading);
+}
+
+.settings-avatar-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.settings-remove-btn {
+  background: none;
+  border: none;
+  font-family: var(--font-body);
+  font-size: 0.875rem;
+  color: var(--sa-red);
+  cursor: pointer;
+  padding: 0;
+  text-align: left;
+}
+
+.settings-remove-btn:hover { text-decoration: underline; }
+
+/* ── Password messages ────────────────────────────────── */
+
+.settings-msg {
+  font-size: 0.875rem;
+  padding: 0.6rem 0.85rem;
+  border-radius: 8px;
+  margin-bottom: 0.75rem;
+}
+
+.settings-msg i { margin-right: 0.4rem; }
+
+.settings-msg-ok  { background: #e8f5ee; color: #1a6b3c; border: 1px solid #b3d9c5; }
+.settings-msg-err { background: #fce8e9; color: #8b1c23; border: 1px solid #f5b8bb; }

@@ -209,3 +209,109 @@
     text-underline-offset: 4px;
   }
 }
+
+/* ── User avatar & dropdown ───────────────────────────── */
+
+.header-user {
+  position: relative;
+  flex-shrink: 0;
+  order: 3;
+}
+
+.header-avatar-btn {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border: 2px solid var(--sa-gold);
+  padding: 0;
+  overflow: hidden;
+  cursor: pointer;
+  background: var(--sa-green);
+  transition: box-shadow 0.2s;
+}
+
+.header-avatar-btn:hover { box-shadow: 0 0 0 3px rgba(0,119,73,0.2); }
+
+.header-avatar-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.header-avatar-initials {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.8rem;
+  font-weight: 800;
+  font-family: var(--font-heading);
+  color: #fff;
+}
+
+.header-dropdown {
+  position: absolute;
+  top: calc(100% + 0.5rem);
+  right: 0;
+  background: #fff;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.12);
+  min-width: 200px;
+  z-index: 200;
+  overflow: hidden;
+}
+
+.header-dropdown-top {
+  padding: 0.9rem 1rem 0.75rem;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.header-dropdown-name {
+  font-weight: 700;
+  font-size: 0.9rem;
+  color: var(--text);
+}
+
+.header-dropdown-badge {
+  display: inline-block;
+  padding: 0.15rem 0.5rem;
+  background: var(--sa-green);
+  color: #fff;
+  border-radius: 999px;
+  font-size: 0.7rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  align-self: flex-start;
+}
+
+.header-dropdown-item {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  width: 100%;
+  padding: 0.7rem 1rem;
+  font-family: var(--font-body);
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--text);
+  background: none;
+  border: none;
+  text-align: left;
+  cursor: pointer;
+  transition: background 0.15s;
+  text-decoration: none;
+}
+
+.header-dropdown-item:hover { background: var(--gray-100); }
+
+.header-dropdown-item i { width: 16px; color: var(--text-muted); }
+
+.header-dropdown-signout { color: var(--sa-red); }
+.header-dropdown-signout i { color: var(--sa-red); }
