@@ -23,7 +23,7 @@ const provinces = [
 ]
 
 const interests = [
-  'Ancient Coins','Medieval Coins','South African Republic (ZAR)',
+  'Ancient Coins','Medieval Coins','Zuid-Afrikaansche Republiek (ZAR)',
   'Union of South Africa','Republic of South Africa','Modern Bullion Coins',
   'Gold Coins','Silver Coins','World Coins','Error Coins',
   'Pattern Coins','Medals & Tokens','Banknotes','Other',

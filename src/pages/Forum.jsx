@@ -1,8 +1,9 @@
 import { useState, useEffect, useRef } from 'react'
 import { Link } from 'react-router-dom'
+import DOMPurify from 'dompurify'
 import { supabase } from '../lib/supabase'
 import { useAuth } from '../lib/AuthContext'
-import { getCategories, getThreadStats, getCategoryThreads, invalidateThreads, invalidateForumHome } from '../lib/preload'
+import { getCategories, getThreadStats, getCategoryThreads, getThreadPosts, prefetchThread, peekSync, invalidateThreads, invalidatePosts, invalidateForumHome } from '../lib/preload'
 import RichTextEditor from '../components/RichTextEditor'
 import './Page.css'
 import './Forum.css'
@@ -93,7 +94,7 @@ function Breadcrumbs({ items }) {
 
 function Avatar({ name, size = 40, url }) {
   if (url) return (
-    <img src={url} alt={name} className="forum-avatar" style={{ width: size, height: size, borderRadius: '50%', objectFit: 'cover', flexShrink: 0 }} />
+    <img src={url} alt={name} loading="lazy" className="forum-avatar" style={{ width: size, height: size, borderRadius: '50%', objectFit: 'cover', flexShrink: 0 }} />
   )
   return (
     <div
@@ -247,6 +248,7 @@ function ForumHome({ user, onSelectCategory }) {
                       key={cat.id}
                       className="forum-cat-row"
                       onClick={() => onSelectCategory(cat)}
+                      onMouseEnter={() => getCategoryThreads(cat.id)}
                       role="button"
                       tabIndex={0}
                       onKeyDown={e => e.key === 'Enter' && onSelectCategory(cat)}
@@ -289,22 +291,16 @@ function ForumHome({ user, onSelectCategory }) {
 // ── Thread list ────────────────────────────────────────────────────────────────
 
 function ThreadList({ category, onSelectThread, onBack, onNewThread }) {
-  const [threads, setThreads]   = useState([])
-  const [profiles, setProfiles] = useState({})
-  const [loading, setLoading]   = useState(true)
+  const _cached = peekSync(`threads_${category.id}`)
+  const [threads,   setThreads]   = useState(_cached?.threads   || [])
+  const [avatarMap, setAvatarMap] = useState(_cached?.avatarMap || {})
+  const [loading,   setLoading]   = useState(!_cached)
 
   useEffect(() => {
-    async function load() {
-      const data = await getCategoryThreads(category.id)
-      setThreads(data)
-      const ids = [...new Set(data.map(t => t.author_id).filter(Boolean))]
-      if (ids.length) {
-        const { data: profs } = await supabase.from('profiles').select('id, avatar_url').in('id', ids)
-        const map = {}; profs?.forEach(p => { map[p.id] = p }); setProfiles(map)
-      }
+    getCategoryThreads(category.id).then(result => {
+      if (result) { setThreads(result.threads); setAvatarMap(result.avatarMap) }
       setLoading(false)
-    }
-    load()
+    })
   }, [category.id])
 
   return (
@@ -352,6 +348,7 @@ function ThreadList({ category, onSelectThread, onBack, onNewThread }) {
                     key={thread.id}
                     className={`forum-thread-row${thread.is_pinned ? ' is-pinned' : ''}${isHot ? ' is-hot' : ''}`}
                     onClick={() => onSelectThread(thread)}
+                    onMouseEnter={() => prefetchThread(thread.id)}
                     role="button"
                     tabIndex={0}
                     onKeyDown={e => e.key === 'Enter' && onSelectThread(thread)}
@@ -367,7 +364,7 @@ function ThreadList({ category, onSelectThread, onBack, onNewThread }) {
                     </div>
                     <div className="ftt-col-author">
                       <div className="forum-thread-author-cell">
-                        <Avatar name={thread.author_name} size={28} url={profiles[thread.author_id]?.avatar_url} />
+                        <Avatar name={thread.author_name} size={28} url={avatarMap[thread.author_id]} />
                         {thread.author_id
                           ? <Link to={`/profile/${thread.author_id}`} onClick={e => e.stopPropagation()} className="forum-author-link">{thread.author_name}</Link>
                           : <span>{thread.author_name}</span>
@@ -392,8 +389,30 @@ function ThreadList({ category, onSelectThread, onBack, onNewThread }) {
 
 // ── Post card ──────────────────────────────────────────────────────────────────
 
+function ImageLightbox({ src, onClose }) {
+  return (
+    <div className="forum-lightbox" onClick={onClose}>
+      <button className="forum-lightbox-close" onClick={onClose}>✕</button>
+      <img src={src} alt="" onClick={e => e.stopPropagation()} />
+    </div>
+  )
+}
+
 function PostCard({ post, isQueued, onToggleQuote, avatarUrl }) {
   const [liked, setLiked] = useState(false)
+  const [lightbox, setLightbox] = useState(null)
+  const proseRef = useRef(null)
+
+  // Attach click handlers to images inside the rendered HTML
+  useEffect(() => {
+    const el = proseRef.current
+    if (!el) return
+    function handleClick(e) {
+      if (e.target.tagName === 'IMG') setLightbox(e.target.src)
+    }
+    el.addEventListener('click', handleClick)
+    return () => el.removeEventListener('click', handleClick)
+  }, [post.content])
 
   return (
     <article className="forum-post">
@@ -412,7 +431,8 @@ function PostCard({ post, isQueued, onToggleQuote, avatarUrl }) {
           <span className="forum-post-date">{fullDate(post.created_at)}</span>
           {post.updated_at && <span className="forum-post-edited">edited</span>}
         </div>
-        <div className="forum-prose" dangerouslySetInnerHTML={{ __html: post.content }} />
+        <div ref={proseRef} className="forum-prose" dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(post.content, { ADD_ATTR: ['target'] }) }} />
+        {lightbox && <ImageLightbox src={lightbox} onClose={() => setLightbox(null)} />}
         <div className="forum-post-actions">
           <button
             className={`forum-action-btn${liked ? ' liked' : ''}`}
@@ -437,36 +457,27 @@ function PostCard({ post, isQueued, onToggleQuote, avatarUrl }) {
 // ── Thread view ────────────────────────────────────────────────────────────────
 
 function ThreadView({ thread, category, user, onBack }) {
-  const [posts, setPosts]           = useState([])
-  const [profiles, setProfiles]     = useState({})
-  const [loading, setLoading]       = useState(true)
-  const [replyOpen, setReplyOpen]   = useState(false)
-  const [replyBody, setReplyBody]   = useState('')
-  const [replyKey, setReplyKey]     = useState(0)
-  const [submitting, setSubmitting] = useState(false)
-  const [quotedIds, setQuotedIds]   = useState([]) // IDs of posts queued for multi-quote
+  const _cached = peekSync(`posts_${thread.id}`)
+  const [posts,     setPosts]     = useState(_cached?.posts     || [])
+  const [avatarMap, setAvatarMap] = useState(_cached?.avatarMap || {})
+  const [loading,   setLoading]   = useState(!_cached)
+  const [replyOpen,   setReplyOpen]   = useState(false)
+  const [replyBody,   setReplyBody]   = useState('')
+  const [replyKey,    setReplyKey]    = useState(0)
+  const [submitting,  setSubmitting]  = useState(false)
+  const [quotedIds,   setQuotedIds]   = useState([])
   const replyRef = useRef(null)
 
   const displayName = memberName(user)
 
   useEffect(() => {
-    async function load() {
-      const { data } = await supabase
-        .from('forum_posts')
-        .select('*')
-        .eq('thread_id', thread.id)
-        .order('created_at', { ascending: true })
-      setPosts(data || [])
-      const ids = [...new Set((data || []).map(p => p.author_id).filter(Boolean))]
-      if (ids.length) {
-        const { data: profs } = await supabase.from('profiles').select('id, avatar_url').in('id', ids)
-        const map = {}; profs?.forEach(p => { map[p.id] = p }); setProfiles(map)
-      }
+    getThreadPosts(thread.id).then(result => {
+      if (result) { setPosts(result.posts); setAvatarMap(result.avatarMap) }
       setLoading(false)
-      await supabase.from('forum_threads').update({ views: (thread.views || 0) + 1 }).eq('id', thread.id)
-    }
-    load()
-  }, [thread.id, thread.views])
+    })
+    supabase.from('forum_threads').update({ views: (thread.views || 0) + 1 }).eq('id', thread.id)
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [thread.id])
 
   // Toggle a post in/out of the quote queue
   function handleToggleQuote(post) {
@@ -517,17 +528,25 @@ function ThreadView({ thread, category, user, onBack }) {
     e.preventDefault()
     if (!replyBody || replyBody === '<p></p>') return
     setSubmitting(true)
-    const { data: newPost, error } = await supabase
-      .from('forum_posts')
-      .insert({ thread_id: thread.id, content: replyBody, author_id: user.id, author_name: displayName })
-      .select()
-      .single()
-    if (!error && newPost) setPosts(prev => [...prev, newPost])
-    setReplyBody('')
-    setReplyKey(k => k + 1)
-    setReplyOpen(false)
-    setQuotedIds([])
-    setSubmitting(false)
+    try {
+      const { data: newPost, error } = await supabase
+        .from('forum_posts')
+        .insert({ thread_id: thread.id, content: replyBody, author_id: user.id, author_name: displayName })
+        .select()
+        .single()
+      if (error) throw error
+      setPosts(prev => [...prev, newPost])
+      invalidatePosts(thread.id) // bust cache so re-entry fetches fresh
+      setReplyBody('')
+      setReplyKey(k => k + 1)
+      setReplyOpen(false)
+      setQuotedIds([])
+    } catch (err) {
+      console.error('Reply failed:', err)
+      alert('Failed to post reply. Please try again.')
+    } finally {
+      setSubmitting(false)
+    }
   }
 
   const quotedCount = quotedIds.length
@@ -571,7 +590,7 @@ function ThreadView({ thread, category, user, onBack }) {
                   post={post}
                   isQueued={quotedIds.includes(post.id)}
                   onToggleQuote={handleToggleQuote}
-                  avatarUrl={profiles[post.author_id]?.avatar_url}
+                  avatarUrl={avatarMap[post.author_id]}
                 />
               ))}
             </div>

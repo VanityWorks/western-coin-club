@@ -102,3 +102,8 @@
 .member-back-link:hover {
   color: var(--sa-green);
 }
+
+@media (max-width: 480px) {
+  .member-login-card { padding: 2rem 1.25rem; border-radius: 16px; }
+  .member-login-title { font-size: 1.5rem; }
+}

@@ -1,17 +1,29 @@
 // Module-level promise cache — fetches start immediately on first call and are reused.
-// Subsequent calls before resolution share the same in-flight promise.
+// _resolved holds the already-settled value so components can read synchronously
+// (zero-delay render from cache, no loading spinner on revisit).
 import { supabase } from './supabase'
 
-const _cache = {}
+const _cache   = {}  // key → Promise
+const _resolved = {} // key → resolved value (sync readable via peekSync)
 
 function cached(key, fn) {
-  if (!_cache[key]) _cache[key] = fn().catch(() => { delete _cache[key]; return [] })
+  if (!_cache[key]) {
+    _cache[key] = fn()
+      .then(result => { _resolved[key] = result; return result })
+      .catch(() => { delete _cache[key]; return null })
+  }
   return _cache[key]
 }
 
-export function invalidate(key) { delete _cache[key] }
+// Read already-resolved cache synchronously — undefined if not yet resolved.
+export function peekSync(key) { return _resolved[key] }
+
+function invalidate(key) { delete _cache[key]; delete _resolved[key] }
 export function invalidateThreads(categoryId) { invalidate(`threads_${categoryId}`) }
-export function invalidateForumHome() { invalidate('categories'); invalidate('thread_stats') }
+export function invalidatePosts(threadId)     { invalidate(`posts_${threadId}`) }
+export function invalidateForumHome()         { invalidate('categories'); invalidate('thread_stats') }
+
+// ── Categories ──────────────────────────────────────────────────────────────
 
 export function getCategories() {
   return cached('categories', async () => {
@@ -19,6 +31,8 @@ export function getCategories() {
     return data || []
   })
 }
+
+// ── Thread stats (used on forum home for "last thread" info) ────────────────
 
 export function getThreadStats() {
   return cached('thread_stats', async () => {
@@ -30,6 +44,8 @@ export function getThreadStats() {
   })
 }
 
+// ── Threads for a category (includes thread-author avatars) ─────────────────
+
 export function getCategoryThreads(categoryId) {
   return cached(`threads_${categoryId}`, async () => {
     const { data } = await supabase
@@ -38,12 +54,49 @@ export function getCategoryThreads(categoryId) {
       .eq('category_id', categoryId)
       .order('is_pinned', { ascending: false })
       .order('created_at', { ascending: false })
-    return data || []
+    const threads = data || []
+
+    // Batch-fetch author avatars in the same tick
+    const ids = [...new Set(threads.map(t => t.author_id).filter(Boolean))]
+    const avatarMap = {}
+    if (ids.length) {
+      const { data: profs } = await supabase.from('profiles').select('id, avatar_url').in('id', ids)
+      profs?.forEach(p => { avatarMap[p.id] = p.avatar_url })
+    }
+    return { threads, avatarMap }
   })
 }
 
-// Call on app startup to warm the cache before the user navigates to /forum
+// ── Posts for a thread (includes poster avatars, fully cached) ───────────────
+
+export function getThreadPosts(threadId) {
+  return cached(`posts_${threadId}`, async () => {
+    const { data: posts } = await supabase
+      .from('forum_posts')
+      .select('*')
+      .eq('thread_id', threadId)
+      .order('created_at', { ascending: true })
+    const items = posts || []
+
+    // Batch-fetch all poster avatars
+    const ids = [...new Set(items.map(p => p.author_id).filter(Boolean))]
+    const avatarMap = {}
+    if (ids.length) {
+      const { data: profs } = await supabase.from('profiles').select('id, avatar_url').in('id', ids)
+      profs?.forEach(p => { avatarMap[p.id] = p.avatar_url })
+    }
+    return { posts: items, avatarMap }
+  })
+}
+
+// Fire-and-forget hover prefetch — call on mouseenter of a thread row
+export function prefetchThread(threadId) { getThreadPosts(threadId) }
+
+// Call on app startup to warm the entire forum cache.
+// Fetches categories + stats, then immediately fires thread fetches for every
+// category in parallel — so navigating into any forum is instant.
 export function prefetchForum() {
-  getCategories()
-  getThreadStats()
+  Promise.all([getCategories(), getThreadStats()]).then(([cats]) => {
+    if (cats) cats.forEach(cat => getCategoryThreads(cat.id))
+  })
 }

@@ -1,7 +1,7 @@
 .rte-wrap {
   border: 1px solid var(--border);
   border-radius: 10px;
-  overflow: hidden;
+  overflow: clip;
   background: var(--white);
   transition: border-color 0.2s;
 }
@@ -127,4 +127,115 @@
   pointer-events: none;
   float: left;
   height: 0;
+}
+
+/* ── Resizable image NodeView ────────────────────────── */
+
+.rte-img-node {
+  display: block;
+  margin: 0.75em 0;
+}
+.rte-img-node.align-center { text-align: center; }
+.rte-img-node.align-right  { text-align: right; }
+.rte-img-node.align-left   { text-align: left; }
+
+.rte-img-wrap {
+  display: inline-block;
+  position: relative;
+  max-width: 100%;
+  line-height: 0;
+}
+.rte-img-wrap img {
+  display: block;
+  width: 100%;
+  height: auto;
+  border-radius: 8px;
+  pointer-events: none;
+  user-select: none;
+}
+.rte-img-wrap.selected img {
+  outline: 2px solid var(--sa-green);
+  border-radius: 8px;
+}
+
+.rte-img-controls {
+  position: absolute;
+  top: 7px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  background: rgba(0,0,0,0.75);
+  border-radius: 8px;
+  padding: 4px 8px;
+  z-index: 10;
+  white-space: nowrap;
+}
+.rte-img-controls button {
+  background: none;
+  border: none;
+  color: rgba(255,255,255,0.7);
+  font-size: 0.8rem;
+  cursor: pointer;
+  padding: 2px 6px;
+  border-radius: 4px;
+  transition: background 0.1s, color 0.1s;
+}
+.rte-img-controls button:hover,
+.rte-img-controls button.active {
+  background: rgba(255,255,255,0.2);
+  color: #fff;
+}
+.rte-img-divider {
+  width: 1px;
+  height: 14px;
+  background: rgba(255,255,255,0.2);
+  margin: 0 2px;
+}
+
+.rte-resize-handle {
+  position: absolute;
+  bottom: 4px;
+  right: 4px;
+  width: 14px;
+  height: 14px;
+  background: var(--sa-green);
+  border-radius: 3px;
+  cursor: nwse-resize;
+  z-index: 10;
+}
+.rte-resize-handle::after {
+  content: '';
+  display: block;
+  width: 6px;
+  height: 6px;
+  border-right: 2px solid white;
+  border-bottom: 2px solid white;
+  position: absolute;
+  bottom: 3px;
+  right: 3px;
+}
+
+.rte-btn-disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+@keyframes rte-spin {
+  to { transform: rotate(360deg); }
+}
+
+/* Images in rendered forum posts */
+.forum-prose img {
+  max-width: 100%;
+  height: auto;
+  border-radius: 10px;
+  display: block;
+  margin: 0.75em 0;
+  cursor: pointer;
+}
+
+.forum-prose img:hover {
+  opacity: 0.92;
 }

@@ -1,11 +1,7 @@
+import { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
+import { supabase } from '../lib/supabase'
 import './Home.css'
-
-const latestNews = [
-  { id: 1, title: '2026 Krugerrand Design Unveiled', summary: 'The annual release brings fresh excitement for bullion collectors.', date: 'Mar 12, 2026', image: '/news-krugerrand.png' },
-  { id: 2, title: 'ZAR Coins: A Collector\'s Guide', summary: 'Deep dive into South African Republic coins.', date: 'Mar 5, 2026', image: '/news-zar.png' },
-  { id: 3, title: 'Club Event: Spring Coin Fair', summary: 'Join us for our quarterly gathering of collectors.', date: 'Feb 28, 2026', image: '/news-spring-fair.png' },
-]
 
 const benefits = [
   'Access to collector community',
@@ -43,7 +39,23 @@ const testimonials = [
 
 const membershipFee = { price: 'R120', desc: 'Full access to all club benefits' }
 
+function formatDate(iso) {
+  return new Date(iso).toLocaleDateString('en-ZA', { day: 'numeric', month: 'short', year: 'numeric' })
+}
+
 export default function Home() {
+  const [news, setNews] = useState([])
+
+  useEffect(() => {
+    supabase
+      .from('articles')
+      .select('id, title, summary, cover_image, published_at, created_at')
+      .eq('published', true)
+      .order('published_at', { ascending: false })
+      .limit(3)
+      .then(({ data }) => { if (data?.length) setNews(data) })
+  }, [])
+
   return (
     <main className="home">
       <div className="home-bg" aria-hidden="true"></div>
@@ -64,26 +76,30 @@ Join a community built for collectors.</p>
         </div>
       </section>
 
-      <section className="section latest-news">
-        <div className="container">
-          <h2>Latest News</h2>
-          <div className="news-grid">
-            {latestNews.map((article) => (
-              <article key={article.id} className="news-card">
-                <div className="news-card-image">
-                  <img src={article.image} alt="" />
-                </div>
-                <div className="news-card-content">
-                  <span className="news-date">{article.date}</span>
-                  <h3>{article.title}</h3>
-                  <p>{article.summary}</p>
-                  <Link to="/news" className="news-link">Read More →</Link>
-                </div>
-              </article>
-            ))}
+      {news.length > 0 && (
+        <section className="section latest-news">
+          <div className="container">
+            <h2>Latest News</h2>
+            <div className="news-grid">
+              {news.map((article) => (
+                <article key={article.id} className="news-card">
+                  {article.cover_image && (
+                    <div className="news-card-image">
+                      <img src={article.cover_image} alt="" loading="lazy" />
+                    </div>
+                  )}
+                  <div className="news-card-content">
+                    <span className="news-date">{formatDate(article.published_at || article.created_at)}</span>
+                    <h3>{article.title}</h3>
+                    {article.summary && <p>{article.summary}</p>}
+                    <Link to={`/news/${article.id}`} className="news-link">Read More →</Link>
+                  </div>
+                </article>
+              ))}
+            </div>
           </div>
-        </div>
-      </section>
+        </section>
+      )}
 
       <section className="section about-club">
         <div className="container">

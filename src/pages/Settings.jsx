@@ -61,8 +61,11 @@ export default function Settings() {
   async function handleAvatarUpload(e) {
     const file = e.target.files?.[0]
     if (!file) return
+    const ALLOWED = ['image/jpeg', 'image/png', 'image/webp', 'image/gif']
+    if (!ALLOWED.includes(file.type)) { alert('Please upload a JPEG, PNG, WebP, or GIF image.'); return }
+    if (file.size > 5 * 1024 * 1024) { alert('Image must be under 5 MB.'); return }
     setAvatarUploading(true)
-    const ext  = file.name.split('.').pop()
+    const ext  = file.name.split('.').pop().toLowerCase()
     const path = `${user.id}/avatar.${ext}`
     const { error: upErr } = await supabase.storage.from('avatars').upload(path, file, { upsert: true })
     if (upErr) { alert('Upload failed: ' + upErr.message); setAvatarUploading(false); return }

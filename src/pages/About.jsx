@@ -61,10 +61,9 @@ export default function About() {
             <div className="structure-section">
               <h3>Community & Industry Relations</h3>
               <ul>
-                <li><strong>Membership Director</strong> - Georgia Hammer</li>
-                <li><strong>Member Liaison</strong> - Dillon Bassani</li>
+                <li><strong>Member Liaison</strong> - Georgia Hammer</li>
                 <li><strong>Events Director</strong> - John Hammer</li>
-                <li><strong>Regional Coordinators</strong> - Western Cape (Gary Willicott), Gauteng (Landon Coleske), KwaZulu-Natal (Anthony Govender), Port Elizabeth (To be announced), Bloemfontein (To be announced)</li>
+                <li><strong>Regional Coordinators</strong> - Western Cape (Gary Willicott), Gauteng (Landon Coleske), KwaZulu-Natal (To be announced), Port Elizabeth (To be announced), Bloemfontein (To be announced)</li>
               </ul>
             </div>
 
@@ -78,7 +77,7 @@ export default function About() {
                 <li><strong>World Coin Coordinator</strong> - To be announced</li>
                 <li><strong>Ancient Coordinator</strong> - Joel Potgieter</li>
                 <li><strong>Local Bullion & Mint Issues Coordinator</strong> - Marco Bassani</li>
-                <li><strong>Banknotes Coordinator</strong> - To be announced</li>
+                <li><strong>Banknotes Coordinator</strong> - Dr Heinz Wirz</li>
                 <li><strong>Tokens Coordinator</strong> - Anthony Govender</li>
                 <li><strong>Young Collectors Program Director</strong> - John Hammer</li>
               </ul>
@@ -113,6 +112,7 @@ export default function About() {
               <li>Gauteng Numismatics</li>
               <li>KZN Numismatics</li>
               <li>Western Cape Numismatics</li>
+              <li>Eastern Cape Numismatics</li>
             </ul>
             <h3 className="channel-group-heading">Channels</h3>
             <ul className="channel-list">

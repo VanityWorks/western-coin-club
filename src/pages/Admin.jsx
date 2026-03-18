@@ -1,7 +1,9 @@
 import { useState, useEffect, useCallback } from 'react'
 import { Link } from 'react-router-dom'
+import DOMPurify from 'dompurify'
 import { supabase } from '../lib/supabase'
 import RichTextEditor from '../components/RichTextEditor'
+import AdminNews from './AdminNews'
 import './Admin.css'
 
 // The admin password is verified server-side via the ADMIN_SECRET env variable
@@ -1174,7 +1176,7 @@ function ForumSection({ adminPassword, showToast }) {
                 ) : (
                   <div
                     className="admin-forum-post-body forum-prose"
-                    dangerouslySetInnerHTML={{ __html: post.content }}
+                    dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(post.content, { ADD_ATTR: ['target'] }) }}
                   />
                 )}
               </div>
@@ -1336,6 +1338,7 @@ function AdminDashboard({ adminPassword, onLogout }) {
     mainView === 'signups'     ? 'Sign-ups'
     : mainView === 'consulting'  ? 'Consulting Requests'
     : mainView === 'members'     ? 'Members'
+    : mainView === 'news'        ? 'News & Articles'
     : 'Forum Management'
 
   return (
@@ -1382,6 +1385,12 @@ function AdminDashboard({ adminPassword, onLogout }) {
 
           <p className="admin-nav-section">Content</p>
           <button
+            className={`admin-nav-item ${mainView === 'news' ? 'active' : ''}`}
+            onClick={() => switchMain('news')}
+          >
+            <span>News & Articles</span>
+          </button>
+          <button
             className={`admin-nav-item ${mainView === 'forum' ? 'active' : ''}`}
             onClick={() => switchMain('forum')}
           >
@@ -1417,7 +1426,9 @@ function AdminDashboard({ adminPassword, onLogout }) {
         </div>
 
         <div className="admin-content">
-          {mainView === 'forum' ? (
+          {mainView === 'news' ? (
+            <AdminNews showToast={showToast} />
+          ) : mainView === 'forum' ? (
             <ForumSection adminPassword={adminPassword} showToast={showToast} />
           ) : mainView === 'members' ? (
             <MembersSection adminPassword={adminPassword} showToast={showToast} />

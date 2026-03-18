@@ -218,3 +218,15 @@
 }
 
 .profile-thread-meta i { margin-right: 0.25rem; }
+
+@media (max-width: 600px) {
+  .profile-hero-inner { gap: 1rem; }
+  .profile-stats-inner { gap: 1.5rem; }
+  .profile-content { padding-top: 1.5rem; }
+}
+
+@media (max-width: 480px) {
+  .profile-hero { padding: 1.5rem 0; }
+  .profile-edit-btn { position: static; margin-top: 0.75rem; align-self: flex-start; }
+  .profile-hero-inner { flex-direction: column; align-items: flex-start; }
+}

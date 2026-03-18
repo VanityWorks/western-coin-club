@@ -163,11 +163,19 @@
 
 .channel-list {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(min(200px, 100%), 1fr));
   gap: 0.5rem;
   margin: 1rem 0;
   padding: 0;
   list-style: none;
+}
+
+@media (max-width: 600px) {
+  .about-page .about-grid { grid-template-columns: 1fr; }
+  .about-digital { padding: 1.25rem; }
+  .structure-section { padding: 1.25rem; }
+  .about-structure { margin-top: 2.5rem; padding-top: 2rem; }
+  .about-digital { margin-top: 2.5rem; }
 }
 
 .channel-list li {
