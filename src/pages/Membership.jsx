@@ -9,7 +9,7 @@ const welcomePack = [
   'South African Coin Collectors Club Membership Card',
   'Welcome Letter from the club',
   'SANGS Pedigree Coin — graded, registered, and attributed to your name',
-  'Access to the Hern\'s Pocket Guide — available on the App Store and Google Play',
+  'Access to the Hern\'s Pocket Guide - available on the App Store and Google Play',
   'SANGS Grading Voucher',
   'Bassani\'s No Seller\'s Commission Voucher',
   'Investment Coin & Bullion Voucher',
