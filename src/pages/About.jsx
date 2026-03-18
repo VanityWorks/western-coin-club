@@ -62,7 +62,7 @@ export default function About() {
               <h3>Community & Industry Relations</h3>
               <ul>
                 <li><strong>Member Liaison</strong> - Georgia Hammer</li>
-                <li><strong>Events Director</strong> - John Hammer</li>
+                <li><strong>Events Director</strong> - John Hamer</li>
                 <li><strong>Regional Coordinators</strong> - Western Cape (Gary Willicott), Gauteng (Landon Coleske), KwaZulu-Natal (To be announced), Port Elizabeth (To be announced), Bloemfontein (To be announced)</li>
               </ul>
             </div>
@@ -79,7 +79,7 @@ export default function About() {
                 <li><strong>Local Bullion & Mint Issues Coordinator</strong> - Marco Bassani</li>
                 <li><strong>Banknotes Coordinator</strong> - Dr Heinz Wirz</li>
                 <li><strong>Tokens Coordinator</strong> - Anthony Govender</li>
-                <li><strong>Young Collectors Program Director</strong> - John Hammer</li>
+                <li><strong>Young Collectors Program Director</strong> - John Hamer</li>
               </ul>
             </div>
 
