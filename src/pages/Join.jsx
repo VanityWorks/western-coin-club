@@ -99,11 +99,13 @@ export default function Join() {
     const fd = new FormData(e.target)
 
     // Generate reference number client-side
-    const year = new Date().getFullYear()
+    const firstName = (fd.get('firstName') || '').trim()
+    const surname = (fd.get('surname') || '').trim()
+    const initial = surname.charAt(0).toUpperCase()
     const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789'
     let code = ''
-    for (let i = 0; i < 6; i++) code += chars[Math.floor(Math.random() * chars.length)]
-    const refNumber = `SACCC-${year}-${code}`
+    for (let i = 0; i < 5; i++) code += chars[Math.floor(Math.random() * chars.length)]
+    const refNumber = `${firstName}${initial}${code}`
 
     const { error: dbError } = await supabase.from('membership_applications').insert({
       reference_number: refNumber,
