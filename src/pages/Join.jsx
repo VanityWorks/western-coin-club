@@ -7,10 +7,11 @@ import './Join.css'
 // ── Update these with your real banking details ───────────
 const EFT = {
   bankName:      'First National Bank',
-  accountName:   'SA Coin Collectors Club NPC',
-  accountNumber: '62XXXXXXXXX',
-  branchCode:    '250655',
-  accountType:   'Current Account',
+  accountName:   'Numismatic Holdings (PTY) LTD',
+  accountNumber: '63201968625',
+  branchCode:    '210554',
+  accountType:   'Platinum Business Account',
+  swiftCode:     'FIRNZAJJ',
   amount:        'R120.00',
   paymentRef:    'Use your reference number below',
 }
@@ -57,6 +58,7 @@ function EFTSuccess({ referenceNumber }) {
                 <div className="eft-row"><span>Account Number</span><strong>{EFT.accountNumber}</strong></div>
                 <div className="eft-row"><span>Branch Code</span><strong>{EFT.branchCode}</strong></div>
                 <div className="eft-row"><span>Account Type</span><strong>{EFT.accountType}</strong></div>
+                <div className="eft-row"><span>Swift Code</span><strong>{EFT.swiftCode}</strong></div>
                 <div className="eft-row"><span>Amount</span><strong className="eft-amount">{EFT.amount} / year</strong></div>
                 <div className="eft-row eft-row-ref">
                   <span>Reference</span>
@@ -99,13 +101,9 @@ export default function Join() {
     const fd = new FormData(e.target)
 
     // Generate reference number client-side
-    const firstName = (fd.get('firstName') || '').trim()
     const surname = (fd.get('surname') || '').trim()
-    const initial = surname.charAt(0).toUpperCase()
-    const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789'
-    let code = ''
-    for (let i = 0; i < 5; i++) code += chars[Math.floor(Math.random() * chars.length)]
-    const refNumber = `${firstName}${initial}${code}`
+    const digits = Math.floor(1000 + Math.random() * 9000)
+    const refNumber = `${surname}${digits}`
 
     const { error: dbError } = await supabase.from('membership_applications').insert({
       reference_number: refNumber,
