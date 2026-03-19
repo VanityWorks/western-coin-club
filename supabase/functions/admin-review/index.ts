@@ -212,14 +212,18 @@ serve(async (req) => {
 
       // Award referral point to the referring member (if any)
       if (app.referral && app.referral_number) {
+        const ref = app.referral_number.trim()
+        // Try matching by membership number first, then by member_id (UUID fallback)
         const { data: refApp } = await supabase
           .from('membership_applications')
           .select('member_id')
-          .eq('reference_number', app.referral_number)
+          .eq('reference_number', ref)
           .eq('status', 'approved')
           .maybeSingle()
-        if (refApp?.member_id) {
-          await supabase.rpc('increment_referral_points', { uid: refApp.member_id })
+        const referrerId = refApp?.member_id ||
+          (/^[0-9a-f-]{36}$/i.test(ref) ? ref : null)
+        if (referrerId) {
+          await supabase.rpc('increment_referral_points', { uid: referrerId })
         }
       }
 

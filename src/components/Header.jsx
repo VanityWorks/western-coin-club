@@ -56,7 +56,8 @@ export default function Header() {
   }
 
   function handleCopyReferral() {
-    const link = `${window.location.origin}/join?ref=${membershipNumber}`
+    const ref = membershipNumber || user.id
+    const link = `${window.location.origin}/join?ref=${ref}`
     navigator.clipboard.writeText(link).then(() => {
       setCopied(true)
       setTimeout(() => setCopied(false), 2000)
@@ -107,11 +108,9 @@ export default function Header() {
                 <Link to="/settings" className="header-dropdown-item" onClick={() => setDropOpen(false)}>
                   <i className="fa-solid fa-gear" /> Settings
                 </Link>
-                {membershipNumber && (
-                  <button className="header-dropdown-item" onClick={handleCopyReferral}>
-                    <i className="fa-solid fa-link" /> {copied ? 'Copied!' : 'Copy Referral Link'}
-                  </button>
-                )}
+                <button className="header-dropdown-item" onClick={handleCopyReferral}>
+                  <i className="fa-solid fa-link" /> {copied ? 'Copied!' : 'Copy Referral Link'}
+                </button>
                 <button className="header-dropdown-item header-dropdown-signout" onClick={handleSignOut}>
                   <i className="fa-solid fa-arrow-right-from-bracket" /> Sign Out
                 </button>
