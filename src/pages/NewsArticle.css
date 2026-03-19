@@ -10,14 +10,11 @@
 .na-hero {
   position: relative;
   width: 100%;
-  height: 420px;
-  overflow: hidden;
 }
 
 .na-hero img {
   width: 100%;
-  height: 100%;
-  object-fit: cover;
+  height: auto;
   display: block;
 }
 
@@ -306,7 +303,6 @@
 /* ── Responsive ──────────────────────────────────────── */
 
 @media (max-width: 640px) {
-  .na-hero { height: 240px; }
   .na-article { padding: 1.5rem 1.25rem 2rem; }
   .na-body { font-size: 1rem; }
 }

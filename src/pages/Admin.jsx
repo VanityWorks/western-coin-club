@@ -115,11 +115,8 @@ function RejectModal({ onConfirm, onCancel, loading }) {
 
 // ── Signup detail ─────────────────────────────────────
 
-function SignupDetail({ entry, onBack, onApprove, onReject, actionLoading, onUpdateMemberNumber }) {
+function SignupDetail({ entry, onBack, onApprove, onReject, actionLoading }) {
   const isPending = entry.status === 'pending'
-  const isApproved = entry.status === 'approved'
-  const [editingNum, setEditingNum] = useState(false)
-  const [memberNum, setMemberNum]   = useState(entry.reference_number || '')
   return (
     <div className="admin-detail">
       <div className="admin-detail-header">
@@ -165,28 +162,6 @@ function SignupDetail({ entry, onBack, onApprove, onReject, actionLoading, onUpd
               <div className="admin-tag-list">
                 {entry.optionals.map(o => <span key={o} className="admin-tag admin-tag-alt">{o}</span>)}
               </div>
-            </div>
-          )}
-          {isApproved && (
-            <div className="admin-detail-field full">
-              <span>Membership Number</span>
-              {editingNum ? (
-                <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center', marginTop: '0.25rem' }}>
-                  <input
-                    className="an-input"
-                    value={memberNum}
-                    onChange={e => setMemberNum(e.target.value)}
-                    style={{ width: '120px' }}
-                  />
-                  <button className="btn btn-primary btn-sm" onClick={() => { onUpdateMemberNumber(entry.id, memberNum); setEditingNum(false) }}>Save</button>
-                  <button className="btn btn-secondary btn-sm" onClick={() => { setMemberNum(entry.reference_number || ''); setEditingNum(false) }}>Cancel</button>
-                </div>
-              ) : (
-                <div style={{ display: 'flex', gap: '0.75rem', alignItems: 'center' }}>
-                  <strong>{memberNum || '—'}</strong>
-                  <button className="btn btn-secondary btn-sm" onClick={() => setEditingNum(true)}>Edit</button>
-                </div>
-              )}
             </div>
           )}
           {entry.referral && (
@@ -351,12 +326,13 @@ function getInitials(name) {
 }
 
 function MembersSection({ adminPassword, showToast }) {
-  const [members, setMembers]     = useState([])
-  const [loading, setLoading]     = useState(true)
-  const [selected, setSelected]   = useState(null)
-  const [saving, setSaving]       = useState(false)
-  const [badges, setBadges]       = useState([])
-  const [search, setSearch]       = useState('')
+  const [members, setMembers]         = useState([])
+  const [loading, setLoading]         = useState(true)
+  const [selected, setSelected]       = useState(null)
+  const [saving, setSaving]           = useState(false)
+  const [badges, setBadges]           = useState([])
+  const [search, setSearch]           = useState('')
+  const [memberNumEdit, setMemberNumEdit] = useState(null)
 
   const adminFetch = useCallback(async (action, extra = {}) => {
     const res = await fetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/profile-admin`, {
@@ -450,6 +426,13 @@ function MembersSection({ adminPassword, showToast }) {
     setSaving(false)
   }
 
+  async function handleUpdateMemberNumber(userId, newNumber) {
+    await supabase.from('membership_applications').update({ reference_number: newNumber }).eq('member_id', userId)
+    setSelected(s => s ? { ...s, membership_number: newNumber } : s)
+    setMembers(prev => prev.map(m => m.id === userId ? { ...m, membership_number: newNumber } : m))
+    showToast('Membership number updated.')
+  }
+
   const filtered = search.trim()
     ? members.filter(m =>
         m.display_name?.toLowerCase().includes(search.toLowerCase()) ||
@@ -458,14 +441,19 @@ function MembersSection({ adminPassword, showToast }) {
     : members
 
   if (selected) {
-    const allBadges = [...(selected.roles || []), ...(selected.awards || [])]
     const joinedDate = new Date(selected.created_at).toLocaleDateString('en-ZA', { day: '2-digit', month: 'short', year: 'numeric' })
+    const isBanned = selected.banned_until && new Date(selected.banned_until) > new Date()
+    const isMuted  = (selected.roles || []).includes('Muted')
+    const [editingMemberNum, setEditingMemberNum] = [memberNumEdit, setMemberNumEdit]
+
     return (
       <div className="admin-forum-wrap">
         <div className="admin-forum-bar">
-          <button className="admin-detail-back" onClick={() => setSelected(null)}>← All Members</button>
+          <button className="admin-detail-back" onClick={() => { setSelected(null); setMemberNumEdit('') }}>← All Members</button>
         </div>
+
         <div className="admin-detail-card">
+          {/* Header */}
           <div className="admin-member-profile-header">
             <div className="admin-member-avatar">
               {selected.avatar_url
@@ -473,19 +461,42 @@ function MembersSection({ adminPassword, showToast }) {
                 : <div className="admin-member-avatar-initials">{getInitials(selected.display_name)}</div>
               }
             </div>
-            <div>
-              <h2 style={{ fontSize: '1.25rem', marginBottom: '0.25rem' }}>{selected.display_name}</h2>
-              <p style={{ color: 'var(--text-muted)', fontSize: '0.875rem', margin: 0 }}>{selected.email}</p>
-              {allBadges.length > 0 && (
-                <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.35rem', marginTop: '0.5rem' }}>
-                  {allBadges.map(b => <MemberBadge key={b} label={b} />)}
-                </div>
-              )}
+            <div style={{ flex: 1 }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', flexWrap: 'wrap' }}>
+                <h2 style={{ fontSize: '1.25rem', margin: 0 }}>{selected.display_name}</h2>
+                {isBanned && <span style={{ fontSize: '0.72rem', background: '#E63946', color: '#fff', borderRadius: '4px', padding: '2px 7px', fontWeight: 700 }}>Banned</span>}
+                {isMuted  && <span style={{ fontSize: '0.72rem', background: '#525252', color: '#fff', borderRadius: '4px', padding: '2px 7px', fontWeight: 700 }}>Muted</span>}
+              </div>
+              <p style={{ color: 'var(--text-muted)', fontSize: '0.875rem', margin: '0.2rem 0 0' }}>{selected.email}</p>
             </div>
           </div>
 
-          <div className="admin-detail-grid" style={{ marginTop: '1.5rem' }}>
-            {selected.membership_number && <div className="admin-detail-field"><span>Membership No.</span><strong>{selected.membership_number}</strong></div>}
+          {/* Info grid */}
+          <div className="admin-detail-grid" style={{ marginTop: '1.25rem' }}>
+            {/* Membership number — editable */}
+            <div className="admin-detail-field">
+              <span>Membership No.</span>
+              {editingMemberNum !== null ? (
+                <div style={{ display: 'flex', gap: '0.4rem', alignItems: 'center', marginTop: '0.25rem' }}>
+                  <input
+                    className="an-input"
+                    value={editingMemberNum}
+                    onChange={e => setMemberNumEdit(e.target.value)}
+                    style={{ width: '100px', padding: '0.3rem 0.5rem', fontSize: '0.9rem' }}
+                  />
+                  <button className="btn btn-primary btn-sm" disabled={saving} onClick={async () => {
+                    await handleUpdateMemberNumber(selected.id, editingMemberNum)
+                    setMemberNumEdit(null)
+                  }}>Save</button>
+                  <button className="btn btn-secondary btn-sm" onClick={() => setMemberNumEdit(null)}>✕</button>
+                </div>
+              ) : (
+                <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
+                  <strong>{selected.membership_number || '—'}</strong>
+                  <button className="btn btn-secondary btn-sm" style={{ fontSize: '0.75rem', padding: '0.2rem 0.5rem' }} onClick={() => setMemberNumEdit(selected.membership_number || '')}>Edit</button>
+                </div>
+              )}
+            </div>
             <div className="admin-detail-field"><span>Member Since</span><strong>{joinedDate}</strong></div>
             <div className="admin-detail-field"><span>Posts</span><strong>{selected.post_count || 0}</strong></div>
             <div className="admin-detail-field"><span>Threads</span><strong>{selected.thread_count || 0}</strong></div>
@@ -493,66 +504,57 @@ function MembersSection({ adminPassword, showToast }) {
             {selected.bio && <div className="admin-detail-field full"><span>Bio</span><p className="admin-detail-message">{selected.bio}</p></div>}
           </div>
 
+          {/* Awards & Roles — dropdown multi-select */}
           <div style={{ marginTop: '1.5rem', paddingTop: '1.25rem', borderTop: '1px solid var(--border)' }}>
-            <h3 style={{ fontSize: '0.95rem', fontWeight: 700, marginBottom: '0.75rem' }}>Awards & Roles</h3>
-            <div className="admin-badge-grid">
-              {PRESET_BADGES.map(badge => {
-                const active = badges.includes(badge)
-                const style = BADGE_COLORS[badge] || { bg: '#525252', text: '#fff' }
+            <h3 style={{ fontSize: '0.9rem', fontWeight: 700, marginBottom: '0.75rem', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.06em' }}>Awards & Roles</h3>
+            <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.4rem', marginBottom: '0.75rem' }}>
+              {badges.length === 0 && <span style={{ color: 'var(--text-muted)', fontSize: '0.875rem' }}>None assigned</span>}
+              {badges.map(b => {
+                const s = BADGE_COLORS[b] || { bg: '#525252', text: '#fff' }
                 return (
-                  <button
-                    key={badge}
-                    className={`admin-badge-toggle${active ? ' active' : ''}`}
-                    style={active ? { background: style.bg, color: style.text, borderColor: style.bg } : {}}
-                    onClick={() => toggleBadge(badge)}
-                  >
-                    {active && <i className="fa-solid fa-check" style={{ marginRight: '0.3rem', fontSize: '0.75rem' }} />}
-                    {badge}
-                  </button>
+                  <span key={b} style={{ display: 'inline-flex', alignItems: 'center', gap: '0.3rem', background: s.bg, color: s.text, borderRadius: '999px', padding: '0.2rem 0.65rem', fontSize: '0.78rem', fontWeight: 700 }}>
+                    {b}
+                    <button onClick={() => toggleBadge(b)} style={{ background: 'none', border: 'none', color: 'inherit', cursor: 'pointer', padding: '0', lineHeight: 1, opacity: 0.75, fontSize: '0.85rem' }}>✕</button>
+                  </span>
                 )
               })}
             </div>
-            <div style={{ marginTop: '1rem', display: 'flex', gap: '0.75rem' }}>
-              <button className="btn btn-primary" onClick={saveBadges} disabled={saving}>
-                {saving ? 'Saving…' : 'Save Changes'}
+            <div style={{ display: 'flex', gap: '0.75rem', alignItems: 'center', flexWrap: 'wrap' }}>
+              <select
+                className="an-select"
+                style={{ maxWidth: '200px' }}
+                defaultValue=""
+                onChange={e => { if (e.target.value) { toggleBadge(e.target.value); e.target.value = '' } }}
+              >
+                <option value="" disabled>+ Add badge…</option>
+                {PRESET_BADGES.filter(b => !badges.includes(b)).map(b => (
+                  <option key={b} value={b}>{b}</option>
+                ))}
+              </select>
+              <button className="btn btn-primary btn-sm" onClick={saveBadges} disabled={saving}>
+                {saving ? 'Saving…' : 'Save Badges'}
               </button>
-              <button className="admin-detail-back" onClick={() => setSelected(null)}>Cancel</button>
             </div>
           </div>
 
+          {/* Member actions */}
           <div style={{ marginTop: '1.5rem', paddingTop: '1.25rem', borderTop: '1px solid var(--border)' }}>
-            <h3 style={{ fontSize: '0.95rem', fontWeight: 700, marginBottom: '0.75rem' }}>Member Actions</h3>
-            <div style={{ display: 'flex', gap: '0.75rem', flexWrap: 'wrap' }}>
-              {(() => {
-                const isBanned = selected.banned_until && new Date(selected.banned_until) > new Date()
-                const isMuted  = (selected.roles || []).includes('Muted')
-                return (
-                  <>
-                    <button
-                      className={`btn btn-sm ${isMuted ? 'btn-primary' : 'btn-secondary'}`}
-                      onClick={() => handleMute(selected)}
-                      disabled={saving}
-                    >
-                      {isMuted ? 'Unmute Member' : 'Mute Member'}
-                    </button>
-                    <button
-                      className={`btn btn-sm ${isBanned ? 'btn-primary' : 'btn-secondary'}`}
-                      onClick={() => handleBan(selected)}
-                      disabled={saving}
-                      style={!isBanned ? { color: '#E63946', borderColor: '#E63946' } : {}}
-                    >
-                      {isBanned ? 'Unban Member' : 'Ban Member'}
-                    </button>
-                    <button
-                      className="btn btn-sm admin-reject-btn"
-                      onClick={() => handleDelete(selected)}
-                      disabled={saving}
-                    >
-                      Delete Member
-                    </button>
-                  </>
-                )
-              })()}
+            <h3 style={{ fontSize: '0.9rem', fontWeight: 700, marginBottom: '0.75rem', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.06em' }}>Actions</h3>
+            <div style={{ display: 'flex', gap: '0.65rem', flexWrap: 'wrap' }}>
+              <button className="btn btn-secondary btn-sm" onClick={() => handleMute(selected)} disabled={saving}>
+                {isMuted ? 'Unmute' : 'Mute'}
+              </button>
+              <button
+                className="btn btn-secondary btn-sm"
+                onClick={() => handleBan(selected)}
+                disabled={saving}
+                style={{ color: isBanned ? 'var(--sa-green)' : '#E63946', borderColor: isBanned ? 'var(--sa-green)' : '#E63946' }}
+              >
+                {isBanned ? 'Unban' : 'Ban'}
+              </button>
+              <button className="btn btn-secondary btn-sm" onClick={() => handleDelete(selected)} disabled={saving} style={{ color: '#E63946', borderColor: '#E63946' }}>
+                Delete
+              </button>
             </div>
           </div>
         </div>
@@ -1565,7 +1567,6 @@ function AdminDashboard({ adminPassword, onLogout }) {
                 onApprove={handleApprove}
                 onReject={entry => setRejectTarget(entry)}
                 actionLoading={actionLoading}
-                onUpdateMemberNumber={handleUpdateMemberNumber}
               />
             ) : (
               <ConsultingDetail
