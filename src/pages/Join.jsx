@@ -68,6 +68,13 @@ function EFTSuccess({ referenceNumber }) {
               </div>
             </div>
 
+            <div className="eft-early-banner">
+              <p className="eft-early-title">Wow - you're one of the early member signups.</p>
+              <p>Secure your spot now and be part of something special from the very beginning. We truly value your early support.</p>
+              <p>Please note: full mobile app access and the shipping of your welcome pack will only commence after the official launch on <strong>29 March at the Johannesburg Coin Show</strong>.</p>
+              <p className="eft-early-congrats">Congratulations - you're early and part of the inner circle.</p>
+            </div>
+
             <div className="eft-next-steps">
               <h3>What happens next?</h3>
               <ol>
