@@ -44,7 +44,7 @@ export default function Header() {
   }
 
   function handleCopyReferral() {
-    const ref = profile?.membership_number || user.id
+    const ref = user.id
     const link = `${window.location.origin}/join?ref=${ref}`
     navigator.clipboard.writeText(link).then(() => {
       setCopied(true)
