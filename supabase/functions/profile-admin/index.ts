@@ -33,12 +33,11 @@ serve(async (req) => {
 
     // ── List all members ─────────────────────────────────────────────────────
     if (action === 'list_members') {
-      const [{ data: profiles }, { data: authUsers }, { data: postRows }, { data: threadRows }, { data: appRows }] = await Promise.all([
+      const [{ data: profiles }, { data: authUsers }, { data: postRows }, { data: threadRows }] = await Promise.all([
         supabase.from('profiles').select('*').order('created_at', { ascending: false }),
         supabase.auth.admin.listUsers({ perPage: 1000 }),
         supabase.from('forum_posts').select('author_id').not('author_id', 'is', null),
         supabase.from('forum_threads').select('author_id').not('author_id', 'is', null),
-        supabase.from('membership_applications').select('member_id, reference_number').eq('status', 'approved').not('member_id', 'is', null),
       ])
 
       const emailMap = new Map((authUsers as any)?.users?.map((u: any) => [u.id, u.email]) ?? [])
@@ -50,14 +49,11 @@ serve(async (req) => {
       const threadCounts = new Map<string, number>()
       threadRows?.forEach((r: any) => threadCounts.set(r.author_id, (threadCounts.get(r.author_id) || 0) + 1))
 
-      const memberNumMap = new Map((appRows || []).map((r: any) => [r.member_id, r.reference_number]))
-
       const enriched = (profiles || []).map((p: any) => ({
         ...p,
         email: emailMap.get(p.id) || '',
         post_count: postCounts.get(p.id) || 0,
         thread_count: threadCounts.get(p.id) || 0,
-        membership_number: memberNumMap.get(p.id) || null,
         banned_until: bannedMap.get(p.id) || null,
       }))
 
@@ -114,11 +110,15 @@ serve(async (req) => {
     // ── Update membership number ──────────────────────────────────────────────
     if (action === 'update_membership_number') {
       const { user_id, membership_number } = body
-      const { error } = await supabase
+      await supabase
         .from('membership_applications')
         .update({ reference_number: membership_number })
         .eq('member_id', user_id)
         .eq('status', 'approved')
+      const { error } = await supabase
+        .from('profiles')
+        .update({ membership_number })
+        .eq('id', user_id)
       if (error) throw error
       return json({ success: true })
     }

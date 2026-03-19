@@ -105,40 +105,28 @@ export default function Join() {
     // Look up the referrer's name and membership number from their user ID or membership number
     async function resolveReferrer() {
       const isUuid = /^[0-9a-f-]{36}$/i.test(ref)
-      let memberId = isUuid ? ref : null
-      let membershipNum = isUuid ? null : ref
 
-      if (!memberId) {
-        // ref is a membership number - find the member_id
+      // Always resolve to a profile row
+      let profileData: any = null
+      if (isUuid) {
         const { data } = await supabase
-          .from('membership_applications')
-          .select('member_id')
-          .eq('reference_number', ref)
-          .eq('status', 'approved')
-          .maybeSingle()
-        memberId = data?.member_id || null
-      }
-
-      if (!membershipNum && memberId) {
-        const { data } = await supabase
-          .from('membership_applications')
-          .select('reference_number')
-          .eq('member_id', memberId)
-          .eq('status', 'approved')
-          .maybeSingle()
-        membershipNum = data?.reference_number || null
-      }
-
-      if (memberId) {
-        const { data: profile } = await supabase
           .from('profiles')
-          .select('display_name')
-          .eq('id', memberId)
+          .select('display_name, membership_number')
+          .eq('id', ref)
           .maybeSingle()
-        if (profile?.display_name) setReferralName(profile.display_name)
+        profileData = data
+      } else {
+        // ref is a membership number
+        const { data } = await supabase
+          .from('profiles')
+          .select('display_name, membership_number')
+          .eq('membership_number', ref)
+          .maybeSingle()
+        profileData = data
       }
 
-      if (membershipNum) setReferralNumber(membershipNum)
+      if (profileData?.display_name) setReferralName(profileData.display_name)
+      if (profileData?.membership_number) setReferralNumber(profileData.membership_number)
     }
 
     resolveReferrer()

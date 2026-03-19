@@ -24,7 +24,6 @@ function getInitials(name) {
 export default function Header() {
   const [menuOpen, setMenuOpen] = useState(false)
   const [dropOpen, setDropOpen] = useState(false)
-  const [membershipNumber, setMembershipNumber] = useState(null)
   const [copied, setCopied] = useState(false)
   const { user, profile } = useAuth()
   const navigate = useNavigate()
@@ -38,17 +37,6 @@ export default function Header() {
     return () => document.removeEventListener('mousedown', handleClick)
   }, [])
 
-  useEffect(() => {
-    if (!user) return
-    supabase
-      .from('membership_applications')
-      .select('reference_number')
-      .eq('member_id', user.id)
-      .eq('status', 'approved')
-      .maybeSingle()
-      .then(({ data }) => { if (data) setMembershipNumber(data.reference_number) })
-  }, [user])
-
   async function handleSignOut() {
     await supabase.auth.signOut()
     setDropOpen(false)
@@ -56,7 +44,7 @@ export default function Header() {
   }
 
   function handleCopyReferral() {
-    const ref = membershipNumber || user.id
+    const ref = profile?.membership_number || user.id
     const link = `${window.location.origin}/join?ref=${ref}`
     navigator.clipboard.writeText(link).then(() => {
       setCopied(true)

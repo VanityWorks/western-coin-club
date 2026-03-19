@@ -210,6 +210,12 @@ serve(async (req) => {
         })
         .eq('id', id)
 
+      // Store membership number directly on the profile for easy lookup
+      await supabase
+        .from('profiles')
+        .update({ membership_number: memberRef })
+        .eq('id', userId)
+
       // Award referral point to the referring member (if any)
       if (app.referral && app.referral_number) {
         const ref = app.referral_number.trim()
