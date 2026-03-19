@@ -102,7 +102,7 @@ export default function Join() {
   const [referralName, setReferralName] = useState('')
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
-  const [referenceNumber, setReferenceNumber] = useState(null)
+  const [referenceNumber, setReferenceNumber] = useState(() => localStorage.getItem('wccc_join_ref') || null)
 
   useEffect(() => {
     const ref = searchParams.get('ref')
@@ -181,6 +181,7 @@ export default function Join() {
       return
     }
 
+    localStorage.setItem('wccc_join_ref', refNumber)
     setReferenceNumber(refNumber)
     setLoading(false)
   }

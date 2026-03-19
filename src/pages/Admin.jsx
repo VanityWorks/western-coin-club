@@ -232,7 +232,7 @@ function SignupsTable({ entries, onSelect, onApprove, onReject }) {
             <th>Name</th>
             <th>Email</th>
             <th>Province</th>
-            <th>Membership No.</th>
+            <th>Payment Ref</th>
             <th>Submitted</th>
             <th>Actions</th>
           </tr>
