@@ -85,8 +85,14 @@ function EFTSuccess({ referenceNumber }) {
               </ol>
             </div>
 
-            <div style={{ textAlign: 'center', marginTop: '2rem' }}>
+            <div style={{ textAlign: 'center', marginTop: '2rem', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0.75rem' }}>
               <a href="/" className="btn btn-primary">Back to Home</a>
+              <button
+                style={{ background: 'none', border: 'none', fontSize: '0.85rem', color: 'var(--text-muted)', cursor: 'pointer', textDecoration: 'underline' }}
+                onClick={() => { localStorage.removeItem('wccc_join_ref'); window.location.reload() }}
+              >
+                Submitted incorrect details? Start over
+              </button>
             </div>
           </div>
         </div>
