@@ -54,7 +54,7 @@ export default function About() {
                 <li><strong>Vice President</strong> - Gary Willicott</li>
                 <li><strong>Treasurer / Financial Director</strong> - Retief de Villiers</li>
                 <li><strong>Legal & Governance Officer</strong> - Henk van Aswegen</li>
-                <li><strong>Committee Members</strong> - Dillon Bassani, Dario Deligiannidis, Anthony Govender</li>
+                <li><strong>Committee Members</strong> - Dillon Bassani, Dario Deligiannidis, John Hamer</li>
               </ul>
             </div>
 
@@ -93,15 +93,6 @@ export default function About() {
               </ul>
             </div>
 
-            <div className="structure-section structure-patron">
-              <h3>Patron</h3>
-              <p>To be announced</p>
-            </div>
-
-            <div className="structure-section structure-patron">
-              <h3>Honorary Life Members</h3>
-              <p>To be announced</p>
-            </div>
           </div>
 
           <div className="about-digital">

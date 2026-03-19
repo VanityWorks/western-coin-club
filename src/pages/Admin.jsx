@@ -325,6 +325,25 @@ function getInitials(name) {
   return parts[0].slice(0, 2).toUpperCase()
 }
 
+function ReferralPointsEditor({ value, onSave }) {
+  const [editing, setEditing] = useState(false)
+  const [val, setVal] = useState(value)
+  if (editing) return (
+    <div style={{ display: 'flex', gap: '0.4rem', alignItems: 'center', marginTop: '0.25rem' }}>
+      <input type="number" min="0" className="an-input" value={val} onChange={e => setVal(Number(e.target.value))}
+        style={{ width: '80px', padding: '0.3rem 0.5rem', fontSize: '0.9rem' }} />
+      <button className="btn btn-primary btn-sm" onClick={async () => { await onSave(val); setEditing(false) }}>Save</button>
+      <button className="btn btn-secondary btn-sm" onClick={() => { setVal(value); setEditing(false) }}>✕</button>
+    </div>
+  )
+  return (
+    <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
+      <strong>{value}</strong>
+      <button className="btn btn-secondary btn-sm" style={{ fontSize: '0.75rem', padding: '0.2rem 0.5rem' }} onClick={() => { setVal(value); setEditing(true) }}>Edit</button>
+    </div>
+  )
+}
+
 function MembersSection({ adminPassword, showToast }) {
   const [members, setMembers]         = useState([])
   const [loading, setLoading]         = useState(true)
@@ -501,6 +520,19 @@ function MembersSection({ adminPassword, showToast }) {
             <div className="admin-detail-field"><span>Member Since</span><strong>{joinedDate}</strong></div>
             <div className="admin-detail-field"><span>Posts</span><strong>{selected.post_count || 0}</strong></div>
             <div className="admin-detail-field"><span>Threads</span><strong>{selected.thread_count || 0}</strong></div>
+            <div className="admin-detail-field">
+              <span>Referral Points</span>
+              <ReferralPointsEditor
+                value={selected.referral_points || 0}
+                onSave={async (val) => {
+                  const res = await adminFetch('update_member', { user_id: selected.id, referral_points: val })
+                  if (res?.error) { showToast('Error: ' + res.error); return }
+                  setSelected(s => s ? { ...s, referral_points: val } : s)
+                  setMembers(prev => prev.map(m => m.id === selected.id ? { ...m, referral_points: val } : m))
+                  showToast('Referral points updated.')
+                }}
+              />
+            </div>
             {selected.location && <div className="admin-detail-field"><span>Location</span><strong>{selected.location}</strong></div>}
             {selected.bio && <div className="admin-detail-field full"><span>Bio</span><p className="admin-detail-message">{selected.bio}</p></div>}
           </div>

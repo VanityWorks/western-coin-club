@@ -24,6 +24,8 @@ function getInitials(name) {
 export default function Header() {
   const [menuOpen, setMenuOpen] = useState(false)
   const [dropOpen, setDropOpen] = useState(false)
+  const [membershipNumber, setMembershipNumber] = useState(null)
+  const [copied, setCopied] = useState(false)
   const { user, profile } = useAuth()
   const navigate = useNavigate()
   const dropRef = useRef(null)
@@ -36,10 +38,29 @@ export default function Header() {
     return () => document.removeEventListener('mousedown', handleClick)
   }, [])
 
+  useEffect(() => {
+    if (!user) return
+    supabase
+      .from('membership_applications')
+      .select('reference_number')
+      .eq('member_id', user.id)
+      .eq('status', 'approved')
+      .maybeSingle()
+      .then(({ data }) => { if (data) setMembershipNumber(data.reference_number) })
+  }, [user])
+
   async function handleSignOut() {
     await supabase.auth.signOut()
     setDropOpen(false)
     navigate('/')
+  }
+
+  function handleCopyReferral() {
+    const link = `${window.location.origin}/join?ref=${membershipNumber}`
+    navigator.clipboard.writeText(link).then(() => {
+      setCopied(true)
+      setTimeout(() => setCopied(false), 2000)
+    })
   }
 
   return (
@@ -86,6 +107,11 @@ export default function Header() {
                 <Link to="/settings" className="header-dropdown-item" onClick={() => setDropOpen(false)}>
                   <i className="fa-solid fa-gear" /> Settings
                 </Link>
+                {membershipNumber && (
+                  <button className="header-dropdown-item" onClick={handleCopyReferral}>
+                    <i className="fa-solid fa-link" /> {copied ? 'Copied!' : 'Copy Referral Link'}
+                  </button>
+                )}
                 <button className="header-dropdown-item header-dropdown-signout" onClick={handleSignOut}>
                   <i className="fa-solid fa-arrow-right-from-bracket" /> Sign Out
                 </button>

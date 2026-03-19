@@ -1,0 +1,1 @@
+ALTER TABLE profiles ADD COLUMN IF NOT EXISTS referral_points int NOT NULL DEFAULT 0;

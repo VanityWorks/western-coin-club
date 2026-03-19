@@ -210,6 +210,19 @@ serve(async (req) => {
         })
         .eq('id', id)
 
+      // Award referral point to the referring member (if any)
+      if (app.referral && app.referral_number) {
+        const { data: refApp } = await supabase
+          .from('membership_applications')
+          .select('member_id')
+          .eq('reference_number', app.referral_number)
+          .eq('status', 'approved')
+          .maybeSingle()
+        if (refApp?.member_id) {
+          await supabase.rpc('increment_referral_points', { uid: refApp.member_id })
+        }
+      }
+
       return new Response(
         JSON.stringify({ success: true, password }),
         { headers: { ...cors, 'Content-Type': 'application/json' } }

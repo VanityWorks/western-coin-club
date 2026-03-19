@@ -1,4 +1,5 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
+import { useSearchParams } from 'react-router-dom'
 import { supabase } from '../lib/supabase'
 import './Page.css'
 import './Membership.css'
@@ -88,10 +89,20 @@ function EFTSuccess({ referenceNumber }) {
 }
 
 export default function Join() {
+  const [searchParams] = useSearchParams()
   const [referral, setReferral] = useState('no')
+  const [referralNumber, setReferralNumber] = useState('')
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
   const [referenceNumber, setReferenceNumber] = useState(null)
+
+  useEffect(() => {
+    const ref = searchParams.get('ref')
+    if (ref) {
+      setReferral('yes')
+      setReferralNumber(ref)
+    }
+  }, [])
 
   async function handleSubmit(e) {
     e.preventDefault()
@@ -231,7 +242,7 @@ export default function Join() {
                   </label>
                   <label>
                     <span>Referring Membership Number <span className="required">*</span></span>
-                    <input type="text" name="referralNumber" required />
+                    <input type="text" name="referralNumber" required value={referralNumber} onChange={e => setReferralNumber(e.target.value)} />
                   </label>
                 </div>
               )}

@@ -83,12 +83,13 @@ serve(async (req) => {
       })
     }
 
-    // ── Update member awards/roles ────────────────────────────────────────────
+    // ── Update member awards/roles/referral_points ────────────────────────────
     if (action === 'update_member') {
-      const { user_id, awards, roles } = body
+      const { user_id, awards, roles, referral_points } = body
       const patch: Record<string, unknown> = {}
       if (awards !== undefined) patch.awards = awards
       if (roles !== undefined) patch.roles = roles
+      if (referral_points !== undefined) patch.referral_points = referral_points
       const { error } = await supabase.from('profiles').update(patch).eq('id', user_id)
       if (error) throw error
       return json({ success: true })
