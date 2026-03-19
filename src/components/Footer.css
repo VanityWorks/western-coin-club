@@ -59,6 +59,20 @@
   text-align: center;
 }
 
+.footer-credit {
+  margin-top: 0.35rem !important;
+  font-size: 0.75rem !important;
+  color: var(--gray-700) !important;
+}
+
+.footer-credit a {
+  color: var(--gray-600);
+  text-decoration: none;
+  transition: color 0.2s;
+}
+
+.footer-credit a:hover { color: var(--sa-gold); }
+
 @media (max-width: 768px) {
   .footer-inner {
     flex-direction: column;

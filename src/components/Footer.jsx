@@ -18,6 +18,7 @@ export default function Footer() {
       </div>
       <div className="footer-bottom">
         <p>© 2026 South African Coin Collectors Club. For collectors, by collectors.</p>
+        <p className="footer-credit">Made by <a href="https://trustydeveloper.com" target="_blank" rel="noopener noreferrer">Trusty Developer</a></p>
       </div>
     </footer>
   )
