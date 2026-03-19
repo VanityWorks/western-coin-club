@@ -98,7 +98,7 @@ function credentialsEmail(app: Record<string, string>, password: string, siteUrl
         <!-- Footer -->
         <tr>
           <td style="padding:20px 40px;border-top:1px solid #e5e5e5;text-align:center">
-            <p style="margin:0;font-size:12px;color:#a3a3a3">South African Coin Collectors Club · saccc.co.za</p>
+            <p style="margin:0;font-size:12px;color:#a3a3a3">South African Coin Collectors Club · coinclub.co.za</p>
           </td>
         </tr>
 
