@@ -50,7 +50,7 @@
   border: 3px solid rgba(255,255,255,0.3);
 }
 
-.profile-hero-info { flex: 1; min-width: 200px; }
+.profile-hero-info { flex: 1; min-width: 200px; text-align: left; }
 
 .profile-name {
   font-size: clamp(1.5rem, 4vw, 2.25rem);

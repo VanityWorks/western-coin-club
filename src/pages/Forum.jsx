@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useSearchParams } from 'react-router-dom'
 import DOMPurify from 'dompurify'
 import { supabase } from '../lib/supabase'
 import { useAuth } from '../lib/AuthContext'
@@ -665,10 +665,37 @@ export default function Forum() {
   // Use user directly once it's non-null — don't wait for profile fetch to complete
   const member = (authLoading && user === null) ? null : (user || false)
 
+  const [searchParams, setSearchParams] = useSearchParams()
   const [view, setView]                   = useState('home')
   const [selectedCategory, setSelectedCategory] = useState(null)
   const [selectedThread, setSelectedThread]     = useState(null)
   const [showNewThread, setShowNewThread]       = useState(false)
+
+  // Deep-link: open a thread directly when ?thread=id is in the URL
+  useEffect(() => {
+    const threadId = searchParams.get('thread')
+    if (!threadId || member === null || member === false) return
+    async function openThread() {
+      const { data: thread } = await supabase
+        .from('forum_threads')
+        .select('*')
+        .eq('id', threadId)
+        .single()
+      if (!thread) return
+      const { data: category } = await supabase
+        .from('forum_categories')
+        .select('*')
+        .eq('id', thread.category_id)
+        .single()
+      if (!category) return
+      setSelectedCategory(category)
+      setSelectedThread(thread)
+      setView('thread')
+      setSearchParams({}, { replace: true })
+      window.scrollTo(0, 0)
+    }
+    openThread()
+  }, [searchParams, member])
 
   function selectCategory(cat) { setSelectedCategory(cat); setView('threads'); window.scrollTo(0, 0) }
   function selectThread(thread) { setSelectedThread(thread); setView('thread'); window.scrollTo(0, 0) }
