@@ -110,6 +110,18 @@ serve(async (req) => {
       return json({ success: true })
     }
 
+    // ── Update membership number ──────────────────────────────────────────────
+    if (action === 'update_membership_number') {
+      const { user_id, membership_number } = body
+      const { error } = await supabase
+        .from('membership_applications')
+        .update({ reference_number: membership_number })
+        .eq('member_id', user_id)
+        .eq('status', 'approved')
+      if (error) throw error
+      return json({ success: true })
+    }
+
     // ── Delete member ────────────────────────────────────────────────────────
     if (action === 'delete_member') {
       const { user_id } = body

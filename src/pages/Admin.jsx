@@ -427,7 +427,8 @@ function MembersSection({ adminPassword, showToast }) {
   }
 
   async function handleUpdateMemberNumber(userId, newNumber) {
-    await supabase.from('membership_applications').update({ reference_number: newNumber }).eq('member_id', userId)
+    const res = await adminFetch('update_membership_number', { user_id: userId, membership_number: newNumber })
+    if (res?.error) { showToast('Error: ' + res.error); return }
     setSelected(s => s ? { ...s, membership_number: newNumber } : s)
     setMembers(prev => prev.map(m => m.id === userId ? { ...m, membership_number: newNumber } : m))
     showToast('Membership number updated.')
