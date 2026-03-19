@@ -1,3 +1,28 @@
+/* Price banner on join form */
+.join-price-banner {
+  display: flex;
+  align-items: baseline;
+  gap: 0.5rem;
+  background: linear-gradient(135deg, rgba(0,109,44,0.06), rgba(255,184,28,0.08));
+  border: 1px solid var(--sa-gold);
+  border-radius: 12px;
+  padding: 1rem 1.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.join-price-amount {
+  font-size: 2rem;
+  font-weight: 800;
+  color: var(--sa-green);
+  line-height: 1;
+}
+
+.join-price-label {
+  font-size: 1rem;
+  font-weight: 500;
+  color: var(--text-muted);
+}
+
 /* EFT Success Screen */
 .eft-success-wrap {
   display: flex;

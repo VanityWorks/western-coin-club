@@ -197,6 +197,11 @@ export default function Join() {
       </section>
       <section className="page-content">
         <div className="container narrow">
+          <div className="join-price-banner">
+            <span className="join-price-amount">R120</span>
+            <span className="join-price-label">/ year membership</span>
+          </div>
+
           <form className="membership-form" onSubmit={handleSubmit}>
             <fieldset>
               <legend>Personal Details</legend>
