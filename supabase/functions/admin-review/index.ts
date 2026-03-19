@@ -89,7 +89,7 @@ function credentialsEmail(app: Record<string, string>, password: string, siteUrl
             </table>
 
             <p style="margin:0;color:#a3a3a3;font-size:13px;line-height:1.6">
-              Your membership reference: <strong style="color:#525252">${app.reference_number}</strong><br>
+              Your membership number: <strong style="color:#525252">${app.reference_number}</strong><br>
               Login at: <a href="${loginUrl}" style="color:#007749">${loginUrl}</a>
             </p>
           </td>
@@ -136,13 +136,12 @@ serve(async (req) => {
         .single()
       if (fetchErr) throw fetchErr
 
-      // Generate membership reference: SURNAME + zero-padded sequential number
+      // Generate membership number starting from 100
       const { count: approvedCount } = await supabase
         .from('membership_applications')
         .select('*', { count: 'exact', head: true })
         .eq('status', 'approved')
-      const memberNumber = String((approvedCount || 0) + 1).padStart(3, '0')
-      const memberRef = app.surname.toUpperCase().replace(/[^A-Z]/g, '') + memberNumber
+      const memberRef = String(100 + (approvedCount || 0))
 
       // Generate password: firstnamesurnamesaccc + random suffix
       const password = generatePassword(app.first_name, app.surname)

@@ -115,8 +115,11 @@ function RejectModal({ onConfirm, onCancel, loading }) {
 
 // ── Signup detail ─────────────────────────────────────
 
-function SignupDetail({ entry, onBack, onApprove, onReject, actionLoading }) {
+function SignupDetail({ entry, onBack, onApprove, onReject, actionLoading, onUpdateMemberNumber }) {
   const isPending = entry.status === 'pending'
+  const isApproved = entry.status === 'approved'
+  const [editingNum, setEditingNum] = useState(false)
+  const [memberNum, setMemberNum]   = useState(entry.reference_number || '')
   return (
     <div className="admin-detail">
       <div className="admin-detail-header">
@@ -162,6 +165,28 @@ function SignupDetail({ entry, onBack, onApprove, onReject, actionLoading }) {
               <div className="admin-tag-list">
                 {entry.optionals.map(o => <span key={o} className="admin-tag admin-tag-alt">{o}</span>)}
               </div>
+            </div>
+          )}
+          {isApproved && (
+            <div className="admin-detail-field full">
+              <span>Membership Number</span>
+              {editingNum ? (
+                <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center', marginTop: '0.25rem' }}>
+                  <input
+                    className="an-input"
+                    value={memberNum}
+                    onChange={e => setMemberNum(e.target.value)}
+                    style={{ width: '120px' }}
+                  />
+                  <button className="btn btn-primary btn-sm" onClick={() => { onUpdateMemberNumber(entry.id, memberNum); setEditingNum(false) }}>Save</button>
+                  <button className="btn btn-secondary btn-sm" onClick={() => { setMemberNum(entry.reference_number || ''); setEditingNum(false) }}>Cancel</button>
+                </div>
+              ) : (
+                <div style={{ display: 'flex', gap: '0.75rem', alignItems: 'center' }}>
+                  <strong>{memberNum || '—'}</strong>
+                  <button className="btn btn-secondary btn-sm" onClick={() => setEditingNum(true)}>Edit</button>
+                </div>
+              )}
             </div>
           )}
           {entry.referral && (
@@ -232,7 +257,7 @@ function SignupsTable({ entries, onSelect, onApprove, onReject }) {
             <th>Name</th>
             <th>Email</th>
             <th>Province</th>
-            <th>Reference</th>
+            <th>Membership No.</th>
             <th>Submitted</th>
             <th>Actions</th>
           </tr>
@@ -1335,6 +1360,13 @@ function AdminDashboard({ adminPassword, onLogout }) {
     setSelected(null)
   }
 
+  async function handleUpdateMemberNumber(id, newNumber) {
+    await supabase.from('membership_applications').update({ reference_number: newNumber }).eq('id', id)
+    setSelected(s => s ? { ...s, reference_number: newNumber } : s)
+    await loadApplications(statusTab)
+    showToast('Membership number updated.')
+  }
+
   function switchMain(v) { setMainView(v); setSelected(null); setSearchParams({ view: v }, { replace: true }) }
   function switchStatus(s) { setStatusTab(s); setSelected(null) }
 
@@ -1446,6 +1478,7 @@ function AdminDashboard({ adminPassword, onLogout }) {
                 onApprove={handleApprove}
                 onReject={entry => setRejectTarget(entry)}
                 actionLoading={actionLoading}
+                onUpdateMemberNumber={handleUpdateMemberNumber}
               />
             ) : (
               <ConsultingDetail
