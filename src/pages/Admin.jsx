@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useSearchParams } from 'react-router-dom'
 import DOMPurify from 'dompurify'
 import { supabase } from '../lib/supabase'
 import RichTextEditor from '../components/RichTextEditor'
@@ -1246,7 +1246,11 @@ function ForumSection({ adminPassword, showToast }) {
 // ── Dashboard ─────────────────────────────────────────
 
 function AdminDashboard({ adminPassword, onLogout }) {
-  const [mainView, setMainView] = useState('signups') // 'signups' | 'consulting' | 'members' | 'forum'
+  const [searchParams, setSearchParams] = useSearchParams()
+  const [mainView, setMainView] = useState(() => {
+    const v = searchParams.get('view')
+    return ['signups','consulting','members','news','forum'].includes(v) ? v : 'signups'
+  })
   const [statusTab, setStatusTab] = useState('pending')
   const [applications, setApplications] = useState([])
   const [consulting, setConsulting] = useState(() => {
@@ -1331,7 +1335,7 @@ function AdminDashboard({ adminPassword, onLogout }) {
     setSelected(null)
   }
 
-  function switchMain(v) { setMainView(v); setSelected(null) }
+  function switchMain(v) { setMainView(v); setSelected(null); setSearchParams({ view: v }, { replace: true }) }
   function switchStatus(s) { setStatusTab(s); setSelected(null) }
 
   const topbarTitle =
