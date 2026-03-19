@@ -1360,7 +1360,7 @@ function AdminDashboard({ adminPassword, onLogout }) {
       <aside className="admin-sidebar">
         <div className="admin-sidebar-top">
           <Link to="/" className="admin-sidebar-logo">
-            <img src="/logo.png" alt="SACCC" />
+            <img src="/logo-footer.png" alt="SACCC" />
           </Link>
           <span className="admin-sidebar-label">Admin</span>
         </div>
