@@ -107,7 +107,7 @@ export default function Join() {
       const isUuid = /^[0-9a-f-]{36}$/i.test(ref)
 
       // Always resolve to a profile row
-      let profileData: any = null
+      let profileData = null
       if (isUuid) {
         const { data } = await supabase
           .from('profiles')
