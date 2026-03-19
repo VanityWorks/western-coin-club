@@ -284,7 +284,7 @@ export default function AdminNews({ showToast }) {
     setLoading(true)
     const { data } = await supabase
       .from('articles')
-      .select('id, title, summary, category, cover_image, published, published_at, created_at, author')
+      .select('id, title, summary, body, category, cover_image, published, published_at, created_at, author')
       .order('created_at', { ascending: false })
     setArticles(data || [])
     setLoading(false)
