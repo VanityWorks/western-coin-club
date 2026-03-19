@@ -92,16 +92,56 @@ export default function Join() {
   const [searchParams] = useSearchParams()
   const [referral, setReferral] = useState('no')
   const [referralNumber, setReferralNumber] = useState('')
+  const [referralName, setReferralName] = useState('')
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
   const [referenceNumber, setReferenceNumber] = useState(null)
 
   useEffect(() => {
     const ref = searchParams.get('ref')
-    if (ref) {
-      setReferral('yes')
-      setReferralNumber(ref)
+    if (!ref) return
+    setReferral('yes')
+
+    // Look up the referrer's name and membership number from their user ID or membership number
+    async function resolveReferrer() {
+      const isUuid = /^[0-9a-f-]{36}$/i.test(ref)
+      let memberId = isUuid ? ref : null
+      let membershipNum = isUuid ? null : ref
+
+      if (!memberId) {
+        // ref is a membership number - find the member_id
+        const { data } = await supabase
+          .from('membership_applications')
+          .select('member_id')
+          .eq('reference_number', ref)
+          .eq('status', 'approved')
+          .maybeSingle()
+        memberId = data?.member_id || null
+      }
+
+      if (!membershipNum && memberId) {
+        const { data } = await supabase
+          .from('membership_applications')
+          .select('reference_number')
+          .eq('member_id', memberId)
+          .eq('status', 'approved')
+          .maybeSingle()
+        membershipNum = data?.reference_number || null
+      }
+
+      if (memberId) {
+        const { data: profile } = await supabase
+          .from('profiles')
+          .select('display_name')
+          .eq('id', memberId)
+          .maybeSingle()
+        if (profile?.display_name) setReferralName(profile.display_name)
+      }
+
+      if (membershipNum) setReferralNumber(membershipNum)
     }
+
+    resolveReferrer()
   }, [])
 
   async function handleSubmit(e) {
@@ -238,7 +278,7 @@ export default function Join() {
                 <div className="referral-fields">
                   <label>
                     <span>Referring Member Name <span className="required">*</span></span>
-                    <input type="text" name="referralName" required />
+                    <input type="text" name="referralName" required value={referralName} onChange={e => setReferralName(e.target.value)} />
                   </label>
                   <label>
                     <span>Referring Membership Number <span className="required">*</span></span>
