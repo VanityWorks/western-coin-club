@@ -33,14 +33,16 @@ serve(async (req) => {
 
     // ── List all members ─────────────────────────────────────────────────────
     if (action === 'list_members') {
-      const [{ data: profiles }, { data: authUsers }, { data: postRows }, { data: threadRows }] = await Promise.all([
+      const [{ data: profiles }, { data: authUsers }, { data: postRows }, { data: threadRows }, { data: appRows }] = await Promise.all([
         supabase.from('profiles').select('*').order('created_at', { ascending: false }),
         supabase.auth.admin.listUsers({ perPage: 1000 }),
         supabase.from('forum_posts').select('author_id').not('author_id', 'is', null),
         supabase.from('forum_threads').select('author_id').not('author_id', 'is', null),
+        supabase.from('membership_applications').select('member_id, reference_number').eq('status', 'approved').not('member_id', 'is', null),
       ])
 
       const emailMap = new Map((authUsers as any)?.users?.map((u: any) => [u.id, u.email]) ?? [])
+      const bannedMap = new Map((authUsers as any)?.users?.map((u: any) => [u.id, u.banned_until ?? null]) ?? [])
 
       const postCounts = new Map<string, number>()
       postRows?.forEach((r: any) => postCounts.set(r.author_id, (postCounts.get(r.author_id) || 0) + 1))
@@ -48,11 +50,15 @@ serve(async (req) => {
       const threadCounts = new Map<string, number>()
       threadRows?.forEach((r: any) => threadCounts.set(r.author_id, (threadCounts.get(r.author_id) || 0) + 1))
 
+      const memberNumMap = new Map((appRows || []).map((r: any) => [r.member_id, r.reference_number]))
+
       const enriched = (profiles || []).map((p: any) => ({
         ...p,
         email: emailMap.get(p.id) || '',
         post_count: postCounts.get(p.id) || 0,
         thread_count: threadCounts.get(p.id) || 0,
+        membership_number: memberNumMap.get(p.id) || null,
+        banned_until: bannedMap.get(p.id) || null,
       }))
 
       return json({ data: enriched })
@@ -84,6 +90,30 @@ serve(async (req) => {
       if (awards !== undefined) patch.awards = awards
       if (roles !== undefined) patch.roles = roles
       const { error } = await supabase.from('profiles').update(patch).eq('id', user_id)
+      if (error) throw error
+      return json({ success: true })
+    }
+
+    // ── Ban member ───────────────────────────────────────────────────────────
+    if (action === 'ban_member') {
+      const { user_id } = body
+      const { error } = await supabase.auth.admin.updateUserById(user_id, { ban_duration: '876000h' })
+      if (error) throw error
+      return json({ success: true })
+    }
+
+    // ── Unban member ─────────────────────────────────────────────────────────
+    if (action === 'unban_member') {
+      const { user_id } = body
+      const { error } = await supabase.auth.admin.updateUserById(user_id, { ban_duration: 'none' })
+      if (error) throw error
+      return json({ success: true })
+    }
+
+    // ── Delete member ────────────────────────────────────────────────────────
+    if (action === 'delete_member') {
+      const { user_id } = body
+      const { error } = await supabase.auth.admin.deleteUser(user_id)
       if (error) throw error
       return json({ success: true })
     }

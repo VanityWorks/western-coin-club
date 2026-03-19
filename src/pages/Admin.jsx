@@ -394,14 +394,58 @@ function MembersSection({ adminPassword, showToast }) {
 
   async function saveBadges() {
     setSaving(true)
-    const roles  = badges.filter(b => ['Admin', 'Moderator'].includes(b))
-    const awards = badges.filter(b => !['Admin', 'Moderator'].includes(b))
+    const roles  = badges.filter(b => ['Admin', 'Moderator', 'Muted'].includes(b))
+    const awards = badges.filter(b => !['Admin', 'Moderator', 'Muted'].includes(b))
     const { error } = await adminFetch('update_member', { user_id: selected.id, roles, awards })
     if (error) showToast('Error saving badges.')
     else {
       showToast('Member updated.')
       setMembers(prev => prev.map(m => m.id === selected.id ? { ...m, roles, awards } : m))
       setSelected(prev => ({ ...prev, roles, awards }))
+    }
+    setSaving(false)
+  }
+
+  async function handleBan(member) {
+    const isBanned = member.banned_until && new Date(member.banned_until) > new Date()
+    const action = isBanned ? 'unban_member' : 'ban_member'
+    setSaving(true)
+    const { error } = await adminFetch(action, { user_id: member.id })
+    if (error) showToast('Error updating ban status.')
+    else {
+      const newBanned = isBanned ? null : '9999-01-01T00:00:00Z'
+      showToast(isBanned ? 'Member unbanned.' : 'Member banned.')
+      setMembers(prev => prev.map(m => m.id === member.id ? { ...m, banned_until: newBanned } : m))
+      setSelected(prev => prev ? { ...prev, banned_until: newBanned } : prev)
+    }
+    setSaving(false)
+  }
+
+  async function handleMute(member) {
+    const isMuted = (member.roles || []).includes('Muted')
+    const newRoles = isMuted
+      ? (member.roles || []).filter(r => r !== 'Muted')
+      : [...(member.roles || []), 'Muted']
+    setSaving(true)
+    const { error } = await adminFetch('update_member', { user_id: member.id, roles: newRoles, awards: member.awards || [] })
+    if (error) showToast('Error updating mute status.')
+    else {
+      showToast(isMuted ? 'Member unmuted.' : 'Member muted.')
+      setMembers(prev => prev.map(m => m.id === member.id ? { ...m, roles: newRoles } : m))
+      setSelected(prev => prev ? { ...prev, roles: newRoles } : prev)
+    }
+    setSaving(false)
+  }
+
+  async function handleDelete(member) {
+    if (!window.confirm(`Permanently delete ${member.display_name}? This cannot be undone.`)) return
+    setSaving(true)
+    const { error } = await adminFetch('delete_member', { user_id: member.id })
+    if (error) showToast('Error deleting member.')
+    else {
+      showToast('Member deleted.')
+      setMembers(prev => prev.filter(m => m.id !== member.id))
+      setSelected(null)
     }
     setSaving(false)
   }
@@ -441,6 +485,7 @@ function MembersSection({ adminPassword, showToast }) {
           </div>
 
           <div className="admin-detail-grid" style={{ marginTop: '1.5rem' }}>
+            {selected.membership_number && <div className="admin-detail-field"><span>Membership No.</span><strong>{selected.membership_number}</strong></div>}
             <div className="admin-detail-field"><span>Member Since</span><strong>{joinedDate}</strong></div>
             <div className="admin-detail-field"><span>Posts</span><strong>{selected.post_count || 0}</strong></div>
             <div className="admin-detail-field"><span>Threads</span><strong>{selected.thread_count || 0}</strong></div>
@@ -474,6 +519,42 @@ function MembersSection({ adminPassword, showToast }) {
               <button className="admin-detail-back" onClick={() => setSelected(null)}>Cancel</button>
             </div>
           </div>
+
+          <div style={{ marginTop: '1.5rem', paddingTop: '1.25rem', borderTop: '1px solid var(--border)' }}>
+            <h3 style={{ fontSize: '0.95rem', fontWeight: 700, marginBottom: '0.75rem' }}>Member Actions</h3>
+            <div style={{ display: 'flex', gap: '0.75rem', flexWrap: 'wrap' }}>
+              {(() => {
+                const isBanned = selected.banned_until && new Date(selected.banned_until) > new Date()
+                const isMuted  = (selected.roles || []).includes('Muted')
+                return (
+                  <>
+                    <button
+                      className={`btn btn-sm ${isMuted ? 'btn-primary' : 'btn-secondary'}`}
+                      onClick={() => handleMute(selected)}
+                      disabled={saving}
+                    >
+                      {isMuted ? 'Unmute Member' : 'Mute Member'}
+                    </button>
+                    <button
+                      className={`btn btn-sm ${isBanned ? 'btn-primary' : 'btn-secondary'}`}
+                      onClick={() => handleBan(selected)}
+                      disabled={saving}
+                      style={!isBanned ? { color: '#E63946', borderColor: '#E63946' } : {}}
+                    >
+                      {isBanned ? 'Unban Member' : 'Ban Member'}
+                    </button>
+                    <button
+                      className="btn btn-sm admin-reject-btn"
+                      onClick={() => handleDelete(selected)}
+                      disabled={saving}
+                    >
+                      Delete Member
+                    </button>
+                  </>
+                )
+              })()}
+            </div>
+          </div>
         </div>
       </div>
     )
@@ -502,6 +583,7 @@ function MembersSection({ adminPassword, showToast }) {
               <tr>
                 <th>Member</th>
                 <th>Email</th>
+                <th>Membership No.</th>
                 <th style={{ textAlign: 'center' }}>Posts</th>
                 <th style={{ textAlign: 'center' }}>Threads</th>
                 <th>Badges</th>
@@ -519,10 +601,15 @@ function MembersSection({ adminPassword, showToast }) {
                           : <span>{getInitials(m.display_name)}</span>
                         }
                       </div>
-                      <strong>{m.display_name}</strong>
+                      <div>
+                        <strong>{m.display_name}</strong>
+                        {(m.banned_until && new Date(m.banned_until) > new Date()) && <span style={{ marginLeft: '0.4rem', fontSize: '0.7rem', background: '#E63946', color: '#fff', borderRadius: '4px', padding: '1px 5px' }}>Banned</span>}
+                        {(m.roles || []).includes('Muted') && <span style={{ marginLeft: '0.4rem', fontSize: '0.7rem', background: '#525252', color: '#fff', borderRadius: '4px', padding: '1px 5px' }}>Muted</span>}
+                      </div>
                     </div>
                   </td>
                   <td style={{ fontSize: '0.875rem', color: 'var(--text-muted)' }}>{m.email}</td>
+                  <td style={{ fontSize: '0.875rem' }}><code className="admin-ref">{m.membership_number || '—'}</code></td>
                   <td style={{ textAlign: 'center', fontSize: '0.875rem' }}>{m.post_count || 0}</td>
                   <td style={{ textAlign: 'center', fontSize: '0.875rem' }}>{m.thread_count || 0}</td>
                   <td>
