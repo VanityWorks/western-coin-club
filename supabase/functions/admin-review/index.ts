@@ -175,7 +175,7 @@ serve(async (req) => {
       // Send credentials email via SendGrid
       const sendgridKey = Deno.env.get('SENDGRID_API_KEY')
       const fromEmail   = Deno.env.get('FROM_EMAIL') || 'noreply@coinclub.co.za'
-      const siteUrl     = Deno.env.get('SITE_URL') || 'https://saccc.co.za'
+      const siteUrl     = Deno.env.get('SITE_URL') || 'https://www.coinclub.co.za'
 
       if (sendgridKey) {
         const emailRes = await fetch('https://api.sendgrid.com/v3/mail/send', {
