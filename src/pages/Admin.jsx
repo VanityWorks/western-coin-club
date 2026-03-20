@@ -230,10 +230,10 @@ function SignupsTable({ entries, onSelect, onApprove, onReject }) {
         <thead>
           <tr>
             <th>Name</th>
-            <th>Email</th>
-            <th>Province</th>
-            <th>Payment Ref</th>
-            <th>Submitted</th>
+            <th className="col-hide-mobile">Email</th>
+            <th className="col-hide-mobile">Province</th>
+            <th className="col-hide-mobile">Payment Ref</th>
+            <th className="col-hide-mobile">Submitted</th>
             <th>Actions</th>
           </tr>
         </thead>
@@ -241,10 +241,10 @@ function SignupsTable({ entries, onSelect, onApprove, onReject }) {
           {entries.map(entry => (
             <tr key={entry.id} className="admin-row" onClick={() => onSelect(entry)}>
               <td className="admin-row-name"><strong>{entry.first_name} {entry.surname}</strong></td>
-              <td>{entry.email}</td>
-              <td>{entry.province || '—'}</td>
-              <td><code className="admin-ref">{entry.reference_number}</code></td>
-              <td className="admin-row-date">{formatDate(entry.submitted_at)}</td>
+              <td className="col-hide-mobile">{entry.email}</td>
+              <td className="col-hide-mobile">{entry.province || '—'}</td>
+              <td className="col-hide-mobile"><code className="admin-ref">{entry.reference_number}</code></td>
+              <td className="col-hide-mobile admin-row-date">{formatDate(entry.submitted_at)}</td>
               <td className="admin-row-actions" onClick={e => e.stopPropagation()}>
                 {entry.status === 'pending' && (
                   <>
@@ -617,12 +617,12 @@ function MembersSection({ adminPassword, showToast }) {
             <thead>
               <tr>
                 <th>Member</th>
-                <th>Email</th>
+                <th className="col-hide-mobile">Email</th>
                 <th>Membership No.</th>
-                <th style={{ textAlign: 'center' }}>Posts</th>
-                <th style={{ textAlign: 'center' }}>Threads</th>
-                <th>Badges</th>
-                <th>Joined</th>
+                <th className="col-hide-mobile" style={{ textAlign: 'center' }}>Posts</th>
+                <th className="col-hide-mobile" style={{ textAlign: 'center' }}>Threads</th>
+                <th className="col-hide-mobile">Badges</th>
+                <th className="col-hide-mobile">Joined</th>
               </tr>
             </thead>
             <tbody>
@@ -643,16 +643,16 @@ function MembersSection({ adminPassword, showToast }) {
                       </div>
                     </div>
                   </td>
-                  <td style={{ fontSize: '0.875rem', color: 'var(--text-muted)' }}>{m.email}</td>
+                  <td className="col-hide-mobile" style={{ fontSize: '0.875rem', color: 'var(--text-muted)' }}>{m.email}</td>
                   <td style={{ fontSize: '0.875rem' }}><code className="admin-ref">{m.membership_number || '—'}</code></td>
-                  <td style={{ textAlign: 'center', fontSize: '0.875rem' }}>{m.post_count || 0}</td>
-                  <td style={{ textAlign: 'center', fontSize: '0.875rem' }}>{m.thread_count || 0}</td>
-                  <td>
+                  <td className="col-hide-mobile" style={{ textAlign: 'center', fontSize: '0.875rem' }}>{m.post_count || 0}</td>
+                  <td className="col-hide-mobile" style={{ textAlign: 'center', fontSize: '0.875rem' }}>{m.thread_count || 0}</td>
+                  <td className="col-hide-mobile">
                     <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.25rem' }}>
                       {[...(m.roles || []), ...(m.awards || [])].map(b => <MemberBadge key={b} label={b} />)}
                     </div>
                   </td>
-                  <td className="admin-row-date">{new Date(m.created_at).toLocaleDateString('en-ZA', { day: '2-digit', month: 'short', year: 'numeric' })}</td>
+                  <td className="col-hide-mobile admin-row-date">{new Date(m.created_at).toLocaleDateString('en-ZA', { day: '2-digit', month: 'short', year: 'numeric' })}</td>
                 </tr>
               ))}
             </tbody>

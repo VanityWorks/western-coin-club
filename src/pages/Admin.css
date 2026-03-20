@@ -1130,15 +1130,14 @@
     padding: 1rem;
   }
 
-  /* Tables scroll horizontally */
-  .admin-table-wrap {
-    overflow-x: auto;
-    -webkit-overflow-scrolling: touch;
+  /* Hide non-essential columns on mobile */
+  .col-hide-mobile {
+    display: none;
   }
 
   .admin-table {
-    font-size: 0.82rem;
-    min-width: 520px;
+    font-size: 0.85rem;
+    width: 100%;
   }
 
   /* Detail card */
