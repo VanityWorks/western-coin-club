@@ -5,7 +5,11 @@ import { useAuth } from '../lib/AuthContext'
 import './Page.css'
 import './Leaderboard.css'
 
-const MEDALS = ['🥇', '🥈', '🥉']
+const MEDALS = [
+  { icon: 'fa-solid fa-trophy', color: '#F5A623' },
+  { icon: 'fa-solid fa-trophy', color: '#9B9B9B' },
+  { icon: 'fa-solid fa-trophy', color: '#CD7F32' },
+]
 
 function getInitials(name) {
   if (!name) return '?'
@@ -67,7 +71,10 @@ export default function Leaderboard() {
               {leaders.map((m, i) => (
                 <Link to={`/profile/${m.id}`} key={m.id} className="lb-row">
                   <div className="lb-rank">
-                    {i < 3 ? <span className="lb-medal">{MEDALS[i]}</span> : <span className="lb-rank-num">{i + 1}</span>}
+                    {i < 3
+                      ? <i className={`${MEDALS[i].icon} lb-medal`} style={{ color: MEDALS[i].color }} />
+                      : <span className="lb-rank-num">{i + 1}</span>
+                    }
                   </div>
                   <div className="lb-avatar">
                     {m.avatar_url
