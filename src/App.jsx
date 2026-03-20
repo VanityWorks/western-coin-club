@@ -22,6 +22,7 @@ const NewsArticle = lazy(() => import('./pages/NewsArticle'))
 const MemberLogin = lazy(() => import('./pages/MemberLogin'))
 const Profile     = lazy(() => import('./pages/Profile'))
 const Settings    = lazy(() => import('./pages/Settings'))
+const Leaderboard = lazy(() => import('./pages/Leaderboard'))
 
 function ScrollToTop() {
   const { pathname } = useLocation()
@@ -66,7 +67,8 @@ function App() {
                 <Route path="/forum"      element={<Forum />} />
                 <Route path="/contact"    element={<Contact />} />
                 <Route path="/profile/:id" element={<Profile />} />
-                <Route path="/settings"   element={<Settings />} />
+                <Route path="/settings"    element={<Settings />} />
+                <Route path="/leaderboard" element={<Leaderboard />} />
               </Route>
               <Route path="/login" element={<MemberLogin />} />
               <Route path="/admin" element={<Admin />} />

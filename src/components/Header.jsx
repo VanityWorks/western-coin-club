@@ -96,6 +96,9 @@ export default function Header() {
                 <Link to="/settings" className="header-dropdown-item" onClick={() => setDropOpen(false)}>
                   <i className="fa-solid fa-gear" /> Settings
                 </Link>
+                <Link to="/leaderboard" className="header-dropdown-item" onClick={() => setDropOpen(false)}>
+                  <i className="fa-solid fa-trophy" /> Referral Leaderboard
+                </Link>
                 <button className="header-dropdown-item" onClick={handleCopyReferral}>
                   <i className="fa-solid fa-link" /> {copied ? 'Copied!' : 'Copy Referral Link'}
                 </button>
