@@ -18,11 +18,48 @@ function getInitials(name) {
   return parts[0].slice(0, 2).toUpperCase()
 }
 
+function Avatar({ url, name, size = 44 }) {
+  return (
+    <div className="lb-avatar" style={{ width: size, height: size }}>
+      {url ? <img src={url} alt="" /> : <span>{getInitials(name)}</span>}
+    </div>
+  )
+}
+
+function ReferredList({ member }) {
+  const [refs, setRefs] = useState(null)
+
+  useEffect(() => {
+    supabase
+      .rpc('get_referred_members', {
+        referrer_membership_number: member.membership_number || '',
+        referrer_uuid: member.id,
+      })
+      .then(({ data }) => setRefs(data || []))
+  }, [member.id])
+
+  if (refs === null) return <p className="lb-refs-loading">Loading...</p>
+  if (refs.length === 0) return <p className="lb-refs-empty">No referred members found.</p>
+
+  return (
+    <div className="lb-refs-list">
+      {refs.map(r => (
+        <Link to={`/profile/${r.id}`} key={r.id} className="lb-ref-row">
+          <Avatar url={r.avatar_url} name={r.display_name} size={32} />
+          <span className="lb-ref-name">{r.display_name}</span>
+          {r.membership_number && <span className="lb-ref-num">#{r.membership_number}</span>}
+        </Link>
+      ))}
+    </div>
+  )
+}
+
 export default function Leaderboard() {
   const { user, loading: authLoading } = useAuth()
   const navigate = useNavigate()
   const [leaders, setLeaders] = useState([])
   const [loading, setLoading] = useState(true)
+  const [expanded, setExpanded] = useState(null)
 
   useEffect(() => {
     if (!authLoading && !user) navigate('/login')
@@ -69,28 +106,40 @@ export default function Leaderboard() {
           ) : (
             <div className="lb-list">
               {leaders.map((m, i) => (
-                <Link to={`/profile/${m.id}`} key={m.id} className="lb-row">
-                  <div className="lb-rank">
-                    {i < 3
-                      ? <i className={`${MEDALS[i].icon} lb-medal`} style={{ color: MEDALS[i].color }} />
-                      : <span className="lb-rank-num">{i + 1}</span>
-                    }
+                <div key={m.id} className="lb-card">
+                  <div
+                    className="lb-row"
+                    onClick={() => setExpanded(expanded === m.id ? null : m.id)}
+                  >
+                    <div className="lb-rank">
+                      {i < 3
+                        ? <i className={`${MEDALS[i].icon} lb-medal`} style={{ color: MEDALS[i].color }} />
+                        : <span className="lb-rank-num">{i + 1}</span>
+                      }
+                    </div>
+                    <Avatar url={m.avatar_url} name={m.display_name} />
+                    <div className="lb-info">
+                      <strong className="lb-name">{m.display_name}</strong>
+                      {m.membership_number && <span className="lb-num">#{m.membership_number}</span>}
+                    </div>
+                    <div className="lb-points">
+                      <span className="lb-points-val">{m.referral_points}</span>
+                      <span className="lb-points-label">{m.referral_points === 1 ? 'referral' : 'referrals'}</span>
+                    </div>
+                    <i className={`fa-solid fa-chevron-${expanded === m.id ? 'up' : 'down'} lb-chevron`} />
                   </div>
-                  <div className="lb-avatar">
-                    {m.avatar_url
-                      ? <img src={m.avatar_url} alt="" />
-                      : <span>{getInitials(m.display_name)}</span>
-                    }
-                  </div>
-                  <div className="lb-info">
-                    <strong className="lb-name">{m.display_name}</strong>
-                    {m.membership_number && <span className="lb-num">#{m.membership_number}</span>}
-                  </div>
-                  <div className="lb-points">
-                    <span className="lb-points-val">{m.referral_points}</span>
-                    <span className="lb-points-label">{m.referral_points === 1 ? 'referral' : 'referrals'}</span>
-                  </div>
-                </Link>
+
+                  {expanded === m.id && (
+                    <div className="lb-expand">
+                      <div className="lb-expand-header">
+                        <i className="fa-solid fa-users" />
+                        <span>Members referred by {m.display_name.split(' ')[0]}</span>
+                        <Link to={`/profile/${m.id}`} className="lb-profile-link">View profile</Link>
+                      </div>
+                      <ReferredList member={m} />
+                    </div>
+                  )}
+                </div>
               ))}
             </div>
           )}

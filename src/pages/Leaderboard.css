@@ -153,3 +153,111 @@
   color: var(--text-muted);
   margin-top: 0.1rem;
 }
+
+/* ── Card wrapper (row + expand) ───────────────────────── */
+
+.lb-card {
+  background: var(--white);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  overflow: hidden;
+  box-shadow: var(--shadow-sm);
+}
+
+/* Remove background/border from row since card handles it */
+.lb-card .lb-row {
+  background: transparent;
+  border: none;
+  border-radius: 0;
+  box-shadow: none;
+  cursor: pointer;
+}
+
+.lb-card:nth-child(1) { background: rgba(255,184,28,0.06); border-color: rgba(255,184,28,0.35); }
+.lb-card:nth-child(2) { background: rgba(180,180,180,0.06); border-color: rgba(180,180,180,0.35); }
+.lb-card:nth-child(3) { background: rgba(180,100,30,0.05); border-color: rgba(180,100,30,0.25); }
+
+/* Remove old direct row styles that targeted nth-child */
+.lb-list .lb-row:nth-child(1),
+.lb-list .lb-row:nth-child(2),
+.lb-list .lb-row:nth-child(3) {
+  background: transparent;
+  border-color: transparent;
+}
+
+.lb-chevron {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  flex-shrink: 0;
+}
+
+/* ── Expand panel ──────────────────────────────────────── */
+
+.lb-expand {
+  border-top: 1px solid var(--border);
+  padding: 1rem 1.25rem;
+  background: rgba(0,0,0,0.02);
+}
+
+.lb-expand-header {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  margin-bottom: 0.75rem;
+}
+
+.lb-expand-header i {
+  color: var(--sa-green);
+}
+
+.lb-profile-link {
+  margin-left: auto;
+  font-size: 0.8rem;
+  color: var(--sa-green);
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.lb-profile-link:hover { text-decoration: underline; }
+
+.lb-refs-loading,
+.lb-refs-empty {
+  font-size: 0.875rem;
+  color: var(--text-muted);
+  margin: 0;
+}
+
+.lb-refs-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.lb-ref-row {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  padding: 0.5rem 0.75rem;
+  border-radius: 8px;
+  background: var(--white);
+  border: 1px solid var(--border);
+  text-decoration: none;
+  color: inherit;
+  transition: border-color 0.15s;
+}
+
+.lb-ref-row:hover { border-color: var(--sa-green); }
+
+.lb-ref-name {
+  font-size: 0.875rem;
+  font-weight: 500;
+  flex: 1;
+}
+
+.lb-ref-num {
+  font-size: 0.78rem;
+  color: var(--text-muted);
+}
