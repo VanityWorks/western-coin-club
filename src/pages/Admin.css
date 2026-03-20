@@ -1130,14 +1130,86 @@
     padding: 1rem;
   }
 
-  /* Hide non-essential columns on mobile */
-  .col-hide-mobile {
-    display: none;
+  /* Card layout - each row becomes a tappable card */
+  .admin-table-wrap {
+    background: transparent;
+    border: none;
+    box-shadow: none;
+    overflow: visible;
   }
 
   .admin-table {
-    font-size: 0.85rem;
+    display: block;
     width: 100%;
+  }
+
+  .admin-table thead {
+    display: none;
+  }
+
+  .admin-table tbody {
+    display: flex;
+    flex-direction: column;
+    gap: 0.65rem;
+  }
+
+  .admin-table tbody tr.admin-row {
+    display: flex;
+    flex-direction: column;
+    background: var(--white);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 0.9rem 1rem;
+    box-shadow: var(--shadow-sm);
+    gap: 0.3rem;
+  }
+
+  .admin-table tbody tr.admin-row:hover {
+    background: var(--gray-100);
+  }
+
+  .admin-table tbody td {
+    display: block;
+    padding: 0;
+    border: none;
+    font-size: 0.875rem;
+    color: var(--text);
+    vertical-align: unset;
+  }
+
+  /* Name row - bigger */
+  .admin-table tbody td.admin-row-name {
+    font-size: 1rem;
+    margin-bottom: 0.15rem;
+  }
+
+  /* Date row - muted small */
+  .admin-table tbody td.admin-row-date {
+    font-size: 0.78rem;
+    color: var(--text-muted);
+  }
+
+  /* Actions row - align right */
+  .admin-table tbody td.admin-row-actions {
+    width: auto;
+    text-align: left;
+    padding-right: 0 !important;
+    margin-top: 0.4rem;
+    display: flex;
+    gap: 0.5rem;
+  }
+
+  /* Restore approve/reject button size on mobile */
+  .admin-approve-sm,
+  .admin-reject-sm {
+    width: 36px;
+    height: 36px;
+    font-size: 1rem;
+  }
+
+  /* col-hide-mobile kept but no longer needed with card layout */
+  .col-hide-mobile {
+    display: block;
   }
 
   /* Detail card */
