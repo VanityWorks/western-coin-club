@@ -1408,6 +1408,7 @@ function AdminDashboard({ adminPassword, onLogout }) {
   const [rejectTarget, setRejectTarget] = useState(null)
   const [actionLoading, setActionLoading] = useState(false)
   const [toast, setToast] = useState('')
+  const [sidebarOpen, setSidebarOpen] = useState(false)
 
   const showToast = (msg) => {
     setToast(msg)
@@ -1489,7 +1490,7 @@ function AdminDashboard({ adminPassword, onLogout }) {
     showToast('Membership number updated.')
   }
 
-  function switchMain(v) { setMainView(v); setSelected(null); setSearchParams({ view: v }, { replace: true }) }
+  function switchMain(v) { setMainView(v); setSelected(null); setSearchParams({ view: v }, { replace: true }); setSidebarOpen(false) }
   function switchStatus(s) { setStatusTab(s); setSelected(null) }
 
   const topbarTitle =
@@ -1501,6 +1502,7 @@ function AdminDashboard({ adminPassword, onLogout }) {
 
   return (
     <div className="admin-wrap">
+      {sidebarOpen && <div className="admin-sidebar-overlay" onClick={() => setSidebarOpen(false)} />}
       {rejectTarget && (
         <RejectModal
           onConfirm={handleRejectConfirm}
@@ -1511,7 +1513,7 @@ function AdminDashboard({ adminPassword, onLogout }) {
       {toast && <div className="admin-toast">{toast}</div>}
 
       {/* ── Sidebar ─── */}
-      <aside className="admin-sidebar">
+      <aside className={`admin-sidebar ${sidebarOpen ? 'open' : ''}`}>
         <div className="admin-sidebar-top">
           <Link to="/" className="admin-sidebar-logo">
             <img src="/logo-footer.png" alt="SACCC" />
@@ -1566,6 +1568,9 @@ function AdminDashboard({ adminPassword, onLogout }) {
       <div className="admin-main">
         <div className="admin-topbar">
           <div className="admin-topbar-info">
+            <button className="admin-hamburger" onClick={() => setSidebarOpen(v => !v)} aria-label="Menu">
+              <span /><span /><span />
+            </button>
             <h1>{topbarTitle}</h1>
           </div>
           {mainView === 'signups' && !selected && (
