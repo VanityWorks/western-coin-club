@@ -123,6 +123,14 @@ serve(async (req) => {
       return json({ success: true })
     }
 
+    // ── Reset password ──────────────────────────────────────────────────────
+    if (action === 'reset_password') {
+      const { user_id, password } = body
+      const { error } = await supabase.auth.admin.updateUserById(user_id, { password })
+      if (error) throw error
+      return json({ success: true })
+    }
+
     // ── Delete member ────────────────────────────────────────────────────────
     if (action === 'delete_member') {
       const { user_id } = body
