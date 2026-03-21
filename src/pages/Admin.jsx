@@ -115,22 +115,30 @@ function RejectModal({ onConfirm, onCancel, loading }) {
 
 // ── Signup detail ─────────────────────────────────────
 
-function SignupDetail({ entry, onBack, onApprove, onReject, actionLoading }) {
+function SignupDetail({ entry, onBack, onApprove, onReject, onResend, actionLoading }) {
   const isPending = entry.status === 'pending'
+  const isApproved = entry.status === 'approved'
   return (
     <div className="admin-detail">
       <div className="admin-detail-header">
         <button className="admin-detail-back" onClick={onBack}>← Back to list</button>
-        {isPending && (
-          <div className="admin-detail-actions">
-            <button className="admin-approve-btn" onClick={() => onApprove(entry.id)} disabled={actionLoading}>
-              {actionLoading ? 'Processing…' : <><i className="fa-solid fa-check" style={{ marginRight: '0.4rem' }} />Approve</>}
+        <div className="admin-detail-actions">
+          {isPending && (
+            <>
+              <button className="admin-approve-btn" onClick={() => onApprove(entry.id)} disabled={actionLoading}>
+                {actionLoading ? 'Processing…' : <><i className="fa-solid fa-check" style={{ marginRight: '0.4rem' }} />Approve</>}
+              </button>
+              <button className="admin-reject-btn" onClick={() => onReject(entry)} disabled={actionLoading}>
+                <i className="fa-solid fa-xmark" style={{ marginRight: '0.4rem' }} />Reject
+              </button>
+            </>
+          )}
+          {isApproved && (
+            <button className="admin-approve-btn" onClick={() => onResend(entry.id)} disabled={actionLoading}>
+              {actionLoading ? 'Sending…' : <><i className="fa-solid fa-envelope" style={{ marginRight: '0.4rem' }} />Resend Email</>}
             </button>
-            <button className="admin-reject-btn" onClick={() => onReject(entry)} disabled={actionLoading}>
-              <i className="fa-solid fa-xmark" style={{ marginRight: '0.4rem' }} />Reject
-            </button>
-          </div>
-        )}
+          )}
+        </div>
       </div>
       <div className="admin-detail-card">
         <div className="admin-detail-title-row">
@@ -222,7 +230,7 @@ function ConsultingDetail({ entry, onBack, onDelete, actionLoading }) {
 
 // ── Tables ────────────────────────────────────────────
 
-function SignupsTable({ entries, onSelect, onApprove, onReject }) {
+function SignupsTable({ entries, onSelect, onApprove, onReject, onResend }) {
   if (entries.length === 0) return <p className="admin-empty">No applications in this category.</p>
   return (
     <div className="admin-table-wrap">
@@ -251,6 +259,9 @@ function SignupsTable({ entries, onSelect, onApprove, onReject }) {
                     <button className="admin-approve-sm" onClick={() => onApprove(entry.id)} title="Approve"><i className="fa-solid fa-check" /></button>
                     <button className="admin-reject-sm"  onClick={() => onReject(entry)}     title="Reject"><i className="fa-solid fa-xmark" /></button>
                   </>
+                )}
+                {entry.status === 'approved' && (
+                  <button className="admin-approve-sm" onClick={() => onResend(entry.id)} title="Resend email"><i className="fa-solid fa-envelope" /></button>
                 )}
               </td>
             </tr>
@@ -1476,6 +1487,23 @@ function AdminDashboard({ adminPassword, onLogout }) {
     setActionLoading(false)
   }
 
+  async function handleResendEmail(id) {
+    if (!window.confirm('This will generate a new password and resend the welcome email. Continue?')) return
+    setActionLoading(true)
+    const res = await fetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/admin-review`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${import.meta.env.VITE_SUPABASE_ANON_KEY}`,
+        'x-admin-secret': adminPassword,
+      },
+      body: JSON.stringify({ id, action: 'resend' }),
+    })
+    if (!res.ok) showToast('Error resending email.')
+    else showToast('Credentials email resent successfully.')
+    setActionLoading(false)
+  }
+
   function deleteConsulting(id) {
     const updated = consulting.filter(e => e.id !== id)
     setConsulting(updated)
@@ -1604,6 +1632,7 @@ function AdminDashboard({ adminPassword, onLogout }) {
                 onBack={() => setSelected(null)}
                 onApprove={handleApprove}
                 onReject={entry => setRejectTarget(entry)}
+                onResend={handleResendEmail}
                 actionLoading={actionLoading}
               />
             ) : (
@@ -1620,6 +1649,7 @@ function AdminDashboard({ adminPassword, onLogout }) {
               onSelect={setSelected}
               onApprove={handleApprove}
               onReject={entry => setRejectTarget(entry)}
+              onResend={handleResendEmail}
             />
           ) : (
             <ConsultingTable

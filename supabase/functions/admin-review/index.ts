@@ -239,6 +239,53 @@ serve(async (req) => {
       )
     }
 
+    if (action === 'resend') {
+      // Re-send credentials email for an already-approved member
+      const { data: app, error: fetchErr } = await supabase
+        .from('membership_applications')
+        .select('*')
+        .eq('id', id)
+        .single()
+      if (fetchErr) throw fetchErr
+      if (app.status !== 'approved') throw new Error('Can only resend for approved applications')
+      if (!app.member_id) throw new Error('No member account linked to this application')
+
+      // Generate a new password and update the auth user
+      const password = generatePassword(app.first_name, app.surname)
+      const { error: updateErr } = await supabase.auth.admin.updateUserById(app.member_id, { password })
+      if (updateErr) throw updateErr
+
+      // Send credentials email via SendGrid
+      const sendgridKey = Deno.env.get('SENDGRID_API_KEY')
+      const fromEmail   = Deno.env.get('FROM_EMAIL') || 'noreply@coinclub.co.za'
+      const siteUrl     = Deno.env.get('SITE_URL') || 'https://www.coinclub.co.za'
+
+      if (!sendgridKey) throw new Error('SENDGRID_API_KEY not configured')
+
+      const emailRes = await fetch('https://api.sendgrid.com/v3/mail/send', {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${sendgridKey}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          personalizations: [{ to: [{ email: app.email }] }],
+          from:    { email: fromEmail, name: 'SACCC' },
+          subject: `Welcome to SACCC, ${app.first_name}! - Your Login Details`,
+          content: [{ type: 'text/html', value: credentialsEmail({ ...app, reference_number: app.reference_number }, password, siteUrl) }],
+        }),
+      })
+      if (!emailRes.ok) {
+        const errText = await emailRes.text()
+        throw new Error(`SendGrid error ${emailRes.status}: ${errText}`)
+      }
+
+      return new Response(
+        JSON.stringify({ success: true, password }),
+        { headers: { ...cors, 'Content-Type': 'application/json' } }
+      )
+    }
+
     if (action === 'reject') {
       const { error } = await supabase
         .from('membership_applications')
