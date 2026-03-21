@@ -34,10 +34,10 @@ serve(async (req) => {
       Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!
     )
 
-    // Look up the member's email by membership number
+    // Look up the member by membership number
     const { data: profile, error: profileErr } = await supabase
       .from('profiles')
-      .select('id, email, display_name, membership_number')
+      .select('id, display_name, membership_number')
       .eq('membership_number', String(membership_number).trim())
       .maybeSingle()
 
@@ -47,15 +47,20 @@ serve(async (req) => {
       return json({ valid: false, error: 'Invalid membership number or password' })
     }
 
+    // Get the user's email from auth.users
+    const { data: authUser, error: authUserErr } = await supabase.auth.admin.getUserById(profile.id)
+    if (authUserErr || !authUser?.user?.email) {
+      return json({ valid: false, error: 'Invalid membership number or password' })
+    }
+
     // Try signing in with the member's email and provided password
-    // Use a fresh anon client for auth so we don't leak service role privileges
     const anonClient = createClient(
       Deno.env.get('SUPABASE_URL')!,
       Deno.env.get('SUPABASE_ANON_KEY')!
     )
 
     const { error: authErr } = await anonClient.auth.signInWithPassword({
-      email: profile.email,
+      email: authUser.user.email,
       password,
     })
 
