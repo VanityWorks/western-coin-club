@@ -1420,6 +1420,7 @@ function AdminDashboard({ adminPassword, onLogout }) {
   const [actionLoading, setActionLoading] = useState(false)
   const [toast, setToast] = useState('')
   const [sidebarOpen, setSidebarOpen] = useState(false)
+  const [signupSearch, setSignupSearch] = useState('')
 
   const showToast = (msg) => {
     setToast(msg)
@@ -1519,7 +1520,7 @@ function AdminDashboard({ adminPassword, onLogout }) {
   }
 
   function switchMain(v) { setMainView(v); setSelected(null); setSearchParams({ view: v }, { replace: true }); setSidebarOpen(false) }
-  function switchStatus(s) { setStatusTab(s); setSelected(null) }
+  function switchStatus(s) { setStatusTab(s); setSelected(null); setSignupSearch('') }
 
   const topbarTitle =
     mainView === 'signups'     ? 'Sign-ups'
@@ -1644,13 +1645,43 @@ function AdminDashboard({ adminPassword, onLogout }) {
               />
             )
           ) : mainView === 'signups' ? (
-            <SignupsTable
-              entries={applications}
-              onSelect={setSelected}
-              onApprove={handleApprove}
-              onReject={entry => setRejectTarget(entry)}
-              onResend={handleResendEmail}
-            />
+            <>
+              <div className="admin-forum-bar" style={{ marginBottom: '1rem' }}>
+                <input
+                  className="admin-forum-filter"
+                  style={{ flex: 1, maxWidth: 320 }}
+                  placeholder="Search by name, email, or payment ref..."
+                  value={signupSearch}
+                  onChange={e => setSignupSearch(e.target.value)}
+                />
+                <span className="admin-forum-count">
+                  {(signupSearch.trim()
+                    ? applications.filter(a => {
+                        const q = signupSearch.toLowerCase()
+                        return (a.first_name + ' ' + a.surname).toLowerCase().includes(q)
+                          || (a.email || '').toLowerCase().includes(q)
+                          || (a.reference_number || '').toLowerCase().includes(q)
+                      })
+                    : applications
+                  ).length} result{applications.length !== 1 ? 's' : ''}
+                </span>
+              </div>
+              <SignupsTable
+                entries={signupSearch.trim()
+                  ? applications.filter(a => {
+                      const q = signupSearch.toLowerCase()
+                      return (a.first_name + ' ' + a.surname).toLowerCase().includes(q)
+                        || (a.email || '').toLowerCase().includes(q)
+                        || (a.reference_number || '').toLowerCase().includes(q)
+                    })
+                  : applications
+                }
+                onSelect={setSelected}
+                onApprove={handleApprove}
+                onReject={entry => setRejectTarget(entry)}
+                onResend={handleResendEmail}
+              />
+            </>
           ) : (
             <ConsultingTable
               entries={consulting}
