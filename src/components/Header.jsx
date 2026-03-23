@@ -109,9 +109,14 @@ export default function Header() {
             )}
           </div>
         ) : (
-          <Link to="/join" className="header-cta" onClick={() => setMenuOpen(false)}>
-            Join The Club
-          </Link>
+          <div className="header-auth-buttons">
+            <Link to="/login" className="header-login" onClick={() => setMenuOpen(false)}>
+              Login
+            </Link>
+            <Link to="/join" className="header-cta" onClick={() => setMenuOpen(false)}>
+              Join The Club
+            </Link>
+          </div>
         )}
 
         <button
