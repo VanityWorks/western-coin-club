@@ -585,6 +585,13 @@ function MembersSection({ adminPassword, showToast }) {
           <div style={{ marginTop: '1.5rem', paddingTop: '1.25rem', borderTop: '1px solid var(--border)' }}>
             <h3 style={{ fontSize: '0.9rem', fontWeight: 700, marginBottom: '0.75rem', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.06em' }}>Actions</h3>
             <div style={{ display: 'flex', gap: '0.65rem', flexWrap: 'wrap' }}>
+              <button className="btn btn-secondary btn-sm" onClick={() => {
+                const link = `https://www.coinclub.co.za/join?ref=${selected.id}`
+                navigator.clipboard.writeText(link)
+                showToast('Referral link copied!')
+              }}>
+                <i className="fa-solid fa-link" style={{ marginRight: '0.3rem' }} />Copy Referral Link
+              </button>
               <button className="btn btn-secondary btn-sm" onClick={() => handleMute(selected)} disabled={saving}>
                 {isMuted ? 'Unmute' : 'Mute'}
               </button>
