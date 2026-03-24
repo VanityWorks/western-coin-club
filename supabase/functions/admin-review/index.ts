@@ -136,6 +136,14 @@ serve(async (req) => {
         .single()
       if (fetchErr) throw fetchErr
 
+      // Guard: if already approved, do nothing
+      if (app.status === 'approved') {
+        return new Response(
+          JSON.stringify({ success: true, already: true }),
+          { headers: { ...cors, 'Content-Type': 'application/json' } }
+        )
+      }
+
       // Generate membership number: find the highest existing number and increment
       const { data: maxRows } = await supabase
         .from('membership_applications')

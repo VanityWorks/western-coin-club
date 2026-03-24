@@ -1470,6 +1470,7 @@ function AdminDashboard({ adminPassword, onLogout }) {
   }, [mainView, statusTab, loadApplications])
 
   async function handleApprove(id) {
+    if (actionLoading) return
     setActionLoading(true)
     const res = await fetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/admin-review`, {
       method: 'POST',
@@ -1480,9 +1481,11 @@ function AdminDashboard({ adminPassword, onLogout }) {
       },
       body: JSON.stringify({ id, action: 'approve' }),
     })
-    if (!res.ok) showToast(`Approval error`)
+    if (!res.ok) showToast('Approval error')
     else {
-      showToast('Application approved. Login credentials sent to member.')
+      const data = await res.json()
+      if (data.already) showToast('Already approved. Use Resend Email to send credentials again.')
+      else showToast('Application approved. Login credentials sent to member.')
       setSelected(null)
       loadApplications(statusTab)
     }
