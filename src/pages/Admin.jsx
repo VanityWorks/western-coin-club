@@ -115,7 +115,7 @@ function RejectModal({ onConfirm, onCancel, loading }) {
 
 // ── Signup detail ─────────────────────────────────────
 
-function SignupDetail({ entry, onBack, onApprove, onReject, onResend, actionLoading }) {
+function SignupDetail({ entry, onBack, onApprove, onReject, onResend, onRemind, actionLoading }) {
   const isPending = entry.status === 'pending'
   const isApproved = entry.status === 'approved'
   return (
@@ -130,6 +130,9 @@ function SignupDetail({ entry, onBack, onApprove, onReject, onResend, actionLoad
               </button>
               <button className="admin-reject-btn" onClick={() => onReject(entry)} disabled={actionLoading}>
                 <i className="fa-solid fa-xmark" style={{ marginRight: '0.4rem' }} />Reject
+              </button>
+              <button className="btn btn-secondary btn-sm" onClick={() => onRemind(entry.id)} disabled={actionLoading}>
+                <i className="fa-solid fa-bell" style={{ marginRight: '0.4rem' }} />Send Reminder
               </button>
             </>
           )}
@@ -230,7 +233,7 @@ function ConsultingDetail({ entry, onBack, onDelete, actionLoading }) {
 
 // ── Tables ────────────────────────────────────────────
 
-function SignupsTable({ entries, onSelect, onApprove, onReject, onResend }) {
+function SignupsTable({ entries, onSelect, onApprove, onReject, onResend, onRemind }) {
   if (entries.length === 0) return <p className="admin-empty">No applications in this category.</p>
   return (
     <div className="admin-table-wrap">
@@ -258,6 +261,7 @@ function SignupsTable({ entries, onSelect, onApprove, onReject, onResend }) {
                   <>
                     <button className="admin-approve-sm" onClick={() => onApprove(entry.id)} title="Approve"><i className="fa-solid fa-check" /></button>
                     <button className="admin-reject-sm"  onClick={() => onReject(entry)}     title="Reject"><i className="fa-solid fa-xmark" /></button>
+                    <button className="admin-approve-sm" onClick={() => onRemind(entry.id)} title="Send payment reminder"><i className="fa-solid fa-bell" /></button>
                   </>
                 )}
                 {entry.status === 'approved' && (
@@ -591,6 +595,17 @@ function MembersSection({ adminPassword, showToast }) {
                 showToast('Referral link copied!')
               }}>
                 <i className="fa-solid fa-link" style={{ marginRight: '0.3rem' }} />Copy Referral Link
+              </button>
+              <button className="btn btn-secondary btn-sm" onClick={async () => {
+                setSaving(true)
+                const { error } = await supabase.auth.resetPasswordForEmail(selected.email, {
+                  redirectTo: 'https://www.coinclub.co.za/settings',
+                })
+                if (error) showToast('Error sending reset email.')
+                else showToast('Password reset email sent!')
+                setSaving(false)
+              }} disabled={saving}>
+                <i className="fa-solid fa-key" style={{ marginRight: '0.3rem' }} />Send Password Reset
               </button>
               <button className="btn btn-secondary btn-sm" onClick={() => handleMute(selected)} disabled={saving}>
                 {isMuted ? 'Unmute' : 'Mute'}
@@ -1495,6 +1510,22 @@ function AdminDashboard({ adminPassword, onLogout }) {
     setActionLoading(false)
   }
 
+  async function handleRemind(id) {
+    setActionLoading(true)
+    const res = await fetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/admin-review`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${import.meta.env.VITE_SUPABASE_ANON_KEY}`,
+        'x-admin-secret': adminPassword,
+      },
+      body: JSON.stringify({ id, action: 'remind' }),
+    })
+    if (!res.ok) showToast('Error sending reminder.')
+    else showToast('Payment reminder sent!')
+    setActionLoading(false)
+  }
+
   async function handleResendEmail(id) {
     if (!window.confirm('This will generate a new password and resend the welcome email. Continue?')) return
     setActionLoading(true)
@@ -1641,6 +1672,7 @@ function AdminDashboard({ adminPassword, onLogout }) {
                 onApprove={handleApprove}
                 onReject={entry => setRejectTarget(entry)}
                 onResend={handleResendEmail}
+                onRemind={handleRemind}
                 actionLoading={actionLoading}
               />
             ) : (
@@ -1687,6 +1719,7 @@ function AdminDashboard({ adminPassword, onLogout }) {
                 onApprove={handleApprove}
                 onReject={entry => setRejectTarget(entry)}
                 onResend={handleResendEmail}
+                onRemind={handleRemind}
               />
             </>
           ) : (

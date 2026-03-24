@@ -292,6 +292,130 @@ serve(async (req) => {
       )
     }
 
+    if (action === 'remind') {
+      const { data: app, error: fetchErr } = await supabase
+        .from('membership_applications')
+        .select('*')
+        .eq('id', id)
+        .single()
+      if (fetchErr) throw fetchErr
+      if (app.status !== 'pending') throw new Error('Can only send reminders for pending applications')
+
+      const sendgridKey = Deno.env.get('SENDGRID_API_KEY')
+      const fromEmail   = Deno.env.get('FROM_EMAIL') || 'noreply@coinclub.co.za'
+      const siteUrl     = Deno.env.get('SITE_URL') || 'https://www.coinclub.co.za'
+
+      if (!sendgridKey) throw new Error('SENDGRID_API_KEY not configured')
+
+      const reminderHtml = `
+<!DOCTYPE html>
+<html>
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"></head>
+<body style="margin:0;padding:0;background:#f5f5f5;font-family:'DM Sans',Arial,sans-serif">
+  <table width="100%" cellpadding="0" cellspacing="0" style="background:#f5f5f5;padding:40px 0">
+    <tr><td align="center">
+      <table width="560" cellpadding="0" cellspacing="0" style="background:#ffffff;border-radius:16px;overflow:hidden;box-shadow:0 4px 24px rgba(0,0,0,0.08)">
+        <tr>
+          <td style="background:#0a0a0a;padding:28px 40px;text-align:center">
+            <p style="margin:0;color:#FFB81C;font-size:11px;font-weight:700;letter-spacing:0.15em;text-transform:uppercase">South African Coin Collectors Club</p>
+          </td>
+        </tr>
+        <tr><td style="height:4px;background:#FFB81C"></td></tr>
+        <tr>
+          <td style="padding:40px 40px 32px">
+            <h1 style="margin:0 0 8px;font-size:24px;font-weight:700;color:#0a0a0a">Hi ${app.first_name}, we noticed you haven't completed your membership yet!</h1>
+            <p style="margin:0 0 24px;color:#525252;font-size:15px;line-height:1.6">
+              Your application to join the South African Coin Collectors Club is still pending. To complete your membership, please make your payment of <strong>R120/year</strong> using the reference below.
+            </p>
+
+            <table width="100%" cellpadding="0" cellspacing="0" style="background:#f5f5f5;border-radius:10px;margin-bottom:24px">
+              <tr>
+                <td style="padding:20px 24px">
+                  <p style="margin:0 0 10px;font-size:11px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:#a3a3a3">Payment Details</p>
+                  <table width="100%" cellpadding="0" cellspacing="0">
+                    <tr>
+                      <td style="padding:6px 0;border-bottom:1px solid #e5e5e5;font-size:13px;color:#525252;width:120px">Bank</td>
+                      <td style="padding:6px 0;border-bottom:1px solid #e5e5e5;font-size:14px;color:#0a0a0a;font-weight:600">First National Bank</td>
+                    </tr>
+                    <tr>
+                      <td style="padding:6px 0;border-bottom:1px solid #e5e5e5;font-size:13px;color:#525252">Account Name</td>
+                      <td style="padding:6px 0;border-bottom:1px solid #e5e5e5;font-size:14px;color:#0a0a0a;font-weight:600">Numismatic Holdings (PTY) LTD</td>
+                    </tr>
+                    <tr>
+                      <td style="padding:6px 0;border-bottom:1px solid #e5e5e5;font-size:13px;color:#525252">Account Number</td>
+                      <td style="padding:6px 0;border-bottom:1px solid #e5e5e5;font-size:14px;color:#0a0a0a;font-weight:600">63201968625</td>
+                    </tr>
+                    <tr>
+                      <td style="padding:6px 0;font-size:13px;color:#525252">Your Reference</td>
+                      <td style="padding:6px 0"><span style="font-family:monospace;font-size:15px;font-weight:700;color:#007749;background:#e8f5ef;padding:4px 10px;border-radius:5px">${app.reference_number}</span></td>
+                    </tr>
+                  </table>
+                </td>
+              </tr>
+            </table>
+
+            <p style="margin:0 0 8px;font-size:15px;font-weight:700;color:#0a0a0a">Here's what you'll receive as a member:</p>
+            <table cellpadding="0" cellspacing="0" style="margin-bottom:24px">
+              <tr><td style="padding:4px 0;font-size:14px;color:#525252">&#8226; Official Membership Certificate in your name</td></tr>
+              <tr><td style="padding:4px 0;font-size:14px;color:#525252">&#8226; SACCC Membership Card</td></tr>
+              <tr><td style="padding:4px 0;font-size:14px;color:#525252">&#8226; SANGS Pedigree Coin - graded and registered to you</td></tr>
+              <tr><td style="padding:4px 0;font-size:14px;color:#525252">&#8226; Hern's Pocket Guide access (App Store & Google Play)</td></tr>
+              <tr><td style="padding:4px 0;font-size:14px;color:#525252">&#8226; SANGS Grading Voucher</td></tr>
+              <tr><td style="padding:4px 0;font-size:14px;color:#525252">&#8226; Bassani's No Seller's Commission Voucher</td></tr>
+              <tr><td style="padding:4px 0;font-size:14px;color:#525252">&#8226; Investment Coin & Bullion Voucher</td></tr>
+              <tr><td style="padding:4px 0;font-size:14px;color:#525252">&#8226; Bucks & Gems Voucher</td></tr>
+              <tr><td style="padding:4px 0;font-size:14px;color:#525252">&#8226; Coin Conservation Kit</td></tr>
+              <tr><td style="padding:4px 0;font-size:14px;color:#525252">&#8226; Access to the Members Forum and community events</td></tr>
+            </table>
+
+            <table cellpadding="0" cellspacing="0" style="margin-bottom:28px">
+              <tr>
+                <td style="background:#007749;border-radius:8px">
+                  <a href="${siteUrl}/join" style="display:inline-block;padding:14px 28px;color:#ffffff;font-size:15px;font-weight:700;text-decoration:none">Complete Your Membership</a>
+                </td>
+              </tr>
+            </table>
+
+            <p style="margin:0;color:#a3a3a3;font-size:13px;line-height:1.6">
+              If you've already made payment, please disregard this email - your membership will be processed shortly.
+            </p>
+          </td>
+        </tr>
+        <tr>
+          <td style="padding:20px 40px;border-top:1px solid #e5e5e5;text-align:center">
+            <p style="margin:0;font-size:12px;color:#a3a3a3">South African Coin Collectors Club - coinclub.co.za</p>
+          </td>
+        </tr>
+      </table>
+    </td></tr>
+  </table>
+</body>
+</html>`
+
+      const emailRes = await fetch('https://api.sendgrid.com/v3/mail/send', {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${sendgridKey}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          personalizations: [{ to: [{ email: app.email }] }],
+          from:    { email: fromEmail, name: 'SACCC' },
+          subject: `${app.first_name}, your SACCC membership is waiting for you!`,
+          content: [{ type: 'text/html', value: reminderHtml }],
+        }),
+      })
+      if (!emailRes.ok) {
+        const errText = await emailRes.text()
+        throw new Error(`SendGrid error ${emailRes.status}: ${errText}`)
+      }
+
+      return new Response(
+        JSON.stringify({ success: true }),
+        { headers: { ...cors, 'Content-Type': 'application/json' } }
+      )
+    }
+
     if (action === 'reject') {
       const { error } = await supabase
         .from('membership_applications')
