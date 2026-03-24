@@ -160,8 +160,8 @@ serve(async (req) => {
         },
       })
       if (createErr) {
-        // User may already exist — fetch them and update password
-        const { data: listData, error: listErr } = await supabase.auth.admin.listUsers()
+        // User may already exist — look them up by email and update password
+        const { data: listData, error: listErr } = await supabase.auth.admin.listUsers({ perPage: 1000 })
         if (listErr) throw listErr
         const existing = listData.users.find((u: { email: string }) => u.email === app.email)
         if (!existing) throw createErr
