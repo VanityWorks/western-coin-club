@@ -475,7 +475,7 @@ function ThreadView({ thread, category, user, onBack }) {
       if (result) { setPosts(result.posts); setAvatarMap(result.avatarMap) }
       setLoading(false)
     })
-    supabase.from('forum_threads').update({ views: (thread.views || 0) + 1 }).eq('id', thread.id)
+    supabase.rpc('increment_thread_views', { tid: thread.id })
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [thread.id])
 
@@ -670,39 +670,80 @@ export default function Forum() {
   const [selectedCategory, setSelectedCategory] = useState(null)
   const [selectedThread, setSelectedThread]     = useState(null)
   const [showNewThread, setShowNewThread]       = useState(false)
+  const [initialLoad, setInitialLoad]           = useState(true)
 
-  // Deep-link: open a thread directly when ?thread=id is in the URL
+  // Restore state from URL on initial load / when params change (e.g. browser back)
   useEffect(() => {
+    if (member === null || member === false) return
+    const catId = searchParams.get('cat')
     const threadId = searchParams.get('thread')
-    if (!threadId || member === null || member === false) return
-    async function openThread() {
-      const { data: thread } = await supabase
-        .from('forum_threads')
-        .select('*')
-        .eq('id', threadId)
-        .single()
-      if (!thread) return
-      const { data: category } = await supabase
-        .from('forum_categories')
-        .select('*')
-        .eq('id', thread.category_id)
-        .single()
-      if (!category) return
-      setSelectedCategory(category)
-      setSelectedThread(thread)
-      setView('thread')
-      setSearchParams({}, { replace: true })
+
+    async function restore() {
+      if (threadId) {
+        const { data: thread } = await supabase
+          .from('forum_threads')
+          .select('*')
+          .eq('id', threadId)
+          .single()
+        if (!thread) { setInitialLoad(false); return }
+        const cid = catId || thread.category_id
+        const { data: category } = await supabase
+          .from('forum_categories')
+          .select('*')
+          .eq('id', cid)
+          .single()
+        if (!category) { setInitialLoad(false); return }
+        setSelectedCategory(category)
+        setSelectedThread(thread)
+        setView('thread')
+      } else if (catId) {
+        const { data: category } = await supabase
+          .from('forum_categories')
+          .select('*')
+          .eq('id', catId)
+          .single()
+        if (!category) { setInitialLoad(false); return }
+        setSelectedCategory(category)
+        setSelectedThread(null)
+        setView('threads')
+      } else {
+        setView('home')
+        setSelectedCategory(null)
+        setSelectedThread(null)
+      }
+      setInitialLoad(false)
       window.scrollTo(0, 0)
     }
-    openThread()
+    restore()
   }, [searchParams, member])
 
-  function selectCategory(cat) { setSelectedCategory(cat); setView('threads'); window.scrollTo(0, 0) }
-  function selectThread(thread) { setSelectedThread(thread); setView('thread'); window.scrollTo(0, 0) }
+  function selectCategory(cat) {
+    setSelectedCategory(cat)
+    setSelectedThread(null)
+    setView('threads')
+    setSearchParams({ cat: cat.id })
+    window.scrollTo(0, 0)
+  }
+
+  function selectThread(thread) {
+    setSelectedThread(thread)
+    setView('thread')
+    setSearchParams({ cat: selectedCategory?.id, thread: thread.id })
+    window.scrollTo(0, 0)
+  }
 
   function handleBack(to) {
-    if (to === 'home')    { setView('home'); setSelectedCategory(null); setSelectedThread(null) }
-    if (to === 'threads') { setView('threads'); setSelectedThread(null) }
+    if (to === 'home') {
+      setView('home')
+      setSelectedCategory(null)
+      setSelectedThread(null)
+      setSearchParams({})
+    }
+    if (to === 'threads') {
+      setView('threads')
+      setSelectedThread(null)
+      setSearchParams({ cat: selectedCategory?.id })
+    }
     window.scrollTo(0, 0)
   }
 
