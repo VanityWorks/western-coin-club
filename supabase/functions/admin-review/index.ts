@@ -136,12 +136,17 @@ serve(async (req) => {
         .single()
       if (fetchErr) throw fetchErr
 
-      // Generate membership number starting from 100
-      const { count: approvedCount } = await supabase
+      // Generate membership number: find the highest existing number and increment
+      const { data: maxRows } = await supabase
         .from('membership_applications')
-        .select('*', { count: 'exact', head: true })
+        .select('reference_number')
         .eq('status', 'approved')
-      const memberRef = String(100 + (approvedCount || 0))
+        .order('reference_number', { ascending: false })
+      const usedNums = (maxRows || [])
+        .map((r: any) => parseInt(r.reference_number, 10))
+        .filter((n: number) => !isNaN(n))
+      const highestNum = usedNums.length > 0 ? Math.max(...usedNums) : 99
+      const memberRef = String(Math.max(highestNum + 1, 100))
 
       // Generate password: firstnamesurnamesaccc + random suffix
       const password = generatePassword(app.first_name, app.surname)
@@ -172,6 +177,24 @@ serve(async (req) => {
         userId = userData.user.id
       }
 
+      // Update application status and set final membership reference FIRST
+      const { error: statusErr } = await supabase
+        .from('membership_applications')
+        .update({
+          status:           'approved',
+          reviewed_at:      new Date().toISOString(),
+          member_id:        userId,
+          reference_number: memberRef,
+        })
+        .eq('id', id)
+      if (statusErr) throw new Error(`Status update failed: ${statusErr.message}`)
+
+      // Store membership number directly on the profile for easy lookup
+      await supabase
+        .from('profiles')
+        .update({ membership_number: memberRef })
+        .eq('id', userId)
+
       // Send credentials email via SendGrid
       const sendgridKey = Deno.env.get('SENDGRID_API_KEY')
       const fromEmail   = Deno.env.get('FROM_EMAIL') || 'noreply@coinclub.co.za'
@@ -187,7 +210,7 @@ serve(async (req) => {
           body: JSON.stringify({
             personalizations: [{ to: [{ email: app.email }] }],
             from:    { email: fromEmail, name: 'SACCC' },
-            subject: `Welcome to SACCC, ${app.first_name}! — Your Login Details`,
+            subject: `Welcome to SACCC, ${app.first_name}! - Your Login Details`,
             content: [{ type: 'text/html', value: credentialsEmail({ ...app, reference_number: memberRef }, password, siteUrl) }],
           }),
         })
@@ -198,23 +221,6 @@ serve(async (req) => {
       } else {
         throw new Error('SENDGRID_API_KEY not configured')
       }
-
-      // Update application status and set final membership reference
-      await supabase
-        .from('membership_applications')
-        .update({
-          status:           'approved',
-          reviewed_at:      new Date().toISOString(),
-          member_id:        userId,
-          reference_number: memberRef,
-        })
-        .eq('id', id)
-
-      // Store membership number directly on the profile for easy lookup
-      await supabase
-        .from('profiles')
-        .update({ membership_number: memberRef })
-        .eq('id', userId)
 
       // Award referral point to the referring member (if any)
       if (app.referral && app.referral_number) {
