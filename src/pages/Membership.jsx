@@ -14,6 +14,7 @@ const welcomePack = [
   'Bassani\'s No Seller\'s Commission Voucher',
   'Investment Coin & Bullion Voucher',
   'Bucks & Gems Voucher',
+  'Coin Conservation Kit',
   'A Special Numismatic Welcome Gift',
 ]
 

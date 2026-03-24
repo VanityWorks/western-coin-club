@@ -63,7 +63,7 @@ export default function About() {
               <ul>
                 <li><strong>Member Liaison</strong> - Georgia Hammer</li>
                 <li><strong>Events Director</strong> - John Hamer</li>
-                <li><strong>Regional Coordinators</strong> - Western Cape (Gary Willicott), Gauteng (Landon Coleske), KwaZulu-Natal (To be announced), Port Elizabeth (To be announced), Bloemfontein (To be announced)</li>
+                <li><strong>Regional Coordinators</strong> - Western Cape (Gary Willicott), Gauteng (Landon Coleske), KwaZulu-Natal (To be announced), Port Elizabeth (To be announced), Bloemfontein (Joel Potgieter)</li>
               </ul>
             </div>
 
@@ -74,7 +74,7 @@ export default function About() {
                 <li><strong>ZAR Series Coordinator</strong> - Werner Lamprecht</li>
                 <li><strong>Union Series Coordinator</strong> - Jan Kleynhans</li>
                 <li><strong>South African Decimal Series Coordinator</strong> - To be announced</li>
-                <li><strong>World Coin Coordinator</strong> - To be announced</li>
+                <li><strong>World Coin Coordinator</strong> - Juan Terblanche</li>
                 <li><strong>Ancient Coordinator</strong> - Joel Potgieter</li>
                 <li><strong>Local Bullion & Mint Issues Coordinator</strong> - Marco Bassani</li>
                 <li><strong>Banknotes Coordinator</strong> - Dr Heinz Wirz</li>
