@@ -670,39 +670,51 @@ export default function Forum() {
   const [selectedCategory, setSelectedCategory] = useState(null)
   const [selectedThread, setSelectedThread]     = useState(null)
   const [showNewThread, setShowNewThread]       = useState(false)
-  const [initialLoad, setInitialLoad]           = useState(true)
+  const navRef = useRef(false) // true when we triggered the nav (skip restore)
+  const categoryCache = useRef({})
+  const threadCache = useRef({})
 
-  // Restore state from URL on initial load / when params change (e.g. browser back)
+  // Restore state from URL on initial load / browser back/forward
   useEffect(() => {
     if (member === null || member === false) return
+
+    // Skip restore if we triggered the navigation ourselves
+    if (navRef.current) {
+      navRef.current = false
+      return
+    }
+
     const catId = searchParams.get('cat')
     const threadId = searchParams.get('thread')
 
     async function restore() {
       if (threadId) {
-        const { data: thread } = await supabase
-          .from('forum_threads')
-          .select('*')
-          .eq('id', threadId)
-          .single()
-        if (!thread) { setInitialLoad(false); return }
+        let thread = threadCache.current[threadId]
+        if (!thread) {
+          const { data } = await supabase.from('forum_threads').select('*').eq('id', threadId).single()
+          thread = data
+          if (thread) threadCache.current[threadId] = thread
+        }
+        if (!thread) return
         const cid = catId || thread.category_id
-        const { data: category } = await supabase
-          .from('forum_categories')
-          .select('*')
-          .eq('id', cid)
-          .single()
-        if (!category) { setInitialLoad(false); return }
+        let category = categoryCache.current[cid]
+        if (!category) {
+          const { data } = await supabase.from('forum_categories').select('*').eq('id', cid).single()
+          category = data
+          if (category) categoryCache.current[cid] = category
+        }
+        if (!category) return
         setSelectedCategory(category)
         setSelectedThread(thread)
         setView('thread')
       } else if (catId) {
-        const { data: category } = await supabase
-          .from('forum_categories')
-          .select('*')
-          .eq('id', catId)
-          .single()
-        if (!category) { setInitialLoad(false); return }
+        let category = categoryCache.current[catId]
+        if (!category) {
+          const { data } = await supabase.from('forum_categories').select('*').eq('id', catId).single()
+          category = data
+          if (category) categoryCache.current[catId] = category
+        }
+        if (!category) return
         setSelectedCategory(category)
         setSelectedThread(null)
         setView('threads')
@@ -711,23 +723,26 @@ export default function Forum() {
         setSelectedCategory(null)
         setSelectedThread(null)
       }
-      setInitialLoad(false)
       window.scrollTo(0, 0)
     }
     restore()
   }, [searchParams, member])
 
   function selectCategory(cat) {
+    categoryCache.current[cat.id] = cat
     setSelectedCategory(cat)
     setSelectedThread(null)
     setView('threads')
+    navRef.current = true
     setSearchParams({ cat: cat.id })
     window.scrollTo(0, 0)
   }
 
   function selectThread(thread) {
+    threadCache.current[thread.id] = thread
     setSelectedThread(thread)
     setView('thread')
+    navRef.current = true
     setSearchParams({ cat: selectedCategory?.id, thread: thread.id })
     window.scrollTo(0, 0)
   }
@@ -737,11 +752,13 @@ export default function Forum() {
       setView('home')
       setSelectedCategory(null)
       setSelectedThread(null)
+      navRef.current = true
       setSearchParams({})
     }
     if (to === 'threads') {
       setView('threads')
       setSelectedThread(null)
+      navRef.current = true
       setSearchParams({ cat: selectedCategory?.id })
     }
     window.scrollTo(0, 0)

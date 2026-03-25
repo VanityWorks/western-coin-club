@@ -61,7 +61,7 @@ export default function About() {
             <div className="structure-section">
               <h3>Community & Industry Relations</h3>
               <ul>
-                <li><strong>Member Liaison</strong> - Georgia Hammer</li>
+                <li><strong>Member Liaison</strong> - Georgia Hamer</li>
                 <li><strong>Events Director</strong> - John Hamer</li>
                 <li><strong>Regional Coordinators</strong> - Western Cape (Gary Willicott), Gauteng (Landon Coleske), KwaZulu-Natal (To be announced), Port Elizabeth (To be announced), Bloemfontein (Juan Terblanche)</li>
               </ul>
