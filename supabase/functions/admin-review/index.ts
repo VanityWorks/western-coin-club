@@ -67,7 +67,7 @@ function credentialsEmail(app: Record<string, string>, password: string, siteUrl
                     <tr>
                       <td style="padding:10px 0 6px;font-size:13px;color:#525252">Password</td>
                       <td style="padding:10px 0 6px">
-                        <span style="font-family:monospace;font-size:15px;font-weight:700;color:#007749;background:#e8f5ef;padding:4px 10px;border-radius:5px;letter-spacing:0.04em">${password}</span>
+                        <code style="font-family:monospace;font-size:15px;font-weight:700;color:#007749;background:#e8f5ef;padding:4px 0;border-radius:5px;letter-spacing:0.04em">${password}</code>
                       </td>
                     </tr>
                   </table>
