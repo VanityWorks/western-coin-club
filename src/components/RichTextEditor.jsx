@@ -97,7 +97,7 @@ export default function RichTextEditor({ content = '', onUpdate, placeholder = '
     const ext = file.name?.split('.').pop()?.toLowerCase() || 'png'
     const path = `forum/${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`
     const { error } = await supabase.storage.from('article-images').upload(path, file, { upsert: false })
-    if (error) { console.error('Supabase storage error:', error.message, error); return null }
+    if (error) { console.error('Supabase storage error:', error.message, error); alert('Image upload failed. Please try again.'); return null }
     const { data: { publicUrl } } = supabase.storage.from('article-images').getPublicUrl(path)
     return publicUrl
   }
