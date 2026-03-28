@@ -385,10 +385,12 @@ function SignupDetail({ entry, onBack, onApprove, onReject, onResend, onRemind, 
                   </button>
                   <button className="btn btn-secondary btn-sm" onClick={async () => {
                     setSaving(true)
-                    const { error } = await supabase.auth.resetPasswordForEmail(entry.email, {
-                      redirectTo: 'https://www.coinclub.co.za/settings',
+                    const res = await fetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/password-reset`, {
+                      method: 'POST',
+                      headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${import.meta.env.VITE_SUPABASE_ANON_KEY}` },
+                      body: JSON.stringify({ action: 'request', email: entry.email }),
                     })
-                    if (error) showToast('Error sending reset email.')
+                    if (!res.ok) showToast('Error sending reset email.')
                     else showToast('Password reset email sent!')
                     setSaving(false)
                   }} disabled={saving}>
@@ -813,10 +815,12 @@ function MembersSection({ adminPassword, showToast }) {
               </button>
               <button className="btn btn-secondary btn-sm" onClick={async () => {
                 setSaving(true)
-                const { error } = await supabase.auth.resetPasswordForEmail(selected.email, {
-                  redirectTo: 'https://www.coinclub.co.za/settings',
+                const res = await fetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/password-reset`, {
+                  method: 'POST',
+                  headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${import.meta.env.VITE_SUPABASE_ANON_KEY}` },
+                  body: JSON.stringify({ action: 'request', email: selected.email }),
                 })
-                if (error) showToast('Error sending reset email.')
+                if (!res.ok) showToast('Error sending reset email.')
                 else showToast('Password reset email sent!')
                 setSaving(false)
               }} disabled={saving}>

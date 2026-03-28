@@ -34,17 +34,20 @@ export default function MemberLogin() {
     if (!email) { setError('Please enter your email address.'); return }
     setResetLoading(true)
     setError('')
-    const { error: resetErr } = await supabase.auth.resetPasswordForEmail(email, {
-      redirectTo: 'https://www.coinclub.co.za/settings',
-    })
-    if (resetErr) {
-      if (resetErr.status === 429) {
-        setError('Too many requests. Please wait a few minutes and try again.')
-      } else {
-        setError('No account found with that email address. Please check and try again.')
-      }
-    } else {
-      setResetSent(true)
+    try {
+      const res = await fetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/password-reset`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${import.meta.env.VITE_SUPABASE_ANON_KEY}`,
+        },
+        body: JSON.stringify({ action: 'request', email }),
+      })
+      const data = await res.json()
+      if (data.error) setError(data.error)
+      else setResetSent(true)
+    } catch {
+      setError('Something went wrong. Please try again.')
     }
     setResetLoading(false)
   }
