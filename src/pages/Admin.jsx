@@ -115,9 +115,99 @@ function RejectModal({ onConfirm, onCancel, loading }) {
 
 // ── Signup detail ─────────────────────────────────────
 
-function SignupDetail({ entry, onBack, onApprove, onReject, onResend, onRemind, actionLoading }) {
+function SignupDetail({ entry, onBack, onApprove, onReject, onResend, onRemind, onDeleteApproved, adminPassword, showToast, actionLoading }) {
   const isPending = entry.status === 'pending'
   const isApproved = entry.status === 'approved'
+
+  // Member management state (only used for approved entries)
+  const [member, setMember] = useState(null)
+  const [memberLoading, setMemberLoading] = useState(false)
+  const [saving, setSaving] = useState(false)
+  const [memberNumEdit, setMemberNumEdit] = useState(null)
+  const [badges, setBadges] = useState([])
+
+  const adminFetch = useCallback(async (action, extra = {}) => {
+    const res = await fetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/profile-admin`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${import.meta.env.VITE_SUPABASE_ANON_KEY}`,
+        'x-admin-secret': adminPassword,
+      },
+      body: JSON.stringify({ action, ...extra }),
+    })
+    const data = await res.json()
+    return { data, error: res.ok ? null : new Error(data?.error || 'Request failed') }
+  }, [adminPassword])
+
+  // Load member profile for approved entries
+  useEffect(() => {
+    if (!isApproved || !entry.member_id) return
+    setMemberLoading(true)
+    adminFetch('get_member', { user_id: entry.member_id }).then(({ data }) => {
+      if (data?.data) {
+        setMember(data.data)
+        setBadges([...(data.data.roles || []), ...(data.data.awards || [])])
+      }
+      setMemberLoading(false)
+    })
+  }, [isApproved, entry.member_id])
+
+  async function handleSaveBadges() {
+    setSaving(true)
+    const roles = badges.filter(b => ['Admin', 'Moderator', 'Muted'].includes(b))
+    const awards = badges.filter(b => !['Admin', 'Moderator', 'Muted'].includes(b))
+    const { error } = await adminFetch('update_member', { user_id: entry.member_id, roles, awards })
+    if (error) showToast('Error saving badges.')
+    else {
+      showToast('Badges updated.')
+      setMember(prev => ({ ...prev, roles, awards }))
+    }
+    setSaving(false)
+  }
+
+  async function handleUpdateMemberNumber(newNumber) {
+    setSaving(true)
+    const { error } = await adminFetch('update_membership_number', { user_id: entry.member_id, membership_number: newNumber })
+    if (error) showToast('Error updating membership number.')
+    else {
+      showToast('Membership number updated.')
+      setMember(prev => ({ ...prev, membership_number: newNumber }))
+    }
+    setSaving(false)
+  }
+
+  async function handleMute() {
+    const isMuted = (member?.roles || []).includes('Muted')
+    const newRoles = isMuted
+      ? (member.roles || []).filter(r => r !== 'Muted')
+      : [...(member.roles || []), 'Muted']
+    setSaving(true)
+    const { error } = await adminFetch('update_member', { user_id: entry.member_id, roles: newRoles, awards: member.awards || [] })
+    if (!error) {
+      showToast(isMuted ? 'Member unmuted.' : 'Member muted.')
+      setMember(prev => ({ ...prev, roles: newRoles }))
+      setBadges([...newRoles, ...(member.awards || [])])
+    }
+    setSaving(false)
+  }
+
+  async function handleBan() {
+    const isBanned = member?.banned_until && new Date(member.banned_until) > new Date()
+    const action = isBanned ? 'unban_member' : 'ban_member'
+    setSaving(true)
+    const { error } = await adminFetch(action, { user_id: entry.member_id })
+    if (!error) {
+      const newBanned = isBanned ? null : '9999-01-01T00:00:00Z'
+      showToast(isBanned ? 'Member unbanned.' : 'Member banned.')
+      setMember(prev => ({ ...prev, banned_until: newBanned }))
+    }
+    setSaving(false)
+  }
+
+  const isBanned = member?.banned_until && new Date(member.banned_until) > new Date()
+  const isMuted = (member?.roles || []).includes('Muted')
+
   return (
     <div className="admin-detail">
       <div className="admin-detail-header">
@@ -137,17 +227,26 @@ function SignupDetail({ entry, onBack, onApprove, onReject, onResend, onRemind, 
             </>
           )}
           {isApproved && (
-            <button className="admin-approve-btn" onClick={() => onResend(entry.id)} disabled={actionLoading}>
-              {actionLoading ? 'Sending…' : <><i className="fa-solid fa-envelope" style={{ marginRight: '0.4rem' }} />Resend Email</>}
-            </button>
+            <>
+              <button className="admin-approve-btn" onClick={() => onResend(entry.id)} disabled={actionLoading}>
+                {actionLoading ? 'Sending…' : <><i className="fa-solid fa-envelope" style={{ marginRight: '0.4rem' }} />Resend Email</>}
+              </button>
+              <button className="admin-reject-btn" onClick={() => onDeleteApproved(entry)} disabled={actionLoading}>
+                <i className="fa-solid fa-trash" style={{ marginRight: '0.4rem' }} />Delete Account
+              </button>
+            </>
           )}
         </div>
       </div>
+
+      {/* Application info */}
       <div className="admin-detail-card">
         <div className="admin-detail-title-row">
           <div>
             <h2>{entry.first_name} {entry.surname}</h2>
             <span className={`admin-status-badge status-${entry.status}`}>{entry.status}</span>
+            {isBanned && <span style={{ marginLeft: '0.5rem', fontSize: '0.72rem', background: '#E63946', color: '#fff', borderRadius: '4px', padding: '2px 7px', fontWeight: 700 }}>Banned</span>}
+            {isMuted && <span style={{ marginLeft: '0.5rem', fontSize: '0.72rem', background: '#525252', color: '#fff', borderRadius: '4px', padding: '2px 7px', fontWeight: 700 }}>Muted</span>}
           </div>
           <span className="admin-detail-date">{formatDate(entry.submitted_at)}</span>
         </div>
@@ -195,6 +294,119 @@ function SignupDetail({ entry, onBack, onApprove, onReject, onResend, onRemind, 
           )}
         </div>
       </div>
+
+      {/* Inline member management for approved entries */}
+      {isApproved && entry.member_id && (
+        <div className="admin-detail-card" style={{ marginTop: '1rem' }}>
+          {memberLoading ? (
+            <p className="admin-empty">Loading member profile...</p>
+          ) : !member ? (
+            <p className="admin-empty">Member profile not found.</p>
+          ) : (
+            <>
+              <h3 style={{ fontSize: '0.9rem', fontWeight: 700, marginBottom: '1rem', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.06em' }}>Member Management</h3>
+              <div className="admin-detail-grid">
+                {/* Membership number - editable */}
+                <div className="admin-detail-field">
+                  <span>Membership No.</span>
+                  {memberNumEdit !== null ? (
+                    <div style={{ display: 'flex', gap: '0.4rem', alignItems: 'center', marginTop: '0.25rem' }}>
+                      <input className="an-input" value={memberNumEdit} onChange={e => setMemberNumEdit(e.target.value)}
+                        style={{ width: '100px', padding: '0.3rem 0.5rem', fontSize: '0.9rem' }} />
+                      <button className="btn btn-primary btn-sm" disabled={saving} onClick={async () => {
+                        await handleUpdateMemberNumber(memberNumEdit)
+                        setMemberNumEdit(null)
+                      }}>Save</button>
+                      <button className="btn btn-secondary btn-sm" onClick={() => setMemberNumEdit(null)}>✕</button>
+                    </div>
+                  ) : (
+                    <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
+                      <strong>{member.membership_number || '—'}</strong>
+                      <button className="btn btn-secondary btn-sm" style={{ fontSize: '0.75rem', padding: '0.2rem 0.5rem' }}
+                        onClick={() => setMemberNumEdit(member.membership_number || '')}>Edit</button>
+                    </div>
+                  )}
+                </div>
+                <div className="admin-detail-field">
+                  <span>Referral Points</span>
+                  <ReferralPointsEditor
+                    value={member.referral_points || 0}
+                    onSave={async (val) => {
+                      const { error } = await adminFetch('update_member', { user_id: entry.member_id, referral_points: val })
+                      if (error) showToast('Error updating referral points.')
+                      else {
+                        setMember(prev => ({ ...prev, referral_points: val }))
+                        showToast('Referral points updated.')
+                      }
+                    }}
+                  />
+                </div>
+                <div className="admin-detail-field"><span>Posts</span><strong>{member.post_count || 0}</strong></div>
+                <div className="admin-detail-field"><span>Threads</span><strong>{member.thread_count || 0}</strong></div>
+              </div>
+
+              {/* Badges */}
+              <div style={{ marginTop: '1.25rem', paddingTop: '1.25rem', borderTop: '1px solid var(--border)' }}>
+                <h3 style={{ fontSize: '0.9rem', fontWeight: 700, marginBottom: '0.75rem', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.06em' }}>Awards & Roles</h3>
+                <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.4rem', marginBottom: '0.75rem' }}>
+                  {badges.length === 0 && <span style={{ color: 'var(--text-muted)', fontSize: '0.875rem' }}>None assigned</span>}
+                  {badges.map(b => {
+                    const s = BADGE_COLORS[b] || { bg: '#525252', text: '#fff' }
+                    return (
+                      <span key={b} style={{ display: 'inline-flex', alignItems: 'center', gap: '0.3rem', background: s.bg, color: s.text, borderRadius: '999px', padding: '0.2rem 0.65rem', fontSize: '0.78rem', fontWeight: 700 }}>
+                        {b}
+                        <button onClick={() => setBadges(prev => prev.filter(x => x !== b))} style={{ background: 'none', border: 'none', color: 'inherit', cursor: 'pointer', padding: 0, lineHeight: 1, opacity: 0.75, fontSize: '0.85rem' }}>✕</button>
+                      </span>
+                    )
+                  })}
+                </div>
+                <div style={{ display: 'flex', gap: '0.75rem', alignItems: 'center', flexWrap: 'wrap' }}>
+                  <select className="an-select" style={{ maxWidth: '200px' }} defaultValue=""
+                    onChange={e => { if (e.target.value) { setBadges(prev => prev.includes(e.target.value) ? prev : [...prev, e.target.value]); e.target.value = '' } }}>
+                    <option value="" disabled>+ Add badge...</option>
+                    {PRESET_BADGES.filter(b => !badges.includes(b)).map(b => <option key={b} value={b}>{b}</option>)}
+                  </select>
+                  <button className="btn btn-primary btn-sm" onClick={handleSaveBadges} disabled={saving}>
+                    {saving ? 'Saving...' : 'Save Badges'}
+                  </button>
+                </div>
+              </div>
+
+              {/* Actions */}
+              <div style={{ marginTop: '1.25rem', paddingTop: '1.25rem', borderTop: '1px solid var(--border)' }}>
+                <h3 style={{ fontSize: '0.9rem', fontWeight: 700, marginBottom: '0.75rem', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.06em' }}>Actions</h3>
+                <div style={{ display: 'flex', gap: '0.65rem', flexWrap: 'wrap' }}>
+                  <button className="btn btn-secondary btn-sm" onClick={() => {
+                    const link = `https://www.coinclub.co.za/join?ref=${entry.member_id}`
+                    navigator.clipboard.writeText(link)
+                    showToast('Referral link copied!')
+                  }}>
+                    <i className="fa-solid fa-link" style={{ marginRight: '0.3rem' }} />Copy Referral Link
+                  </button>
+                  <button className="btn btn-secondary btn-sm" onClick={async () => {
+                    setSaving(true)
+                    const { error } = await supabase.auth.resetPasswordForEmail(entry.email, {
+                      redirectTo: 'https://www.coinclub.co.za/settings',
+                    })
+                    if (error) showToast('Error sending reset email.')
+                    else showToast('Password reset email sent!')
+                    setSaving(false)
+                  }} disabled={saving}>
+                    <i className="fa-solid fa-key" style={{ marginRight: '0.3rem' }} />Send Password Reset
+                  </button>
+                  <button className="btn btn-secondary btn-sm" onClick={handleMute} disabled={saving}>
+                    {isMuted ? 'Unmute' : 'Mute'}
+                  </button>
+                  <button className="btn btn-secondary btn-sm" onClick={handleBan} disabled={saving}
+                    style={{ color: isBanned ? 'var(--sa-green)' : '#E63946', borderColor: isBanned ? 'var(--sa-green)' : '#E63946' }}>
+                    {isBanned ? 'Unban' : 'Ban'}
+                  </button>
+                </div>
+              </div>
+            </>
+          )}
+        </div>
+      )}
     </div>
   )
 }
@@ -233,7 +445,7 @@ function ConsultingDetail({ entry, onBack, onDelete, actionLoading }) {
 
 // ── Tables ────────────────────────────────────────────
 
-function SignupsTable({ entries, onSelect, onApprove, onReject, onResend, onRemind }) {
+function SignupsTable({ entries, onSelect, onApprove, onReject, onResend, onRemind, onDeleteApproved }) {
   if (entries.length === 0) return <p className="admin-empty">No applications in this category.</p>
   return (
     <div className="admin-table-wrap">
@@ -265,7 +477,10 @@ function SignupsTable({ entries, onSelect, onApprove, onReject, onResend, onRemi
                   </>
                 )}
                 {entry.status === 'approved' && (
-                  <button className="admin-approve-sm" onClick={() => onResend(entry.id)} title="Resend email"><i className="fa-solid fa-envelope" /></button>
+                  <>
+                    <button className="admin-approve-sm" onClick={() => onResend(entry.id)} title="Resend email"><i className="fa-solid fa-envelope" /></button>
+                    <button className="admin-reject-sm" onClick={() => onDeleteApproved(entry)} title="Delete account"><i className="fa-solid fa-trash" /></button>
+                  </>
                 )}
               </td>
             </tr>
@@ -1492,6 +1707,36 @@ function AdminDashboard({ adminPassword, onLogout }) {
     setActionLoading(false)
   }
 
+  async function handleDeleteApproved(entry) {
+    if (!window.confirm(`Delete ${entry.first_name} ${entry.surname}'s account and application? This cannot be undone.`)) return
+    setActionLoading(true)
+    // Delete the auth user/profile if they have a member_id
+    if (entry.member_id) {
+      await adminFetch('delete_member', { user_id: entry.member_id })
+    }
+    // Delete the application record
+    const { error } = await supabase
+      .from('membership_applications')
+      .delete()
+      .eq('id', entry.id)
+    if (error) {
+      // If RLS blocks it, try via edge function
+      await fetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/admin-review`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${import.meta.env.VITE_SUPABASE_ANON_KEY}`,
+          'x-admin-secret': adminPassword,
+        },
+        body: JSON.stringify({ id: entry.id, action: 'delete' }),
+      })
+    }
+    showToast('Account and application deleted.')
+    setSelected(null)
+    loadApplications(statusTab)
+    setActionLoading(false)
+  }
+
   async function handleRejectConfirm(reason) {
     setActionLoading(true)
     const res = await fetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/admin-review`, {
@@ -1676,6 +1921,9 @@ function AdminDashboard({ adminPassword, onLogout }) {
                 onReject={entry => setRejectTarget(entry)}
                 onResend={handleResendEmail}
                 onRemind={handleRemind}
+                onDeleteApproved={handleDeleteApproved}
+                adminPassword={adminPassword}
+                showToast={showToast}
                 actionLoading={actionLoading}
               />
             ) : (
@@ -1723,6 +1971,7 @@ function AdminDashboard({ adminPassword, onLogout }) {
                 onReject={entry => setRejectTarget(entry)}
                 onResend={handleResendEmail}
                 onRemind={handleRemind}
+                onDeleteApproved={handleDeleteApproved}
               />
             </>
           ) : (

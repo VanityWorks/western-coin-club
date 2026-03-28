@@ -441,6 +441,27 @@ serve(async (req) => {
       )
     }
 
+    if (action === 'delete') {
+      // Delete the application record (and optionally the auth user)
+      const { data: app } = await supabase
+        .from('membership_applications')
+        .select('member_id')
+        .eq('id', id)
+        .single()
+      if (app?.member_id) {
+        await supabase.auth.admin.deleteUser(app.member_id)
+      }
+      const { error } = await supabase
+        .from('membership_applications')
+        .delete()
+        .eq('id', id)
+      if (error) throw error
+      return new Response(
+        JSON.stringify({ success: true }),
+        { headers: { ...cors, 'Content-Type': 'application/json' } }
+      )
+    }
+
     return new Response(
       JSON.stringify({ error: 'Invalid action' }),
       { status: 400, headers: { ...cors, 'Content-Type': 'application/json' } }
