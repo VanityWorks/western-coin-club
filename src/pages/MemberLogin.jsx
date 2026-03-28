@@ -38,7 +38,11 @@ export default function MemberLogin() {
       redirectTo: 'https://www.coinclub.co.za/settings',
     })
     if (resetErr) {
-      setError('Something went wrong. Please try again.')
+      if (resetErr.status === 429) {
+        setError('Too many requests. Please wait a few minutes and try again.')
+      } else {
+        setError('No account found with that email address. Please check and try again.')
+      }
     } else {
       setResetSent(true)
     }
