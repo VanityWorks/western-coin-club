@@ -44,15 +44,15 @@ export default function AdminMagazine() {
   // ── Stats ─────────────────────────────────────────────
   const stats = useMemo(() => {
     const total = filtered.length
-    if (!total) return { total: 0, unique: 0, avgTime: 0, completion: 0, engaged: 0 }
+    if (!total) return { total: 0, unique: 0, avgTime: 0, completion: 0, avgPages: 0 }
     const unique = new Set(filtered.map(v => v.session_id)).size
     const withTime = filtered.filter(v => v.time_on_page > 0)
     const avgTime = withTime.length ? Math.round(withTime.reduce((s, v) => s + v.time_on_page, 0) / withTime.length) : 0
-    const completed = withTime.filter(v => v.completed).length
-    const completion = withTime.length ? Math.round((completed / withTime.length) * 100) : 0
-    const engaged = withTime.filter(v => v.time_on_page >= 300).length
-    const engagedPct = withTime.length ? Math.round((engaged / withTime.length) * 100) : 0
-    return { total, unique, avgTime, completion, engaged: engagedPct }
+    const withPages = filtered.filter(v => v.total_pages > 0)
+    const completed = withPages.filter(v => v.completed).length
+    const completion = withPages.length ? Math.round((completed / withPages.length) * 100) : 0
+    const avgPages = withPages.length ? Math.round(withPages.reduce((s, v) => s + v.max_page_reached, 0) / withPages.length) : 0
+    return { total, unique, avgTime, completion, avgPages }
   }, [filtered])
 
   // ── Referrer breakdown ────────────────────────────────
@@ -121,12 +121,12 @@ export default function AdminMagazine() {
           <span className="am-card-label">Avg. Time on Page</span>
         </div>
         <div className="am-card">
-          <span className="am-card-value">{stats.engaged}%</span>
-          <span className="am-card-label">Engaged (5+ min)</span>
+          <span className="am-card-value">{stats.avgPages}</span>
+          <span className="am-card-label">Avg. Pages Reached</span>
         </div>
         <div className="am-card">
           <span className="am-card-value">{stats.completion}%</span>
-          <span className="am-card-label">Read Through (15+ min)</span>
+          <span className="am-card-label">Read All Pages</span>
         </div>
       </div>
 
@@ -189,8 +189,8 @@ export default function AdminMagazine() {
                 <th>Source</th>
                 <th>Device</th>
                 <th>Time</th>
-                <th>Engagement</th>
-                <th>Read Through</th>
+                <th>Pages</th>
+                <th>Completed</th>
               </tr>
             </thead>
             <tbody>
@@ -200,7 +200,7 @@ export default function AdminMagazine() {
                   <td><span className="am-source-tag">{v.utm_source || v.referrer || 'direct'}</span></td>
                   <td>{deviceLabel(v.screen_width)}</td>
                   <td>{fmtTime(v.time_on_page)}</td>
-                  <td>{v.time_on_page >= 300 ? <span className="am-yes">Engaged</span> : v.time_on_page >= 60 ? <span className="am-mid">Browsed</span> : <span className="am-no">Bounced</span>}</td>
+                  <td>{v.max_page_reached}{v.total_pages ? ` / ${v.total_pages}` : ''}</td>
                   <td>{v.completed ? <span className="am-yes">Yes</span> : <span className="am-no">No</span>}</td>
                 </tr>
               ))}

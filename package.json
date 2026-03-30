@@ -10,6 +10,8 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@react-pdf-viewer/core": "^3.12.0",
+    "@react-pdf-viewer/default-layout": "^3.12.0",
     "@supabase/supabase-js": "^2.99.2",
     "@tiptap/extension-color": "^3.20.4",
     "@tiptap/extension-highlight": "^3.20.4",
@@ -23,6 +25,7 @@
     "@tiptap/react": "^3.20.4",
     "@tiptap/starter-kit": "^3.20.4",
     "dompurify": "^3.3.3",
+    "pdfjs-dist": "^3.11.174",
     "react": "^19.2.4",
     "react-dom": "^19.2.4",
     "react-router-dom": "^7.13.1"

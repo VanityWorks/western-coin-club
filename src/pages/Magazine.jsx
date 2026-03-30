@@ -22,8 +22,12 @@
   CREATE POLICY "auth_select"   ON magazine_views FOR SELECT TO authenticated USING (true);
 */
 
-import { useState, useEffect, useRef } from 'react'
+import { useEffect, useRef } from 'react'
 import { Link, useSearchParams } from 'react-router-dom'
+import { Worker, Viewer, SpecialZoomLevel } from '@react-pdf-viewer/core'
+import { defaultLayoutPlugin } from '@react-pdf-viewer/default-layout'
+import '@react-pdf-viewer/core/lib/styles/index.css'
+import '@react-pdf-viewer/default-layout/lib/styles/index.css'
 import { supabase } from '../lib/supabase'
 import './Magazine.css'
 
@@ -31,31 +35,19 @@ function uid() {
   return crypto.randomUUID?.() || Math.random().toString(36).slice(2) + Date.now().toString(36)
 }
 
-// Estimate engagement from time on page (48-page magazine)
-function engagementLevel(secs) {
-  if (secs >= 900) return 'completed'  // 15+ min - very likely read it all
-  if (secs >= 300) return 'engaged'    // 5-15 min - read a good portion
-  if (secs >= 60)  return 'browsed'    // 1-5 min - skimmed
-  return 'bounced'
-}
-
 export default function Magazine() {
   const [searchParams] = useSearchParams()
-  const [loaded, setLoaded] = useState(false)
-  const [isMobileFallback, setIsMobileFallback] = useState(false)
-
   const viewIdRef = useRef(null)
+  const maxPageRef = useRef(1)
+  const numPagesRef = useRef(0)
   const startRef = useRef(Date.now())
 
   const ref = searchParams.get('ref') || 'direct'
   const utm = searchParams.get('utm_source') || null
 
-  // Detect mobile devices that can't show inline PDFs well
-  useEffect(() => {
-    const ua = navigator.userAgent
-    const isMobile = /iPhone|iPad|iPod|Android/i.test(ua) && window.innerWidth < 768
-    setIsMobileFallback(isMobile)
-  }, [])
+  const defaultLayoutPluginInstance = defaultLayoutPlugin({
+    sidebarTabs: () => [],
+  })
 
   // ── Analytics ─────────────────────────────────────────
   useEffect(() => {
@@ -71,17 +63,22 @@ export default function Magazine() {
 
     function flush() {
       if (!viewIdRef.current) return
-      const elapsed = Math.round((Date.now() - startRef.current) / 1000)
       supabase.from('magazine_views').update({
-        time_on_page: elapsed,
-        completed: elapsed >= 900,
+        time_on_page: Math.round((Date.now() - startRef.current) / 1000),
+        max_page_reached: maxPageRef.current,
+        total_pages: numPagesRef.current,
+        completed: numPagesRef.current > 0 && maxPageRef.current >= numPagesRef.current,
       }).eq('id', viewIdRef.current).then(() => {})
     }
 
     function onHide() {
       if (document.visibilityState !== 'hidden' || !viewIdRef.current) return
-      const elapsed = Math.round((Date.now() - startRef.current) / 1000)
-      const body = JSON.stringify({ time_on_page: elapsed, completed: elapsed >= 900 })
+      const body = JSON.stringify({
+        time_on_page: Math.round((Date.now() - startRef.current) / 1000),
+        max_page_reached: maxPageRef.current,
+        total_pages: numPagesRef.current,
+        completed: numPagesRef.current > 0 && maxPageRef.current >= numPagesRef.current,
+      })
       const url = `${import.meta.env.VITE_SUPABASE_URL}/rest/v1/magazine_views?id=eq.${viewIdRef.current}`
       const headers = {
         'Content-Type': 'application/json',
@@ -104,9 +101,17 @@ export default function Magazine() {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [ref, utm])
 
+  function handleDocumentLoad(e) {
+    numPagesRef.current = e.doc.numPages
+  }
+
+  function handlePageChange(e) {
+    const page = e.currentPage + 1
+    if (page > maxPageRef.current) maxPageRef.current = page
+  }
+
   return (
     <div className="mag-shell">
-      {/* Top bar */}
       <header className="mag-bar">
         <Link to="/" className="mag-back">
           <i className="fa-solid fa-arrow-left" /> <span>Back</span>
@@ -118,35 +123,22 @@ export default function Magazine() {
         <div className="mag-bar-spacer" />
       </header>
 
-      {/* Viewer */}
       <main className="mag-viewer">
-        {!loaded && !isMobileFallback && (
-          <div className="mag-loading-overlay">
-            <div className="mag-spinner" />
-            <p>Loading magazine...</p>
-          </div>
-        )}
-
-        {isMobileFallback ? (
-          <div className="mag-mobile">
-            <div className="mag-mobile-icon">
-              <i className="fa-solid fa-book-open" />
-            </div>
-            <h2>Read Our Magazine</h2>
-            <p>Tap the button below to open the full magazine in your PDF viewer.</p>
-            <a href="/maga.pdf" target="_blank" rel="noopener noreferrer" className="btn btn-primary btn-lg mag-open-btn">
-              Open Magazine
-            </a>
-            <p className="mag-mobile-hint">48 pages - best viewed in landscape</p>
-          </div>
-        ) : (
-          <iframe
-            src="/maga.pdf"
-            className="mag-iframe"
-            title="SA Coin Collectors Club Magazine"
-            onLoad={() => setLoaded(true)}
+        <Worker workerUrl="https://unpkg.com/pdfjs-dist@3.11.174/build/pdf.worker.min.js">
+          <Viewer
+            fileUrl="/maga.pdf"
+            defaultScale={SpecialZoomLevel.PageWidth}
+            plugins={[defaultLayoutPluginInstance]}
+            onDocumentLoad={handleDocumentLoad}
+            onPageChange={handlePageChange}
+            renderLoader={(percentages) => (
+              <div className="mag-loading">
+                <div className="mag-spinner" />
+                <p>Loading magazine - {Math.round(percentages)}%</p>
+              </div>
+            )}
           />
-        )}
+        </Worker>
       </main>
     </div>
   )
