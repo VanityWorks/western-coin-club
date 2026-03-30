@@ -1649,7 +1649,7 @@ function AdminDashboard({ adminPassword, onLogout }) {
   const [searchParams, setSearchParams] = useSearchParams()
   const [mainView, setMainView] = useState(() => {
     const v = searchParams.get('view')
-    return ['signups','consulting','members','news','forum'].includes(v) ? v : 'signups'
+    return ['signups','consulting','members','news','magazine','forum'].includes(v) ? v : 'signups'
   })
   const [statusTab, setStatusTab] = useState('pending')
   const [applications, setApplications] = useState([])
