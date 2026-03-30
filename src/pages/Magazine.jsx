@@ -22,51 +22,42 @@
   CREATE POLICY "auth_select"   ON magazine_views FOR SELECT TO authenticated USING (true);
 */
 
-import { useState, useEffect, useRef, useCallback } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { Link, useSearchParams } from 'react-router-dom'
-import { Document, Page, pdfjs } from 'react-pdf'
-import 'react-pdf/dist/Page/AnnotationLayer.css'
-import 'react-pdf/dist/Page/TextLayer.css'
 import { supabase } from '../lib/supabase'
 import './Magazine.css'
-
-pdfjs.GlobalWorkerOptions.workerSrc = new URL(
-  'pdfjs-dist/build/pdf.worker.min.mjs',
-  import.meta.url,
-).toString()
 
 function uid() {
   return crypto.randomUUID?.() || Math.random().toString(36).slice(2) + Date.now().toString(36)
 }
 
+// Estimate engagement from time on page (48-page magazine)
+function engagementLevel(secs) {
+  if (secs >= 900) return 'completed'  // 15+ min - very likely read it all
+  if (secs >= 300) return 'engaged'    // 5-15 min - read a good portion
+  if (secs >= 60)  return 'browsed'    // 1-5 min - skimmed
+  return 'bounced'
+}
+
 export default function Magazine() {
   const [searchParams] = useSearchParams()
-  const [numPages, setNumPages] = useState(null)
-  const [currentPage, setCurrentPage] = useState(1)
-  const [width, setWidth] = useState(null)
-  const [error, setError] = useState(false)
+  const [loaded, setLoaded] = useState(false)
+  const [isMobileFallback, setIsMobileFallback] = useState(false)
 
-  const containerRef = useRef(null)
   const viewIdRef = useRef(null)
-  const maxPageRef = useRef(1)
-  const numPagesRef = useRef(0)
   const startRef = useRef(Date.now())
-  const observerRef = useRef(null)
 
   const ref = searchParams.get('ref') || 'direct'
   const utm = searchParams.get('utm_source') || null
 
-  // ── Responsive width ──────────────────────────────────
+  // Detect mobile devices that can't show inline PDFs well
   useEffect(() => {
-    function measure() {
-      if (containerRef.current) setWidth(containerRef.current.clientWidth)
-    }
-    measure()
-    window.addEventListener('resize', measure)
-    return () => window.removeEventListener('resize', measure)
+    const ua = navigator.userAgent
+    const isMobile = /iPhone|iPad|iPod|Android/i.test(ua) && window.innerWidth < 768
+    setIsMobileFallback(isMobile)
   }, [])
 
-  // ── Analytics: insert + periodic update + unload ──────
+  // ── Analytics ─────────────────────────────────────────
   useEffect(() => {
     const sid = sessionStorage.getItem('mag_sid') || uid()
     sessionStorage.setItem('mag_sid', sid)
@@ -80,22 +71,17 @@ export default function Magazine() {
 
     function flush() {
       if (!viewIdRef.current) return
+      const elapsed = Math.round((Date.now() - startRef.current) / 1000)
       supabase.from('magazine_views').update({
-        time_on_page: Math.round((Date.now() - startRef.current) / 1000),
-        max_page_reached: maxPageRef.current,
-        total_pages: numPagesRef.current,
-        completed: numPagesRef.current > 0 && maxPageRef.current >= numPagesRef.current,
+        time_on_page: elapsed,
+        completed: elapsed >= 900,
       }).eq('id', viewIdRef.current).then(() => {})
     }
 
     function onHide() {
       if (document.visibilityState !== 'hidden' || !viewIdRef.current) return
-      const body = JSON.stringify({
-        time_on_page: Math.round((Date.now() - startRef.current) / 1000),
-        max_page_reached: maxPageRef.current,
-        total_pages: numPagesRef.current,
-        completed: numPagesRef.current > 0 && maxPageRef.current >= numPagesRef.current,
-      })
+      const elapsed = Math.round((Date.now() - startRef.current) / 1000)
+      const body = JSON.stringify({ time_on_page: elapsed, completed: elapsed >= 900 })
       const url = `${import.meta.env.VITE_SUPABASE_URL}/rest/v1/magazine_views?id=eq.${viewIdRef.current}`
       const headers = {
         'Content-Type': 'application/json',
@@ -103,7 +89,6 @@ export default function Magazine() {
         Authorization: `Bearer ${import.meta.env.VITE_SUPABASE_ANON_KEY}`,
         Prefer: 'return=minimal',
       }
-      // keepalive fetch survives page close better than supabase client
       fetch(url, { method: 'PATCH', headers, body, keepalive: true }).catch(() => {})
     }
 
@@ -119,70 +104,48 @@ export default function Magazine() {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [ref, utm])
 
-  // ── Page intersection observer ────────────────────────
-  const observePage = useCallback((node) => {
-    if (!node) return
-    if (!observerRef.current) {
-      observerRef.current = new IntersectionObserver((entries) => {
-        let best = null
-        entries.forEach(e => {
-          if (e.isIntersecting && (!best || e.intersectionRatio > best.intersectionRatio)) best = e
-        })
-        if (best) {
-          const p = parseInt(best.target.dataset.page)
-          setCurrentPage(p)
-          if (p > maxPageRef.current) maxPageRef.current = p
-        }
-      }, { threshold: [0, 0.25, 0.5, 0.75] })
-    }
-    observerRef.current.observe(node)
-  }, [])
-
-  function onLoadSuccess({ numPages: n }) {
-    setNumPages(n)
-    numPagesRef.current = n
-  }
-
-  const pageWidth = width ? Math.min(width - 16, 960) : 800
-
   return (
     <div className="mag-shell">
       {/* Top bar */}
       <header className="mag-bar">
-        <Link to="/" className="mag-back"><i className="fa-solid fa-arrow-left" /> Back to site</Link>
-        <span className="mag-title">SA Coin Collectors Club Magazine</span>
-        <span className="mag-indicator">
-          {numPages ? `${currentPage} / ${numPages}` : ''}
-        </span>
+        <Link to="/" className="mag-back">
+          <i className="fa-solid fa-arrow-left" /> <span>Back</span>
+        </Link>
+        <div className="mag-center">
+          <img src="/logo.png" alt="" className="mag-logo" />
+          <span className="mag-title">SA Coin Collectors Club Magazine</span>
+        </div>
+        <div className="mag-bar-spacer" />
       </header>
 
-      {/* PDF viewer */}
-      <main className="mag-viewer" ref={containerRef}>
-        {error ? (
-          <div className="mag-error">
-            <h2>Unable to load magazine</h2>
-            <p>Please try refreshing the page.</p>
+      {/* Viewer */}
+      <main className="mag-viewer">
+        {!loaded && !isMobileFallback && (
+          <div className="mag-loading-overlay">
+            <div className="mag-spinner" />
+            <p>Loading magazine...</p>
+          </div>
+        )}
+
+        {isMobileFallback ? (
+          <div className="mag-mobile">
+            <div className="mag-mobile-icon">
+              <i className="fa-solid fa-book-open" />
+            </div>
+            <h2>Read Our Magazine</h2>
+            <p>Tap the button below to open the full magazine in your PDF viewer.</p>
+            <a href="/maga.pdf" target="_blank" rel="noopener noreferrer" className="btn btn-primary btn-lg mag-open-btn">
+              Open Magazine
+            </a>
+            <p className="mag-mobile-hint">48 pages - best viewed in landscape</p>
           </div>
         ) : (
-          <Document
-            file="/maga.pdf"
-            onLoadSuccess={onLoadSuccess}
-            onLoadError={() => setError(true)}
-            loading={<div className="mag-loading"><div className="mag-spinner" /><p>Loading magazine...</p></div>}
-          >
-            {numPages && Array.from({ length: numPages }, (_, i) => (
-              <div key={i + 1} className="mag-page" data-page={i + 1} ref={observePage}>
-                <Page
-                  pageNumber={i + 1}
-                  width={pageWidth}
-                  loading={<div className="mag-skeleton" style={{ width: pageWidth, height: pageWidth * 1.414 }} />}
-                  renderTextLayer
-                  renderAnnotationLayer
-                />
-                <span className="mag-page-num">Page {i + 1}</span>
-              </div>
-            ))}
-          </Document>
+          <iframe
+            src="/maga.pdf"
+            className="mag-iframe"
+            title="SA Coin Collectors Club Magazine"
+            onLoad={() => setLoaded(true)}
+          />
         )}
       </main>
     </div>

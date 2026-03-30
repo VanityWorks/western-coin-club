@@ -193,6 +193,7 @@
   font-weight: 600;
 }
 .am-yes { color: var(--sa-green); font-weight: 700; }
+.am-mid { color: var(--sa-gold); font-weight: 600; }
 .am-no  { color: var(--text-muted); }
 .am-empty-cell { text-align: center; color: var(--text-muted); padding: 2rem !important; }
 
