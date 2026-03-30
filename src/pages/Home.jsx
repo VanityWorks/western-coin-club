@@ -66,7 +66,7 @@ export default function Home() {
           <p className="hero-sub">South Africa’s Home of Numismatics</p>
           <div className="hero-actions">
             <Link to="/join" className="btn btn-primary">Join The Club</Link>
-            <Link to="/news" className="btn btn-outline">Read Latest News</Link>
+            <Link to="/magazine?ref=home" className="btn btn-outline">Read Our Magazine</Link>
           </div>
           <p className="hero-intro-brief">Bringing collectors together.
 Learn, discover, and share knowledge.

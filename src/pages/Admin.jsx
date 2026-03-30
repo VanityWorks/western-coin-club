@@ -4,6 +4,7 @@ import DOMPurify from 'dompurify'
 import { supabase } from '../lib/supabase'
 import RichTextEditor from '../components/RichTextEditor'
 import AdminNews from './AdminNews'
+import AdminMagazine from './AdminMagazine'
 import './Admin.css'
 
 // The admin password is verified server-side via the ADMIN_SECRET env variable
@@ -1817,6 +1818,7 @@ function AdminDashboard({ adminPassword, onLogout }) {
     : mainView === 'consulting'  ? 'Consulting Requests'
     : mainView === 'members'     ? 'Members'
     : mainView === 'news'        ? 'News & Articles'
+    : mainView === 'magazine'    ? 'Magazine Analytics'
     : 'Forum Management'
 
   return (
@@ -1870,6 +1872,12 @@ function AdminDashboard({ adminPassword, onLogout }) {
             <span>News & Articles</span>
           </button>
           <button
+            className={`admin-nav-item ${mainView === 'magazine' ? 'active' : ''}`}
+            onClick={() => switchMain('magazine')}
+          >
+            <span>Magazine</span>
+          </button>
+          <button
             className={`admin-nav-item ${mainView === 'forum' ? 'active' : ''}`}
             onClick={() => switchMain('forum')}
           >
@@ -1910,6 +1918,8 @@ function AdminDashboard({ adminPassword, onLogout }) {
         <div className="admin-content">
           {mainView === 'news' ? (
             <AdminNews showToast={showToast} />
+          ) : mainView === 'magazine' ? (
+            <AdminMagazine />
           ) : mainView === 'forum' ? (
             <ForumSection adminPassword={adminPassword} showToast={showToast} />
           ) : mainView === 'members' ? (
