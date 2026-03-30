@@ -1,6 +1,6 @@
 {
   "rewrites": [
     { "source": "/api/v1/verify-member", "destination": "https://qkwbqozshaajvthofocl.supabase.co/functions/v1/verify-member" },
-    { "source": "/(.*)", "destination": "/index.html" }
+    { "source": "/((?!.*\\.).*)", "destination": "/index.html" }
   ]
 }
