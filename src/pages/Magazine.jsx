@@ -126,7 +126,7 @@ export default function Magazine() {
       <main className="mag-viewer">
         <Worker workerUrl="https://unpkg.com/pdfjs-dist@3.11.174/build/pdf.worker.min.js">
           <Viewer
-            fileUrl="/maga.pdf"
+            fileUrl="https://qkwbqozshaajvthofocl.supabase.co/storage/v1/object/public/magazine/maga.pdf"
             defaultScale={SpecialZoomLevel.PageWidth}
             plugins={[defaultLayoutPluginInstance]}
             onDocumentLoad={handleDocumentLoad}
