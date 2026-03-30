@@ -54,10 +54,15 @@ export default function Magazine() {
     const sid = sessionStorage.getItem('mag_sid') || uid()
     sessionStorage.setItem('mag_sid', sid)
 
-    supabase.from('magazine_views')
-      .insert({ session_id: sid, referrer: ref, utm_source: utm, user_agent: navigator.userAgent, screen_width: window.innerWidth })
-      .select('id').single()
-      .then(({ data }) => { if (data) viewIdRef.current = data.id })
+    // Fetch IP then insert view
+    fetch('https://api.ipify.org?format=json')
+      .then(r => r.json()).then(d => d.ip).catch(() => null)
+      .then(ip => {
+        supabase.from('magazine_views')
+          .insert({ session_id: sid, referrer: ref, utm_source: utm, user_agent: navigator.userAgent, screen_width: window.innerWidth, ip_address: ip })
+          .select('id').single()
+          .then(({ data }) => { if (data) viewIdRef.current = data.id })
+      })
 
     const tick = setInterval(flush, 15000)
 

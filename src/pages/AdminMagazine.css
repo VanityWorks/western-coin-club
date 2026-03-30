@@ -184,6 +184,13 @@
   white-space: nowrap;
 }
 .am-table tbody tr:hover { background: rgba(0,0,0,0.015); }
+.am-ip {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  background: var(--gray-100);
+  padding: 0.15rem 0.4rem;
+  border-radius: 4px;
+}
 .am-source-tag {
   display: inline-block;
   padding: 0.15rem 0.5rem;

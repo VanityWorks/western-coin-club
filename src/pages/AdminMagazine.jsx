@@ -186,6 +186,7 @@ export default function AdminMagazine() {
             <thead>
               <tr>
                 <th>Date</th>
+                <th>IP</th>
                 <th>Source</th>
                 <th>Device</th>
                 <th>Time</th>
@@ -197,6 +198,7 @@ export default function AdminMagazine() {
               {filtered.slice(0, 100).map(v => (
                 <tr key={v.id}>
                   <td>{fmtDate(v.created_at)}</td>
+                  <td><code className="am-ip">{v.ip_address || '-'}</code></td>
                   <td><span className="am-source-tag">{v.utm_source || v.referrer || 'direct'}</span></td>
                   <td>{deviceLabel(v.screen_width)}</td>
                   <td>{fmtTime(v.time_on_page)}</td>
@@ -205,7 +207,7 @@ export default function AdminMagazine() {
                 </tr>
               ))}
               {filtered.length === 0 && (
-                <tr><td colSpan={6} className="am-empty-cell">No views recorded yet.</td></tr>
+                <tr><td colSpan={7} className="am-empty-cell">No views recorded yet.</td></tr>
               )}
             </tbody>
           </table>
