@@ -4,6 +4,7 @@
   display: flex;
   flex-direction: column;
   height: 100dvh;
+  background: #f0ede8;
   overflow: hidden;
 }
 
@@ -62,64 +63,157 @@
   white-space: nowrap;
 }
 
-.mag-bar-spacer {
-  min-width: 60px;
-}
+.mag-bar-spacer { min-width: 60px; }
 
-/* ── Viewer area ─────────────────────────────────────── */
+/* ── Page area ───────────────────────────────────────── */
 
-.mag-viewer {
+.mag-page-area {
   flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   overflow: hidden;
+  position: relative;
+  padding: 1rem;
+  touch-action: pan-y pinch-zoom;
 }
 
-/* Override the viewer's own toolbar to match site theme */
-.mag-viewer .rpv-core__viewer {
-  height: 100% !important;
+.mag-canvas {
+  display: block;
+  border-radius: 4px;
+  box-shadow: 0 4px 24px rgba(0,0,0,0.12), 0 1px 4px rgba(0,0,0,0.06);
+  background: #fff;
+  max-width: 100%;
+  max-height: 100%;
 }
 
-.mag-viewer .rpv-default-layout__container {
-  border: none !important;
+.mag-page-loading {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  pointer-events: none;
 }
 
-/* Toolbar theming */
-.mag-viewer .rpv-default-layout__toolbar {
-  background: var(--gray-100, #f5f5f5) !important;
-  border-bottom: 1px solid var(--border, #e5e5e5) !important;
+/* ── Bottom controls ─────────────────────────────────── */
+
+.mag-controls {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1rem;
+  background: #fff;
+  border-top: 1px solid rgba(0,0,0,0.08);
+  flex-shrink: 0;
+  user-select: none;
 }
 
-/* Page area background */
-.mag-viewer .rpv-default-layout__body {
-  background: var(--gray-100, #f5f5f5) !important;
+.mag-arrow {
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  border: 2px solid var(--sa-green, #007749);
+  background: #fff;
+  color: var(--sa-green, #007749);
+  font-size: 1.1rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.15s, color 0.15s, transform 0.15s;
+  flex-shrink: 0;
 }
 
-.mag-viewer .rpv-core__inner-pages {
-  background: var(--gray-100, #f5f5f5) !important;
+.mag-arrow:hover:not(:disabled) {
+  background: var(--sa-green, #007749);
+  color: #fff;
+  transform: scale(1.05);
 }
 
-/* Page shadow */
-.mag-viewer .rpv-core__page-layer {
-  box-shadow: 0 2px 12px rgba(0,0,0,0.08) !important;
-  border-radius: 2px;
+.mag-arrow:active:not(:disabled) {
+  transform: scale(0.95);
 }
 
-/* ── Loading ─────────────────────────────────────────── */
+.mag-arrow:disabled {
+  border-color: #ccc;
+  color: #ccc;
+  cursor: default;
+}
+
+.mag-page-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.35rem;
+  min-width: 0;
+}
+
+.mag-page-num {
+  font-family: var(--font-heading, 'Outfit', system-ui, sans-serif);
+  font-weight: 700;
+  font-size: 0.95rem;
+  color: var(--black, #0a0a0a);
+}
+
+.mag-slider {
+  width: 100%;
+  max-width: 400px;
+  height: 6px;
+  -webkit-appearance: none;
+  appearance: none;
+  background: #e0ddd8;
+  border-radius: 3px;
+  outline: none;
+  cursor: pointer;
+}
+
+.mag-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: var(--sa-green, #007749);
+  border: 2px solid #fff;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.2);
+  cursor: pointer;
+}
+
+.mag-slider::-moz-range-thumb {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: var(--sa-green, #007749);
+  border: 2px solid #fff;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.2);
+  cursor: pointer;
+}
+
+/* ── Loading / error ─────────────────────────────────── */
 
 .mag-loading {
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
   gap: 1rem;
-  height: 100%;
   color: var(--text-muted, #525252);
   font-size: 0.95rem;
 }
 
 .mag-spinner {
-  width: 36px;
-  height: 36px;
-  border: 3px solid var(--border, #e5e5e5);
+  width: 40px;
+  height: 40px;
+  border: 3px solid rgba(0,0,0,0.1);
+  border-top-color: var(--sa-green, #007749);
+  border-radius: 50%;
+  animation: mag-spin 0.8s linear infinite;
+}
+
+.mag-spinner-sm {
+  width: 28px;
+  height: 28px;
+  border: 3px solid rgba(0,0,0,0.08);
   border-top-color: var(--sa-green, #007749);
   border-radius: 50%;
   animation: mag-spin 0.8s linear infinite;
@@ -127,12 +221,29 @@
 
 @keyframes mag-spin { to { transform: rotate(360deg); } }
 
+.mag-error {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  height: 100%;
+  text-align: center;
+  padding: 2rem;
+  color: var(--text-muted, #525252);
+}
+.mag-error h2 { color: var(--black, #0a0a0a); font-size: 1.3rem; margin: 0; }
+.mag-error p { margin: 0; }
+
 /* ── Responsive ──────────────────────────────────────── */
 
 @media (max-width: 768px) {
   .mag-bar { padding: 0.45rem 0.75rem; }
   .mag-logo { height: 28px; }
   .mag-title { font-size: 0.8rem; }
+  .mag-page-area { padding: 0.5rem; }
+  .mag-arrow { width: 46px; height: 46px; font-size: 1rem; }
+  .mag-controls { padding: 0.6rem 0.75rem; }
 }
 
 @media (max-width: 480px) {
@@ -142,4 +253,7 @@
   .mag-bar { padding: 0.4rem 0.625rem; gap: 0.4rem; }
   .mag-title { font-size: 0.72rem; }
   .mag-logo { height: 24px; }
+  .mag-page-area { padding: 0.25rem; }
+  .mag-arrow { width: 42px; height: 42px; font-size: 0.9rem; }
+  .mag-page-num { font-size: 0.85rem; }
 }
