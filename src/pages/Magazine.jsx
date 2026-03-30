@@ -141,16 +141,21 @@ export default function Magazine() {
     return () => window.removeEventListener('keydown', onKey)
   })
 
-  // Swipe navigation
-  function onTouchStart(e) { touchStartRef.current = e.touches[0].clientX }
+  // Swipe navigation — only on single-finger horizontal swipes (ignore pinch-to-zoom)
+  function onTouchStart(e) {
+    if (e.touches.length !== 1) { touchStartRef.current = null; return }
+    touchStartRef.current = { x: e.touches[0].clientX, y: e.touches[0].clientY }
+  }
   function onTouchEnd(e) {
-    if (touchStartRef.current === null) return
-    const diff = touchStartRef.current - e.changedTouches[0].clientX
-    if (Math.abs(diff) > 50) {
-      if (diff > 0) goTo(currentPage + 1) // swipe left = next
-      else goTo(currentPage - 1) // swipe right = prev
-    }
+    if (!touchStartRef.current) return
+    const dx = touchStartRef.current.x - e.changedTouches[0].clientX
+    const dy = touchStartRef.current.y - e.changedTouches[0].clientY
     touchStartRef.current = null
+    // Only trigger if horizontal swipe is dominant and long enough
+    if (Math.abs(dx) > 60 && Math.abs(dx) > Math.abs(dy) * 2) {
+      if (dx > 0) goTo(currentPage + 1)
+      else goTo(currentPage - 1)
+    }
   }
 
   // ── Analytics ─────────────────────────────────────────
