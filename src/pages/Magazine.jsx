@@ -30,7 +30,10 @@ import 'react-pdf/dist/Page/TextLayer.css'
 import { supabase } from '../lib/supabase'
 import './Magazine.css'
 
-pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.min.mjs`
+pdfjs.GlobalWorkerOptions.workerSrc = new URL(
+  'pdfjs-dist/build/pdf.worker.min.mjs',
+  import.meta.url,
+).toString()
 
 function uid() {
   return crypto.randomUUID?.() || Math.random().toString(36).slice(2) + Date.now().toString(36)
@@ -147,7 +150,7 @@ export default function Magazine() {
       {/* Top bar */}
       <header className="mag-bar">
         <Link to="/" className="mag-back"><i className="fa-solid fa-arrow-left" /> Back to site</Link>
-        <span className="mag-title">WCCC Magazine</span>
+        <span className="mag-title">SA Coin Collectors Club Magazine</span>
         <span className="mag-indicator">
           {numPages ? `${currentPage} / ${numPages}` : ''}
         </span>
