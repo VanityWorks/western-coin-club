@@ -24,7 +24,7 @@
 
 import { useEffect, useRef } from 'react'
 import { Link, useSearchParams } from 'react-router-dom'
-import { Worker, Viewer, SpecialZoomLevel } from '@react-pdf-viewer/core'
+import { Worker, Viewer } from '@react-pdf-viewer/core'
 import { defaultLayoutPlugin } from '@react-pdf-viewer/default-layout'
 import '@react-pdf-viewer/core/lib/styles/index.css'
 import '@react-pdf-viewer/default-layout/lib/styles/index.css'
@@ -127,14 +127,15 @@ export default function Magazine() {
         <Worker workerUrl="https://unpkg.com/pdfjs-dist@3.11.174/build/pdf.worker.min.js">
           <Viewer
             fileUrl="https://qkwbqozshaajvthofocl.supabase.co/storage/v1/object/public/magazine/maga.pdf"
-            defaultScale={SpecialZoomLevel.PageWidth}
+            defaultScale={1}
             plugins={[defaultLayoutPluginInstance]}
             onDocumentLoad={handleDocumentLoad}
             onPageChange={handlePageChange}
+            enableSmoothScroll
             renderLoader={(percentages) => (
               <div className="mag-loading">
                 <div className="mag-spinner" />
-                <p>Loading magazine - {Math.round(percentages)}%</p>
+                <p>Loading magazine{percentages > 0 ? ` - ${Math.round(percentages)}%` : '...'}</p>
               </div>
             )}
           />
