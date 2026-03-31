@@ -76,6 +76,34 @@ Join a community built for collectors.</p>
         </div>
       </section>
 
+      <section className="section newsletter-banner">
+        <div className="container">
+          <div className="nl-banner">
+            <div className="nl-banner-left">
+              <span className="nl-banner-tag">New Issue Out Now</span>
+              <h2 className="nl-banner-title">The Collector's Pulse</h2>
+              <p className="nl-banner-desc">Market trends, featured coins, collector stories - everything happening in South African numismatics this month.</p>
+              <Link to="/newsletter" className="nl-banner-btn">
+                Read the March 2026 Edition <i className="fa-solid fa-arrow-right" />
+              </Link>
+            </div>
+            <div className="nl-banner-right">
+              <div className="nl-banner-preview">
+                <div className="nl-preview-mockup">
+                  <div className="nl-preview-header" />
+                  <div className="nl-preview-line w80" />
+                  <div className="nl-preview-line w60" />
+                  <div className="nl-preview-block" />
+                  <div className="nl-preview-line w90" />
+                  <div className="nl-preview-line w40" />
+                </div>
+                <span className="nl-preview-label">March 2026</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
       {news.length > 0 && (
         <section className="section latest-news">
           <div className="container">
@@ -146,16 +174,6 @@ Join a community built for collectors.</p>
                 </footer>
               </blockquote>
             ))}
-          </div>
-        </div>
-      </section>
-
-      <section className="section newsletter-section">
-        <div className="container">
-          <h2>The Collector's Pulse</h2>
-          <div className="newsletter-cta">
-            <p>Our monthly newsletter - market trends, featured coins, collector stories, and everything happening in South African numismatics.</p>
-            <Link to="/newsletter" className="btn btn-primary">Read the March 2026 Edition</Link>
           </div>
         </div>
       </section>
