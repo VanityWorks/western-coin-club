@@ -1746,13 +1746,92 @@ function ForumSection({ adminPassword, showToast }) {
   return null
 }
 
+// ── Messages ─────────────────────────────────────────
+
+function MessagesSection() {
+  const [messages, setMessages] = useState([])
+  const [loading, setLoading]   = useState(true)
+  const [selected, setSelected] = useState(null)
+
+  useEffect(() => {
+    supabase.from('contact_messages')
+      .select('*')
+      .order('created_at', { ascending: false })
+      .limit(200)
+      .then(({ data }) => { setMessages(data || []); setLoading(false) })
+  }, [])
+
+  if (selected) {
+    return (
+      <div className="admin-forum-wrap">
+        <div className="admin-forum-bar">
+          <button className="admin-detail-back" onClick={() => setSelected(null)}>← All Messages</button>
+        </div>
+        <div className="admin-detail-card">
+          <div className="admin-detail-title-row">
+            <div>
+              <h2>{selected.name}</h2>
+              <span style={{ fontSize: '0.85rem', color: 'var(--text-muted)' }}>{selected.email}</span>
+            </div>
+            <span className="admin-detail-date">{formatDate(selected.created_at)}</span>
+          </div>
+          <div className="admin-detail-grid" style={{ marginTop: '1rem' }}>
+            <div className="admin-detail-field"><span>Subject</span><strong>{selected.subject || 'General enquiry'}</strong></div>
+            <div className="admin-detail-field"><span>Email</span><strong>{selected.email}</strong></div>
+          </div>
+          <div style={{ marginTop: '1.25rem', paddingTop: '1.25rem', borderTop: '1px solid var(--border)' }}>
+            <span style={{ fontSize: '0.75rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.06em', color: 'var(--text-muted)', display: 'block', marginBottom: '0.5rem' }}>Message</span>
+            <p style={{ fontSize: '0.95rem', lineHeight: 1.7, color: 'var(--text)', whiteSpace: 'pre-wrap', margin: 0 }}>{selected.message}</p>
+          </div>
+        </div>
+      </div>
+    )
+  }
+
+  return (
+    <div className="admin-forum-wrap">
+      <div className="admin-forum-bar">
+        <span className="admin-forum-count">{messages.length} message{messages.length !== 1 ? 's' : ''}</span>
+      </div>
+      {loading ? (
+        <p className="admin-empty">Loading messages...</p>
+      ) : messages.length === 0 ? (
+        <p className="admin-empty">No messages yet.</p>
+      ) : (
+        <div className="admin-table-wrap">
+          <table className="admin-table">
+            <thead>
+              <tr>
+                <th>Name</th>
+                <th>Email</th>
+                <th>Subject</th>
+                <th>Date</th>
+              </tr>
+            </thead>
+            <tbody>
+              {messages.map(m => (
+                <tr key={m.id} className="admin-row" onClick={() => setSelected(m)}>
+                  <td><strong>{m.name}</strong></td>
+                  <td>{m.email}</td>
+                  <td>{m.subject || 'General enquiry'}</td>
+                  <td>{timeAgo(m.created_at)}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      )}
+    </div>
+  )
+}
+
 // ── Dashboard ─────────────────────────────────────────
 
 function AdminDashboard({ adminPassword, onLogout }) {
   const [searchParams, setSearchParams] = useSearchParams()
   const [mainView, setMainView] = useState(() => {
     const v = searchParams.get('view')
-    return ['signups','consulting','members','news','magazine','forum'].includes(v) ? v : 'signups'
+    return ['signups','consulting','members','news','magazine','forum','messages'].includes(v) ? v : 'signups'
   })
   const [statusTab, setStatusTab] = useState('pending')
   const [applications, setApplications] = useState([])
@@ -1922,6 +2001,7 @@ function AdminDashboard({ adminPassword, onLogout }) {
     : mainView === 'members'     ? 'Members'
     : mainView === 'news'        ? 'News & Articles'
     : mainView === 'magazine'    ? 'Magazine Analytics'
+    : mainView === 'messages'    ? 'Messages'
     : 'Forum Management'
 
   return (
@@ -1965,6 +2045,13 @@ function AdminDashboard({ adminPassword, onLogout }) {
           >
             <span>Consulting Requests</span>
             {consulting.length > 0 && <span className="admin-badge">{consulting.length}</span>}
+          </button>
+
+          <button
+            className={`admin-nav-item ${mainView === 'messages' ? 'active' : ''}`}
+            onClick={() => switchMain('messages')}
+          >
+            <span>Messages</span>
           </button>
 
           <p className="admin-nav-section">Content</p>
@@ -2019,7 +2106,9 @@ function AdminDashboard({ adminPassword, onLogout }) {
         </div>
 
         <div className="admin-content">
-          {mainView === 'news' ? (
+          {mainView === 'messages' ? (
+            <MessagesSection />
+          ) : mainView === 'news' ? (
             <AdminNews showToast={showToast} />
           ) : mainView === 'magazine' ? (
             <AdminMagazine />
