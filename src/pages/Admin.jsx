@@ -206,8 +206,71 @@ function SignupDetail({ entry, onBack, onApprove, onReject, onResend, onRemind, 
     setSaving(false)
   }
 
+  // ── Inline field editing ──────────────────────────────
+  const [editField, setEditField] = useState(null) // { key, value }
+  const [editSaving, setEditSaving] = useState(false)
+  const [localEntry, setLocalEntry] = useState(entry)
+
+  async function saveField(key, value) {
+    setEditSaving(true)
+    const res = await fetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/profile-admin`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${import.meta.env.VITE_SUPABASE_ANON_KEY}`,
+        'x-admin-secret': adminPassword,
+      },
+      body: JSON.stringify({ action: 'update_signup', signup_id: localEntry.id, fields: { [key]: value } }),
+    })
+    const data = await res.json()
+    if (res.ok && data.success) {
+      setLocalEntry(prev => ({ ...prev, [key]: value }))
+      showToast(`${key.replace('_', ' ')} updated.`)
+      setEditField(null)
+    } else {
+      showToast('Failed to update. Try again.')
+    }
+    setEditSaving(false)
+  }
+
   const isBanned = member?.banned_until && new Date(member.banned_until) > new Date()
   const isMuted = (member?.roles || []).includes('Muted')
+
+  function EditableField({ label, fieldKey, value }) {
+    const isEditing = editField?.key === fieldKey
+    return (
+      <div className="admin-detail-field">
+        <span>{label}</span>
+        {isEditing ? (
+          <div style={{ display: 'flex', gap: '0.4rem', alignItems: 'center', marginTop: '0.2rem' }}>
+            <input
+              className="an-input"
+              style={{ flex: 1, padding: '0.35rem 0.5rem', fontSize: '0.875rem' }}
+              value={editField.value}
+              onChange={e => setEditField({ key: fieldKey, value: e.target.value })}
+              autoFocus
+              onKeyDown={e => { if (e.key === 'Enter') saveField(fieldKey, editField.value); if (e.key === 'Escape') setEditField(null) }}
+            />
+            <button className="btn btn-primary btn-sm" style={{ padding: '0.3rem 0.6rem', fontSize: '0.78rem' }} disabled={editSaving} onClick={() => saveField(fieldKey, editField.value)}>
+              {editSaving ? '...' : 'Save'}
+            </button>
+            <button className="btn btn-secondary btn-sm" style={{ padding: '0.3rem 0.5rem', fontSize: '0.78rem' }} onClick={() => setEditField(null)}>Cancel</button>
+          </div>
+        ) : (
+          <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
+            <strong>{value || '-'}</strong>
+            <button
+              className="admin-edit-inline-btn"
+              onClick={() => setEditField({ key: fieldKey, value: value || '' })}
+              title={`Edit ${label.toLowerCase()}`}
+            >
+              <i className="fa-solid fa-pen" />
+            </button>
+          </div>
+        )}
+      </div>
+    )
+  }
 
   return (
     <div className="admin-detail">
@@ -244,53 +307,55 @@ function SignupDetail({ entry, onBack, onApprove, onReject, onResend, onRemind, 
       <div className="admin-detail-card">
         <div className="admin-detail-title-row">
           <div>
-            <h2>{entry.first_name} {entry.surname}</h2>
-            <span className={`admin-status-badge status-${entry.status}`}>{entry.status}</span>
+            <h2>{localEntry.first_name} {localEntry.surname}</h2>
+            <span className={`admin-status-badge status-${localEntry.status}`}>{localEntry.status}</span>
             {isBanned && <span style={{ marginLeft: '0.5rem', fontSize: '0.72rem', background: '#E63946', color: '#fff', borderRadius: '4px', padding: '2px 7px', fontWeight: 700 }}>Banned</span>}
             {isMuted && <span style={{ marginLeft: '0.5rem', fontSize: '0.72rem', background: '#525252', color: '#fff', borderRadius: '4px', padding: '2px 7px', fontWeight: 700 }}>Muted</span>}
           </div>
-          <span className="admin-detail-date">{formatDate(entry.submitted_at)}</span>
+          <span className="admin-detail-date">{formatDate(localEntry.submitted_at)}</span>
         </div>
         <div className="admin-detail-grid">
-          <div className="admin-detail-field"><span>Email</span><strong>{entry.email || '—'}</strong></div>
-          <div className="admin-detail-field"><span>Mobile</span><strong>{entry.mobile || '—'}</strong></div>
-          <div className="admin-detail-field"><span>WhatsApp</span><strong>{entry.whatsapp || '—'}</strong></div>
-          <div className="admin-detail-field"><span>City</span><strong>{entry.city || '—'}</strong></div>
-          <div className="admin-detail-field"><span>Province</span><strong>{entry.province || '—'}</strong></div>
-          <div className="admin-detail-field"><span>Country</span><strong>{entry.country || '—'}</strong></div>
-          <div className="admin-detail-field full"><span>Address</span><strong>{entry.address || '—'}</strong></div>
-          {entry.interests?.length > 0 && (
+          <EditableField label="First Name" fieldKey="first_name" value={localEntry.first_name} />
+          <EditableField label="Surname" fieldKey="surname" value={localEntry.surname} />
+          <EditableField label="Email" fieldKey="email" value={localEntry.email} />
+          <EditableField label="Mobile" fieldKey="mobile" value={localEntry.mobile} />
+          <EditableField label="WhatsApp" fieldKey="whatsapp" value={localEntry.whatsapp} />
+          <EditableField label="City" fieldKey="city" value={localEntry.city} />
+          <EditableField label="Province" fieldKey="province" value={localEntry.province} />
+          <EditableField label="Country" fieldKey="country" value={localEntry.country} />
+          <EditableField label="Address" fieldKey="address" value={localEntry.address} />
+          {localEntry.interests?.length > 0 && (
             <div className="admin-detail-field full">
               <span>Collecting Interests</span>
               <div className="admin-tag-list">
-                {entry.interests.map(i => <span key={i} className="admin-tag">{i}</span>)}
+                {localEntry.interests.map(i => <span key={i} className="admin-tag">{i}</span>)}
               </div>
             </div>
           )}
-          {entry.optionals?.length > 0 && (
+          {localEntry.optionals?.length > 0 && (
             <div className="admin-detail-field full">
               <span>Optional Interests</span>
               <div className="admin-tag-list">
-                {entry.optionals.map(o => <span key={o} className="admin-tag admin-tag-alt">{o}</span>)}
+                {localEntry.optionals.map(o => <span key={o} className="admin-tag admin-tag-alt">{o}</span>)}
               </div>
             </div>
           )}
-          {entry.referral && (
+          {localEntry.referral && (
             <>
-              <div className="admin-detail-field"><span>Referral Name</span><strong>{entry.referral_name || '—'}</strong></div>
-              <div className="admin-detail-field"><span>Referral Number</span><strong>{entry.referral_number || '—'}</strong></div>
+              <div className="admin-detail-field"><span>Referral Name</span><strong>{localEntry.referral_name || '-'}</strong></div>
+              <div className="admin-detail-field"><span>Referral Number</span><strong>{localEntry.referral_number || '-'}</strong></div>
             </>
           )}
-          {entry.rejection_reason && (
+          {localEntry.rejection_reason && (
             <div className="admin-detail-field full">
               <span>Rejection Reason</span>
-              <p className="admin-detail-message">{entry.rejection_reason}</p>
+              <p className="admin-detail-message">{localEntry.rejection_reason}</p>
             </div>
           )}
-          {entry.reviewed_at && (
+          {localEntry.reviewed_at && (
             <div className="admin-detail-field">
               <span>Reviewed</span>
-              <strong>{formatDate(entry.reviewed_at)}</strong>
+              <strong>{formatDate(localEntry.reviewed_at)}</strong>
             </div>
           )}
         </div>

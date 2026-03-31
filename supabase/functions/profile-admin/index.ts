@@ -79,6 +79,42 @@ serve(async (req) => {
       })
     }
 
+    // ── Update signup/application fields ───────────────────────────────────────
+    if (action === 'update_signup') {
+      const { signup_id, fields } = body
+      const allowed = ['email', 'first_name', 'surname', 'mobile', 'whatsapp', 'city', 'province', 'country', 'address']
+      const patch: Record<string, unknown> = {}
+      for (const key of allowed) {
+        if (fields[key] !== undefined) patch[key] = fields[key]
+      }
+      if (Object.keys(patch).length === 0) return json({ error: 'No valid fields' }, 400)
+
+      const { error } = await supabase.from('membership_applications').update(patch).eq('id', signup_id)
+      if (error) throw error
+
+      // If email changed and there's a linked auth user, update auth email too
+      if (patch.email) {
+        const { data: app } = await supabase.from('membership_applications').select('member_id').eq('id', signup_id).single()
+        if (app?.member_id) {
+          await supabase.auth.admin.updateUserById(app.member_id, { email: patch.email as string })
+        }
+      }
+
+      // If name changed and there's a linked auth user, update profile display_name + auth metadata
+      if (patch.first_name || patch.surname) {
+        const { data: app } = await supabase.from('membership_applications').select('member_id, first_name, surname').eq('id', signup_id).single()
+        if (app?.member_id) {
+          const name = `${app.first_name} ${app.surname}`.trim()
+          await supabase.from('profiles').update({ display_name: name }).eq('id', app.member_id)
+          await supabase.auth.admin.updateUserById(app.member_id, {
+            user_metadata: { first_name: app.first_name, surname: app.surname }
+          })
+        }
+      }
+
+      return json({ success: true })
+    }
+
     // ── Update member awards/roles/referral_points ────────────────────────────
     if (action === 'update_member') {
       const { user_id, awards, roles, referral_points } = body

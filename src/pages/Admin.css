@@ -737,6 +737,19 @@
   font-weight: 500;
 }
 
+.admin-edit-inline-btn {
+  background: none;
+  border: none;
+  color: var(--text-muted);
+  cursor: pointer;
+  font-size: 0.7rem;
+  padding: 0.2rem 0.35rem;
+  border-radius: 4px;
+  opacity: 0.5;
+  transition: opacity 0.15s, color 0.15s;
+}
+.admin-edit-inline-btn:hover { opacity: 1; color: var(--sa-green); }
+
 .admin-detail-message {
   font-size: 0.95rem;
   color: var(--text);
