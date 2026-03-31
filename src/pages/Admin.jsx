@@ -912,16 +912,55 @@ function MembersSection({ adminPassword, showToast }) {
     )
   }
 
+  function exportMembersPDF() {
+    const sorted = [...members]
+      .filter(m => m.membership_number)
+      .sort((a, b) => (parseInt(a.membership_number) || 0) - (parseInt(b.membership_number) || 0))
+
+    const rows = sorted.map(m => {
+      const parts = (m.display_name || '').split(' ')
+      const first = parts.slice(0, -1).join(' ') || parts[0] || ''
+      const surname = parts.length > 1 ? parts[parts.length - 1] : ''
+      return { first, surname, num: m.membership_number || '' }
+    })
+
+    const html = `<!DOCTYPE html><html><head><meta charset="utf-8">
+<title>SACCC Members</title>
+<style>
+  body { font-family: Arial, sans-serif; margin: 2cm; font-size: 11px; }
+  h1 { font-size: 16px; margin: 0 0 4px; }
+  .sub { font-size: 10px; color: #666; margin-bottom: 16px; }
+  table { width: 100%; border-collapse: collapse; }
+  th { text-align: left; padding: 6px 8px; border-bottom: 2px solid #333; font-size: 10px; text-transform: uppercase; letter-spacing: 0.05em; }
+  td { padding: 5px 8px; border-bottom: 1px solid #ddd; }
+  tr:nth-child(even) { background: #f9f9f9; }
+  @media print { body { margin: 1cm; } }
+</style></head><body>
+<h1>South African Coin Collectors Club - Members</h1>
+<p class="sub">Generated ${new Date().toLocaleDateString('en-ZA', { day: '2-digit', month: 'long', year: 'numeric' })} - ${rows.length} members</p>
+<table><thead><tr><th>Name</th><th>Surname</th><th>Membership No.</th></tr></thead><tbody>
+${rows.map(r => `<tr><td>${r.first}</td><td>${r.surname}</td><td>${r.num}</td></tr>`).join('\n')}
+</tbody></table></body></html>`
+
+    const w = window.open('', '_blank')
+    w.document.write(html)
+    w.document.close()
+    w.onload = () => { w.print() }
+  }
+
   return (
     <div className="admin-forum-wrap">
       <div className="admin-forum-bar">
         <input
           className="admin-forum-filter"
           style={{ flex: 1, maxWidth: 320 }}
-          placeholder="Search by name or email…"
+          placeholder="Search by name or email..."
           value={search}
           onChange={e => setSearch(e.target.value)}
         />
+        <button className="btn btn-secondary btn-sm" onClick={exportMembersPDF} style={{ whiteSpace: 'nowrap' }}>
+          <i className="fa-solid fa-file-pdf" style={{ marginRight: '0.35rem' }} />Export PDF
+        </button>
         <span className="admin-forum-count">{filtered.length} member{filtered.length !== 1 ? 's' : ''}</span>
       </div>
       {loading ? (
