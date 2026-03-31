@@ -45,6 +45,7 @@ function formatDate(iso) {
 
 export default function Home() {
   const [news, setNews] = useState([])
+  const [newsLoading, setNewsLoading] = useState(true)
 
   useEffect(() => {
     supabase
@@ -53,7 +54,7 @@ export default function Home() {
       .eq('published', true)
       .order('published_at', { ascending: false })
       .limit(3)
-      .then(({ data }) => { if (data?.length) setNews(data) })
+      .then(({ data }) => { if (data?.length) setNews(data); setNewsLoading(false) })
   }, [])
 
   return (
@@ -76,12 +77,25 @@ Join a community built for collectors.</p>
         </div>
       </section>
 
-      {news.length > 0 && (
-        <section className="section latest-news">
-          <div className="container">
-            <h2>Latest News</h2>
-            <div className="news-grid">
-              {news.map((article) => (
+      <section className="section latest-news">
+        <div className="container">
+          <h2>Latest News</h2>
+          <div className="news-grid">
+            {newsLoading ? (
+              <>
+                {[1,2,3].map(i => (
+                  <div key={i} className="news-card news-skeleton">
+                    <div className="news-card-image news-skel-img" />
+                    <div className="news-card-content">
+                      <div className="news-skel-line w40" />
+                      <div className="news-skel-line w80" />
+                      <div className="news-skel-line w60" />
+                    </div>
+                  </div>
+                ))}
+              </>
+            ) : news.length > 0 ? (
+              news.map((article) => (
                 <article key={article.id} className="news-card">
                   {article.cover_image && (
                     <div className="news-card-image">
@@ -95,11 +109,13 @@ Join a community built for collectors.</p>
                     <Link to={`/news/${article.id}`} className="news-link">Read More →</Link>
                   </div>
                 </article>
-              ))}
-            </div>
+              ))
+            ) : (
+              <p style={{ textAlign: 'center', color: 'var(--text-muted)', gridColumn: '1 / -1' }}>No articles published yet.</p>
+            )}
           </div>
-        </section>
-      )}
+        </div>
+      </section>
 
       <section className="section newsletter-banner">
         <div className="container">
