@@ -150,6 +150,23 @@ Join a community built for collectors.</p>
         </div>
       </section>
 
+      <section className="section newsletter-section">
+        <div className="container">
+          <h2>The Collector's Pulse</h2>
+          <p className="newsletter-sub">Our monthly newsletter covering market trends, featured coins, collector stories, and everything happening in South African numismatics.</p>
+          <div className="newsletter-card">
+            <div className="newsletter-card-inner">
+              <div className="newsletter-info">
+                <span className="newsletter-badge">Latest Issue</span>
+                <h3>March 2026 Edition</h3>
+                <p>The launch of the SA Coin Collectors Club, the 2026 JHB Coin Show, market pulse, coin of the month, and more.</p>
+              </div>
+              <Link to="/newsletter" className="btn btn-primary btn-lg">Read Newsletter</Link>
+            </div>
+          </div>
+        </div>
+      </section>
+
       <section className="section pricing">
         <div className="container">
           <h2>2026 Membership</h2>

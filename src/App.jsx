@@ -25,6 +25,7 @@ const Settings    = lazy(() => import('./pages/Settings'))
 const Leaderboard = lazy(() => import('./pages/Leaderboard'))
 const ResetPassword = lazy(() => import('./pages/ResetPassword'))
 const Magazine      = lazy(() => import('./pages/Magazine'))
+const Newsletter    = lazy(() => import('./pages/Newsletter'))
 
 function ScrollToTop() {
   const { pathname } = useLocation()
@@ -75,6 +76,7 @@ function App() {
               <Route path="/login" element={<MemberLogin />} />
               <Route path="/reset-password" element={<ResetPassword />} />
               <Route path="/magazine" element={<Magazine />} />
+              <Route path="/newsletter" element={<Newsletter />} />
               <Route path="/admin" element={<Admin />} />
             </Routes>
           </Suspense>
