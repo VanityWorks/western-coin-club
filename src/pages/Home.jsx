@@ -76,6 +76,31 @@ Join a community built for collectors.</p>
         </div>
       </section>
 
+      {news.length > 0 && (
+        <section className="section latest-news">
+          <div className="container">
+            <h2>Latest News</h2>
+            <div className="news-grid">
+              {news.map((article) => (
+                <article key={article.id} className="news-card">
+                  {article.cover_image && (
+                    <div className="news-card-image">
+                      <img src={article.cover_image} alt="" loading="lazy" />
+                    </div>
+                  )}
+                  <div className="news-card-content">
+                    <span className="news-date">{formatDate(article.published_at || article.created_at)}</span>
+                    <h3>{article.title}</h3>
+                    {article.summary && <p>{article.summary}</p>}
+                    <Link to={`/news/${article.id}`} className="news-link">Read More →</Link>
+                  </div>
+                </article>
+              ))}
+            </div>
+          </div>
+        </section>
+      )}
+
       <section className="section newsletter-banner">
         <div className="container">
           <div className="nl-banner">
@@ -103,31 +128,6 @@ Join a community built for collectors.</p>
           </div>
         </div>
       </section>
-
-      {news.length > 0 && (
-        <section className="section latest-news">
-          <div className="container">
-            <h2>Latest News</h2>
-            <div className="news-grid">
-              {news.map((article) => (
-                <article key={article.id} className="news-card">
-                  {article.cover_image && (
-                    <div className="news-card-image">
-                      <img src={article.cover_image} alt="" loading="lazy" />
-                    </div>
-                  )}
-                  <div className="news-card-content">
-                    <span className="news-date">{formatDate(article.published_at || article.created_at)}</span>
-                    <h3>{article.title}</h3>
-                    {article.summary && <p>{article.summary}</p>}
-                    <Link to={`/news/${article.id}`} className="news-link">Read More →</Link>
-                  </div>
-                </article>
-              ))}
-            </div>
-          </div>
-        </section>
-      )}
 
       <section className="section about-club">
         <div className="container">
