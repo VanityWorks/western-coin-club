@@ -262,9 +262,8 @@ function SignupDetail({ entry, onBack, onApprove, onReject, onResend, onRemind, 
             <button
               className="admin-edit-inline-btn"
               onClick={() => setEditField({ key: fieldKey, value: value || '' })}
-              title={`Edit ${label.toLowerCase()}`}
             >
-              <i className="fa-solid fa-pen" />
+              <i className="fa-solid fa-pen" /> Edit
             </button>
           </div>
         )}
