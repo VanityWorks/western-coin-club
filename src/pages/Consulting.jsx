@@ -103,7 +103,7 @@ export default function Consulting() {
             <p>
               Our experienced collectors and numismatic experts are passionate about helping fellow members. Consulting fees are treated as sponsorship contributions that support the club's mission while advancing numismatic knowledge in South Africa.
             </p>
-            <p className="consulting-price-note">R1,500 donation for 30 minutes</p>
+            <p className="consulting-price-note">R1,000 donation for 30 minutes</p>
           </div>
 
           <section className="consultants-section">
