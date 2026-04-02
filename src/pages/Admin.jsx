@@ -921,25 +921,26 @@ function MembersSection({ adminPassword, showToast }) {
       const parts = (m.display_name || '').split(' ')
       const first = parts.slice(0, -1).join(' ') || parts[0] || ''
       const surname = parts.length > 1 ? parts[parts.length - 1] : ''
-      return { first, surname, num: m.membership_number || '' }
+      const addr = [m.address, m.city, m.province, m.country].filter(Boolean).join(', ')
+      return { first, surname, num: m.membership_number || '', addr }
     })
 
     const html = `<!DOCTYPE html><html><head><meta charset="utf-8">
 <title>SACCC Members</title>
 <style>
-  body { font-family: Arial, sans-serif; margin: 2cm; font-size: 11px; }
+  body { font-family: Arial, sans-serif; margin: 1.5cm; font-size: 10px; }
   h1 { font-size: 16px; margin: 0 0 4px; }
   .sub { font-size: 10px; color: #666; margin-bottom: 16px; }
   table { width: 100%; border-collapse: collapse; }
-  th { text-align: left; padding: 6px 8px; border-bottom: 2px solid #333; font-size: 10px; text-transform: uppercase; letter-spacing: 0.05em; }
-  td { padding: 5px 8px; border-bottom: 1px solid #ddd; }
+  th { text-align: left; padding: 5px 6px; border-bottom: 2px solid #333; font-size: 9px; text-transform: uppercase; letter-spacing: 0.05em; }
+  td { padding: 4px 6px; border-bottom: 1px solid #ddd; }
   tr:nth-child(even) { background: #f9f9f9; }
-  @media print { body { margin: 1cm; } }
+  @media print { body { margin: 1cm; } @page { size: landscape; } }
 </style></head><body>
 <h1>South African Coin Collectors Club - Members</h1>
 <p class="sub">Generated ${new Date().toLocaleDateString('en-ZA', { day: '2-digit', month: 'long', year: 'numeric' })} - ${rows.length} members</p>
-<table><thead><tr><th>Name</th><th>Surname</th><th>Membership No.</th></tr></thead><tbody>
-${rows.map(r => `<tr><td>${r.first}</td><td>${r.surname}</td><td>${r.num}</td></tr>`).join('\n')}
+<table><thead><tr><th>Name</th><th>Surname</th><th>No.</th><th>Address</th></tr></thead><tbody>
+${rows.map(r => `<tr><td>${r.first}</td><td>${r.surname}</td><td>${r.num}</td><td>${r.addr}</td></tr>`).join('\n')}
 </tbody></table></body></html>`
 
     const w = window.open('', '_blank')
