@@ -922,7 +922,7 @@ function MembersSection({ adminPassword, showToast }) {
       const first = parts.slice(0, -1).join(' ') || parts[0] || ''
       const surname = parts.length > 1 ? parts[parts.length - 1] : ''
       const addr = [m.address, m.city, m.province, m.country].filter(Boolean).join(', ')
-      return { first, surname, num: m.membership_number || '', addr }
+      return { first, surname, num: m.membership_number || '', email: m.email || '', phone: m.phone || '', addr }
     })
 
     const html = `<!DOCTYPE html><html><head><meta charset="utf-8">
@@ -939,8 +939,8 @@ function MembersSection({ adminPassword, showToast }) {
 </style></head><body>
 <h1>South African Coin Collectors Club - Members</h1>
 <p class="sub">Generated ${new Date().toLocaleDateString('en-ZA', { day: '2-digit', month: 'long', year: 'numeric' })} - ${rows.length} members</p>
-<table><thead><tr><th>Name</th><th>Surname</th><th>No.</th><th>Address</th></tr></thead><tbody>
-${rows.map(r => `<tr><td>${r.first}</td><td>${r.surname}</td><td>${r.num}</td><td>${r.addr}</td></tr>`).join('\n')}
+<table><thead><tr><th>Name</th><th>Surname</th><th>No.</th><th>Email</th><th>Phone</th><th>Address</th></tr></thead><tbody>
+${rows.map(r => `<tr><td>${r.first}</td><td>${r.surname}</td><td>${r.num}</td><td>${r.email}</td><td>${r.phone}</td><td>${r.addr}</td></tr>`).join('\n')}
 </tbody></table></body></html>`
 
     const w = window.open('', '_blank')
