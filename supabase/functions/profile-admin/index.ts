@@ -38,12 +38,12 @@ serve(async (req) => {
         supabase.auth.admin.listUsers({ perPage: 1000 }),
         supabase.from('forum_posts').select('author_id').not('author_id', 'is', null),
         supabase.from('forum_threads').select('author_id').not('author_id', 'is', null),
-        supabase.from('membership_applications').select('member_id, phone, address, city, province, country').eq('status', 'approved'),
+        supabase.from('membership_applications').select('member_id, mobile, address, city, province, country').eq('status', 'approved'),
       ])
 
       const emailMap = new Map((authUsers as any)?.users?.map((u: any) => [u.id, u.email]) ?? [])
       const bannedMap = new Map((authUsers as any)?.users?.map((u: any) => [u.id, u.banned_until ?? null]) ?? [])
-      const addressMap = new Map((apps || []).map((a: any) => [a.member_id, { phone: a.phone, address: a.address, city: a.city, province: a.province, country: a.country }]))
+      const addressMap = new Map((apps || []).map((a: any) => [a.member_id, { phone: a.mobile, address: a.address, city: a.city, province: a.province, country: a.country }]))
 
       const postCounts = new Map<string, number>()
       postRows?.forEach((r: any) => postCounts.set(r.author_id, (postCounts.get(r.author_id) || 0) + 1))
@@ -78,13 +78,13 @@ serve(async (req) => {
         supabase.auth.admin.getUserById(user_id),
         supabase.from('forum_posts').select('*', { count: 'exact', head: true }).eq('author_id', user_id),
         supabase.from('forum_threads').select('*', { count: 'exact', head: true }).eq('author_id', user_id),
-        supabase.from('membership_applications').select('phone, address, city, province, country').eq('member_id', user_id).eq('status', 'approved').maybeSingle(),
+        supabase.from('membership_applications').select('mobile, address, city, province, country').eq('member_id', user_id).eq('status', 'approved').maybeSingle(),
       ])
       return json({
         data: {
           ...profile,
           email: (authUser as any)?.user?.email || '',
-          phone: app?.phone || '',
+          phone: app?.mobile || '',
           address: app?.address || '',
           city: app?.city || '',
           province: app?.province || '',
