@@ -78,13 +78,17 @@ serve(async (req) => {
         supabase.auth.admin.getUserById(user_id),
         supabase.from('forum_posts').select('*', { count: 'exact', head: true }).eq('author_id', user_id),
         supabase.from('forum_threads').select('*', { count: 'exact', head: true }).eq('author_id', user_id),
-        supabase.from('membership_applications').select('phone').eq('member_id', user_id).eq('status', 'approved').single(),
+        supabase.from('membership_applications').select('phone, address, city, province, country').eq('member_id', user_id).eq('status', 'approved').maybeSingle(),
       ])
       return json({
         data: {
           ...profile,
           email: (authUser as any)?.user?.email || '',
           phone: app?.phone || '',
+          address: app?.address || '',
+          city: app?.city || '',
+          province: app?.province || '',
+          country: app?.country || '',
           post_count: postRes.count || 0,
           thread_count: threadRes.count || 0,
         }
