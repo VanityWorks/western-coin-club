@@ -38,12 +38,18 @@ serve(async (req) => {
         supabase.auth.admin.listUsers({ perPage: 1000 }),
         supabase.from('forum_posts').select('author_id').not('author_id', 'is', null),
         supabase.from('forum_threads').select('author_id').not('author_id', 'is', null),
-        supabase.from('membership_applications').select('member_id, mobile, address, city, province, country').eq('status', 'approved').order('submitted_at', { ascending: true }),
+        supabase.from('membership_applications').select('member_id, email, mobile, address, city, province, country').eq('status', 'approved').order('submitted_at', { ascending: true }),
       ])
 
       const emailMap = new Map((authUsers as any)?.users?.map((u: any) => [u.id, u.email]) ?? [])
+      const reverseEmailMap = new Map((authUsers as any)?.users?.map((u: any) => [u.email, u.id]) ?? [])
       const bannedMap = new Map((authUsers as any)?.users?.map((u: any) => [u.id, u.banned_until ?? null]) ?? [])
-      const addressMap = new Map((apps || []).map((a: any) => [a.member_id, { phone: a.mobile, address: a.address, city: a.city, province: a.province, country: a.country }]))
+      // Build address map keyed by user id — match by member_id first, then fall back to email
+      const addressMap = new Map<string, any>()
+      for (const a of (apps || [])) {
+        const uid = a.member_id || reverseEmailMap.get(a.email)
+        if (uid) addressMap.set(uid, { phone: a.mobile, address: a.address, city: a.city, province: a.province, country: a.country })
+      }
 
       const postCounts = new Map<string, number>()
       postRows?.forEach((r: any) => postCounts.set(r.author_id, (postCounts.get(r.author_id) || 0) + 1))
