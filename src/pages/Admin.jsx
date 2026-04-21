@@ -830,6 +830,8 @@ function MembersSection({ adminPassword, showToast }) {
                 }}
               />
             </div>
+            {selected.phone && <div className="admin-detail-field"><span>Phone</span><strong>{selected.phone}</strong></div>}
+            {(selected.address || selected.city || selected.province || selected.country) && <div className="admin-detail-field full"><span>Address</span><strong>{[selected.address, selected.city, selected.province, selected.country].filter(Boolean).join(', ')}</strong></div>}
             {selected.location && <div className="admin-detail-field"><span>Location</span><strong>{selected.location}</strong></div>}
             {selected.bio && <div className="admin-detail-field full"><span>Bio</span><p className="admin-detail-message">{selected.bio}</p></div>}
           </div>
