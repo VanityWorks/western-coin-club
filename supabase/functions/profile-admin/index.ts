@@ -38,12 +38,12 @@ serve(async (req) => {
         supabase.auth.admin.listUsers({ perPage: 1000 }),
         supabase.from('forum_posts').select('author_id').not('author_id', 'is', null),
         supabase.from('forum_threads').select('author_id').not('author_id', 'is', null),
-        supabase.from('membership_applications').select('member_id, address, city, province, country').eq('status', 'approved'),
+        supabase.from('membership_applications').select('member_id, phone, address, city, province, country').eq('status', 'approved'),
       ])
 
       const emailMap = new Map((authUsers as any)?.users?.map((u: any) => [u.id, u.email]) ?? [])
       const bannedMap = new Map((authUsers as any)?.users?.map((u: any) => [u.id, u.banned_until ?? null]) ?? [])
-      const addressMap = new Map((apps || []).map((a: any) => [a.member_id, { address: a.address, city: a.city, province: a.province, country: a.country }]))
+      const addressMap = new Map((apps || []).map((a: any) => [a.member_id, { phone: a.phone, address: a.address, city: a.city, province: a.province, country: a.country }]))
 
       const postCounts = new Map<string, number>()
       postRows?.forEach((r: any) => postCounts.set(r.author_id, (postCounts.get(r.author_id) || 0) + 1))
@@ -59,6 +59,7 @@ serve(async (req) => {
           post_count: postCounts.get(p.id) || 0,
           thread_count: threadCounts.get(p.id) || 0,
           banned_until: bannedMap.get(p.id) || null,
+          phone: addr.phone || '',
           address: addr.address || '',
           city: addr.city || '',
           province: addr.province || '',
@@ -72,16 +73,18 @@ serve(async (req) => {
     // ── Get single member ────────────────────────────────────────────────────
     if (action === 'get_member') {
       const { user_id } = body
-      const [{ data: profile }, { data: authUser }, postRes, threadRes] = await Promise.all([
+      const [{ data: profile }, { data: authUser }, postRes, threadRes, { data: app }] = await Promise.all([
         supabase.from('profiles').select('*').eq('id', user_id).single(),
         supabase.auth.admin.getUserById(user_id),
         supabase.from('forum_posts').select('*', { count: 'exact', head: true }).eq('author_id', user_id),
         supabase.from('forum_threads').select('*', { count: 'exact', head: true }).eq('author_id', user_id),
+        supabase.from('membership_applications').select('phone').eq('member_id', user_id).eq('status', 'approved').single(),
       ])
       return json({
         data: {
           ...profile,
           email: (authUser as any)?.user?.email || '',
+          phone: app?.phone || '',
           post_count: postRes.count || 0,
           thread_count: threadRes.count || 0,
         }
