@@ -38,7 +38,7 @@ serve(async (req) => {
         supabase.auth.admin.listUsers({ perPage: 1000 }),
         supabase.from('forum_posts').select('author_id').not('author_id', 'is', null),
         supabase.from('forum_threads').select('author_id').not('author_id', 'is', null),
-        supabase.from('membership_applications').select('member_id, mobile, address, city, province, country').eq('status', 'approved'),
+        supabase.from('membership_applications').select('member_id, mobile, address, city, province, country').eq('status', 'approved').order('submitted_at', { ascending: true }),
       ])
 
       const emailMap = new Map((authUsers as any)?.users?.map((u: any) => [u.id, u.email]) ?? [])
