@@ -44,11 +44,18 @@ serve(async (req) => {
       const emailMap = new Map((authUsers as any)?.users?.map((u: any) => [u.id, u.email]) ?? [])
       const reverseEmailMap = new Map((authUsers as any)?.users?.map((u: any) => [u.email, u.id]) ?? [])
       const bannedMap = new Map((authUsers as any)?.users?.map((u: any) => [u.id, u.banned_until ?? null]) ?? [])
-      // Build address map keyed by user id — match by member_id first, then fall back to email
+      // Build address map keyed by user id — rows with member_id always take priority
       const addressMap = new Map<string, any>()
+      const memberIdMatched = new Set<string>()
       for (const a of (apps || [])) {
-        const uid = a.member_id || reverseEmailMap.get(a.email)
-        if (uid) addressMap.set(uid, { phone: a.mobile, address: a.address, city: a.city, province: a.province, country: a.country })
+        const info = { phone: a.mobile, address: a.address, city: a.city, province: a.province, country: a.country }
+        if (a.member_id) {
+          addressMap.set(a.member_id, info)
+          memberIdMatched.add(a.member_id)
+        } else {
+          const uid = reverseEmailMap.get(a.email)
+          if (uid && !memberIdMatched.has(uid)) addressMap.set(uid, info)
+        }
       }
 
       const postCounts = new Map<string, number>()
